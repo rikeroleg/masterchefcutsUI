@@ -1,159 +1,86 @@
-import React  from 'react'
-import { Link, useLocation } from "react-router";
-import { createPageUrl } from "@/utils";
-import { Beef, ShoppingCart, Home, Info, Phone } from "lucide-react";
-import './App.css'
+import { OrbitControls, Center, Bounds } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Beef, ShoppingCart, Home, Info } from "lucide-react";
+import { Cow } from "./Components/3DModel/cow/Cow";
+import './App.css';
 
 function App() {
-
   const location = useLocation();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-red-50 to-orange-50">
-    {/* Header */}
-    <header className="bg-white shadow-lg border-b-4 border-red-600">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          <Link to={createPageUrl("Home")} className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-red-800 rounded-full flex items-center justify-center shadow-lg">
-              <Beef className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-red-800">Prime Cuts</h1>
-              <p className="text-sm text-red-600">Premium Butcher Shop</p>
-            </div>
-          </Link>
+    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
 
-          <nav className="hidden md:flex space-x-8">
-            <Link 
-              to={createPageUrl("Home")} 
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
-                location.pathname === createPageUrl("Home") 
-                  ? 'bg-red-100 text-red-800 font-semibold' 
-                  : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
-              }`}
-            >
-              <Home className="w-5 h-5" />
-              <span>Shop</span>
-            </Link>
-            <Link 
-              to={createPageUrl("Cart")} 
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
-                location.pathname === createPageUrl("Cart") 
-                  ? 'bg-red-100 text-red-800 font-semibold' 
-                  : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
-              }`}
-            >
-              <ShoppingCart className="w-5 h-5" />
-              <span>Cart</span>
-            </Link>
-            <Link 
-              to={createPageUrl("About")} 
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
-                location.pathname === createPageUrl("About") 
-                  ? 'bg-red-100 text-red-800 font-semibold' 
-                  : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
-              }`}
-            >
-              <Info className="w-5 h-5" />
-              <span>About</span>
-            </Link>
-          </nav>
-
-          <Link to={createPageUrl("Cart")} className="relative">
-            <div className="w-12 h-12 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center shadow-lg transition-colors duration-200">
-              <ShoppingCart className="w-6 h-6 text-white" />
-            </div>
-          </Link>
-        </div>
-      </div>
-    </header>
-
-    {/* Mobile Navigation */}
-    <nav className="md:hidden bg-white border-b border-red-200 px-4 py-3">
-      <div className="flex space-x-4">
-        <Link 
-          to={createPageUrl("Home")} 
-          className={`flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded-lg ${
-            location.pathname === createPageUrl("Home") 
-              ? 'bg-red-100 text-red-800' 
-              : 'text-gray-700 hover:bg-red-50'
-          }`}
+      {/* Full-viewport 3D Canvas — background layer */}
+      <div style={{ position: 'absolute', inset: 0 }}>
+        <Canvas
+          camera={{ position: [0, 0, 10], fov: 45 }}
+          gl={{ antialias: true }}
+          style={{ width: '100%', height: '100%' }}
         >
-          <Home className="w-4 h-4" />
-          <span className="text-sm">Shop</span>
-        </Link>
-        <Link 
-          to={createPageUrl("Cart")} 
-          className={`flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded-lg ${
-            location.pathname === createPageUrl("Cart") 
-              ? 'bg-red-100 text-red-800' 
-              : 'text-gray-700 hover:bg-red-50'
-          }`}
-        >
-          <ShoppingCart className="w-4 h-4" />
-          <span className="text-sm">Cart</span>
-        </Link>
-        <Link 
-          to={createPageUrl("About")} 
-          className={`flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded-lg ${
-            location.pathname === createPageUrl("About") 
-              ? 'bg-red-100 text-red-800' 
-              : 'text-gray-700 hover:bg-red-50'
-          }`}
-        >
-          <Info className="w-4 h-4" />
-          <span className="text-sm">About</span>
-        </Link>
+          <color attach="background" args={['#0f0f0f']} />
+          <ambientLight intensity={1.2} />
+          <pointLight position={[10, 10, 10]} intensity={1.5} />
+          <pointLight position={[-10, -10, -10]} intensity={0.5} />
+          <Bounds fit clip observe margin={1.1}>
+            <Center>
+              <Cow />
+            </Center>
+          </Bounds>
+          <OrbitControls enablePan={false} />
+        </Canvas>
       </div>
-    </nav>
 
-    {/* Main Content */}
-    {/* <main className="flex-1">
-      {children}
-    </main> */}
+      {/* UI Overlay — pointer-events disabled on wrapper, re-enabled on interactive children */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        zIndex: 10,
+        pointerEvents: 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+      }}>
 
-    {/* Footer */}
-    <footer className="bg-red-800 text-white py-12 mt-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div>
-            <div className="flex items-center space-x-3 mb-4">
-              <Beef className="w-8 h-8" />
-              <h3 className="text-xl font-bold">Prime Cuts</h3>
-            </div>
-            <p className="text-red-200">
-              Premium quality meats from local farms. 
-              Fresh cuts delivered daily since 1952.
-            </p>
+        {/* Header */}
+        <header style={{ pointerEvents: 'auto' }} className="ui-header">
+          <div className="ui-header-inner">
+            <Link to="/" className="ui-brand">
+              <div className="ui-brand-icon">
+                <Beef size={24} color="white" />
+              </div>
+              <div>
+                <span className="ui-brand-title">MasterChef Cuts</span>
+                <span className="ui-brand-sub">Premium Butcher Shop</span>
+              </div>
+            </Link>
+
+            <nav className="ui-nav">
+              <Link to="/" className={`ui-nav-link${location.pathname === '/' ? ' active' : ''}`}>
+                <Home size={18} />
+                <span>Shop</span>
+              </Link>
+              <Link to="/cart" className={`ui-nav-link${location.pathname === '/cart' ? ' active' : ''}`}>
+                <ShoppingCart size={18} />
+                <span>Cart</span>
+              </Link>
+              <Link to="/about" className={`ui-nav-link${location.pathname === '/about' ? ' active' : ''}`}>
+                <Info size={18} />
+                <span>About</span>
+              </Link>
+            </nav>
           </div>
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Contact Info</h4>
-            <div className="space-y-2 text-red-200">
-              <p className="flex items-center space-x-2">
-                <Phone className="w-4 h-4" />
-                <span>(555) 123-MEAT</span>
-              </p>
-              <p>123 Butcher Lane</p>
-              <p>Meattown, MT 12345</p>
-            </div>
-          </div>
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Hours</h4>
-            <div className="space-y-1 text-red-200 text-sm">
-              <p>Monday - Friday: 8AM - 7PM</p>
-              <p>Saturday: 8AM - 6PM</p>
-              <p>Sunday: 10AM - 4PM</p>
-            </div>
-          </div>
+        </header>
+
+        {/* Bottom hint */}
+        <div className="ui-bottom-hint" style={{ pointerEvents: 'none' }}>
+          <span>Drag to rotate &nbsp;·&nbsp; Scroll to zoom</span>
         </div>
-        <div className="border-t border-red-700 mt-8 pt-6 text-center text-red-300">
-          <p>&copy; 2024 Prime Cuts Butcher Shop. All rights reserved.</p>
-        </div>
+
       </div>
-    </footer>
-  </div>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
