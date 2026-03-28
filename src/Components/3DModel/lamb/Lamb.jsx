@@ -1,33 +1,27 @@
 import React, { useRef, useState, useCallback } from 'react'
 import { useGLTF, Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
-import { BEEF_CUT_DATA } from '../../../data/beefCutData'
+import { LAMB_CUT_DATA } from '../../../data/lambCutData'
 
-// UV-space cut zones [uMin, uMax, vMin, vMax]
-// v=0 bottom of texture, v=1 top — adjust if model has flipped V
+// UV-space cut zones — placeholder zones, tune once actual GLB is loaded
+// v=0 bottom of texture, v=1 top; flip handled in findCutByUV
 const UV_CUT_ZONES = [
-  { id: 'chuck',     name: 'Chuck',      u: [0.06, 0.30], v: [0.48, 0.90], color: '#e74c3c' },
-  { id: 'rib',       name: 'Rib',        u: [0.28, 0.50], v: [0.55, 0.92], color: '#e67e22' },
-  { id: 'shortloin', name: 'Short Loin', u: [0.48, 0.62], v: [0.50, 0.88], color: '#f1c40f' },
-  { id: 'sirloin',   name: 'Sirloin',    u: [0.60, 0.74], v: [0.46, 0.82], color: '#2ecc71' },
-  { id: 'round',     name: 'Round',      u: [0.72, 0.96], v: [0.40, 0.86], color: '#1abc9c' },
-  { id: 'brisket',   name: 'Brisket',    u: [0.06, 0.28], v: [0.24, 0.50], color: '#3498db' },
-  { id: 'plate',     name: 'Plate',      u: [0.26, 0.50], v: [0.08, 0.40], color: '#9b59b6' },
-  { id: 'flank',     name: 'Flank',      u: [0.48, 0.72], v: [0.08, 0.38], color: '#e91e63' },
-  { id: 'shank',     name: 'Shank',      u: [0.04, 0.26], v: [0.02, 0.26], color: '#795548' },
+  { id: 'shoulder', name: 'Shoulder',       u: [0.05, 0.30], v: [0.48, 0.92], color: '#e74c3c' },
+  { id: 'rack',     name: 'Rack',           u: [0.28, 0.48], v: [0.55, 0.92], color: '#e67e22' },
+  { id: 'loin',     name: 'Loin',           u: [0.46, 0.62], v: [0.50, 0.90], color: '#f1c40f' },
+  { id: 'leg',      name: 'Leg',            u: [0.60, 0.95], v: [0.38, 0.92], color: '#2ecc71' },
+  { id: 'breast',   name: 'Breast & Flank', u: [0.25, 0.62], v: [0.10, 0.42], color: '#3498db' },
+  { id: 'shank',    name: 'Shank',          u: [0.60, 0.95], v: [0.04, 0.38], color: '#9b59b6' },
 ]
 
 function findCutByUV(u, v) {
-  // Try direct zone match
   for (const zone of UV_CUT_ZONES) {
     if (u >= zone.u[0] && u <= zone.u[1] && v >= zone.v[0] && v <= zone.v[1]) return zone
   }
-  // Also try with flipped V in case model has inverted texture
   const vFlip = 1 - v
   for (const zone of UV_CUT_ZONES) {
     if (u >= zone.u[0] && u <= zone.u[1] && vFlip >= zone.v[0] && vFlip <= zone.v[1]) return zone
   }
-  // Nearest zone center fallback — always returns a result
   let best = null, bestDist = Infinity
   for (const zone of UV_CUT_ZONES) {
     const cu = (zone.u[0] + zone.u[1]) / 2
@@ -49,7 +43,7 @@ function easeOutCubic(t) {
 
 function CutFullPopup({ cut, onClose }) {
   const [qty, setQty] = useState(1)
-  const data = BEEF_CUT_DATA[cut.id]
+  const data = LAMB_CUT_DATA[cut.id]
   if (!data) return null
   const { color } = cut
   const total = (data.price * qty).toFixed(0)
@@ -190,7 +184,7 @@ function CutMarker({ position, color, cut, onClose }) {
 
       <Html
         center
-        distanceFactor={19}
+        distanceFactor={13}
         position={[0, 0.7, 0]}
         zIndexRange={[50, 0]}
         style={{ pointerEvents: 'none' }}
@@ -201,32 +195,27 @@ function CutMarker({ position, color, cut, onClose }) {
   )
 }
 
-export function Cow({ ...props }) {
+export function Lamb({ ...props }) {
   const meshRef = useRef()
-  const { nodes, materials } = useGLTF('/Meshy_AI_Beef_Cuts_Diagram_0326215242_texture.glb')
+  const { nodes, materials } = useGLTF('/lamb_cuts_diagram.glb')
   const [markers, setMarkers] = useState([])
 
-  const mat =
-    materials['Material_0.003'] ??
-    materials['Material_0.004'] ??
-    Object.values(materials)[0]
+  const mesh = Object.values(nodes).find((n) => n.isMesh) ?? Object.values(nodes)[1]
+  const mat  = Object.values(materials)[0]
 
   const handleClick = useCallback((event) => {
     event.stopPropagation()
     const { uv, point } = event
     if (!uv) {
-      console.warn('[Cow] No UV on intersection — model may lack UV coords')
+      console.warn('[Lamb] No UV on intersection — model may lack UV coords')
       return
     }
-    console.log('[Cow] UV click:', uv.x.toFixed(3), uv.y.toFixed(3))
+    console.log('[Lamb] UV click:', uv.x.toFixed(3), uv.y.toFixed(3))
 
     const cut = findCutByUV(uv.x, uv.y)
     if (!cut) return
 
-    // Convert world-space hit point to the mesh's local space so the marker
-    // sits correctly regardless of the Center/Bounds offset transform.
     const localPoint = event.object.worldToLocal(point.clone())
-
     const markerId = `${cut.id}-${Date.now()}`
     setMarkers((prev) => [
       ...prev.filter((m) => m.cutId !== cut.id),
@@ -240,13 +229,8 @@ export function Cow({ ...props }) {
     ])
   }, [])
 
-  const handlePointerOver = useCallback(() => {
-    document.body.style.cursor = 'pointer'
-  }, [])
-
-  const handlePointerOut = useCallback(() => {
-    document.body.style.cursor = 'auto'
-  }, [])
+  const handlePointerOver = useCallback(() => { document.body.style.cursor = 'pointer' }, [])
+  const handlePointerOut  = useCallback(() => { document.body.style.cursor = 'auto'    }, [])
 
   return (
     <group {...props} dispose={null}>
@@ -254,7 +238,7 @@ export function Cow({ ...props }) {
         ref={meshRef}
         castShadow
         receiveShadow
-        geometry={nodes.Mesh_0.geometry}
+        geometry={mesh?.geometry}
         material={mat}
         onClick={handleClick}
         onPointerOver={handlePointerOver}
@@ -273,4 +257,4 @@ export function Cow({ ...props }) {
   )
 }
 
-useGLTF.preload('/Meshy_AI_Beef_Cuts_Diagram_0326215242_texture.glb')
+useGLTF.preload('/lamb_cuts_diagram.glb')
