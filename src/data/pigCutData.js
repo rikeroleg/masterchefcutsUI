@@ -1,4 +1,22 @@
 export const PIG_CUT_DATA = {
+  head: {
+    name: 'Head',
+    color: '#6c3483',
+    section: 'Head',
+    price: 19,
+    description:
+      'The whole pig\'s head is a cornerstone of nose-to-tail cooking. It yields the tongue, brain, ears, snout, and cheek meat. Slow-braised or roasted, it produces head cheese (brawn), crisped pig ears, and deeply flavoured stocks that form the base of many traditional dishes.',
+    popularCuts: ['Head Cheese / Brawn', 'Pig Ear (Crispy)', 'Pig Tongue', 'Pig Snout', 'Fromage de Tête'],
+    cookingMethods: [
+      { method: 'Braising',   note: 'Whole: 300 °F for 4–5 hours in stock' },
+      { method: 'Roasting',   note: 'Ears & snout: 425 °F for crackle skin' },
+      { method: 'Slow Cook',  note: '8–10 hours — shred for head cheese' },
+      { method: 'Stock',      note: 'Hours of simmering yields silky broth' },
+    ],
+    flavorProfile: 'Rich, gelatinous, deeply porky — maximum collagen, maximum flavour',
+    tenderness: 4,
+    internalTemp: '185–195 °F for full breakdown',
+  },
   shoulder: {
     name: 'Shoulder',
     color: '#e74c3c',

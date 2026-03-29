@@ -2,6 +2,7 @@ import React, { useRef, useState, useCallback } from 'react'
 import { useGLTF, Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { LAMB_CUT_DATA } from '../../../data/lambCutData'
+import { cartBridge } from '../../../context/CartContext'
 
 // UV-space cut zones — placeholder zones, tune once actual GLB is loaded
 // v=0 bottom of texture, v=1 top; flip handled in findCutByUV
@@ -43,10 +44,17 @@ function easeOutCubic(t) {
 
 function CutFullPopup({ cut, onClose }) {
   const [qty, setQty] = useState(1)
+  const [added, setAdded] = useState(false)
   const data = LAMB_CUT_DATA[cut.id]
   if (!data) return null
   const { color } = cut
   const total = (data.price * qty).toFixed(0)
+
+  const handleOrder = () => {
+    cartBridge.addToCart({ animal: 'lamb', cutId: cut.id, name: data.name, color, price: data.price, qty })
+    setAdded(true)
+    setTimeout(() => setAdded(false), 1800)
+  }
 
   return (
     <div
@@ -134,8 +142,8 @@ function CutFullPopup({ cut, onClose }) {
               <button className="cpf-qty-btn" onClick={() => setQty((q) => q + 1)}>+</button>
             </div>
           </div>
-          <button className="cpf-add-btn" style={{ background: color }}>
-            Order {qty} {qty === 1 ? 'Cut' : 'Cuts'} — ${total}
+          <button className="cpf-add-btn" style={{ background: added ? '#27ae60' : color }} onClick={handleOrder}>
+            {added ? '✓ Added to Cart!' : `Order ${qty} ${qty === 1 ? 'Cut' : 'Cuts'} — $${total}`}
           </button>
         </div>
 

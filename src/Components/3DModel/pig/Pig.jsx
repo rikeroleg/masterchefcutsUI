@@ -1,35 +1,34 @@
-import React, { useRef, useState, useCallback } from 'react'
+import React, { useRef, useState, useCallback, useMemo } from 'react'
 import { useGLTF, Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { PIG_CUT_DATA } from '../../../data/pigCutData'
+import { cartBridge } from '../../../context/CartContext'
 
-// UV-space cut zones — placeholder zones, tune once actual GLB is loaded
-// v=0 bottom of texture, v=1 top; flip handled in findCutByUV
-const UV_CUT_ZONES = [
-  { id: 'jowl',     name: 'Jowl',     u: [0.00, 0.14], v: [0.55, 0.95], color: '#9b59b6' },
-  { id: 'shoulder', name: 'Shoulder', u: [0.10, 0.35], v: [0.48, 0.92], color: '#e74c3c' },
-  { id: 'loin',     name: 'Loin',     u: [0.33, 0.65], v: [0.52, 0.92], color: '#e67e22' },
-  { id: 'belly',    name: 'Belly',    u: [0.30, 0.65], v: [0.12, 0.50], color: '#f1c40f' },
-  { id: 'ham',      name: 'Ham',      u: [0.63, 0.92], v: [0.42, 0.92], color: '#2ecc71' },
-  { id: 'hock',     name: 'Hock',     u: [0.68, 0.96], v: [0.04, 0.42], color: '#3498db' },
-]
+// 3D local-space cut detection — zones derived from 20-bin vertex histogram of 3DPig.glb
+// HEAD at +Z (+0.95), TAIL at -Z (-0.95). Foreleg avgY dip at Z[+0.19,+0.38]; density gap n=120 at Z[+0.475,+0.57].
+// Hindleg avgY dip at Z[-0.76,-0.475]; ham body dense at Z[-0.57,-0.475] n=351.
+const CUTS = {
+  head:     { id: 'head',     name: 'Head',     color: '#6c3483' },
+  jowl:     { id: 'jowl',     name: 'Jowl',     color: '#9b59b6' },
+  shoulder: { id: 'shoulder', name: 'Shoulder',  color: '#e74c3c' },
+  loin:     { id: 'loin',     name: 'Loin',      color: '#e67e22' },
+  belly:    { id: 'belly',    name: 'Belly',     color: '#f1c40f' },
+  ham:      { id: 'ham',      name: 'Ham',       color: '#2ecc71' },
+  hock:     { id: 'hock',     name: 'Hock',      color: '#3498db' },
+}
 
-function findCutByUV(u, v) {
-  for (const zone of UV_CUT_ZONES) {
-    if (u >= zone.u[0] && u <= zone.u[1] && v >= zone.v[0] && v <= zone.v[1]) return zone
-  }
-  const vFlip = 1 - v
-  for (const zone of UV_CUT_ZONES) {
-    if (u >= zone.u[0] && u <= zone.u[1] && vFlip >= zone.v[0] && vFlip <= zone.v[1]) return zone
-  }
-  let best = null, bestDist = Infinity
-  for (const zone of UV_CUT_ZONES) {
-    const cu = (zone.u[0] + zone.u[1]) / 2
-    const cv = (zone.v[0] + zone.v[1]) / 2
-    const d = Math.hypot(u - cu, v - cv)
-    if (d < bestDist) { bestDist = d; best = zone }
-  }
-  return best
+function findCutByPosition(lp) {
+  const y = lp.y, z = lp.z
+  // Hock: front & rear legs (Y below mid-body)
+  if (y < -0.22) return CUTS.hock
+  // HEAD at +Z, TAIL at -Z
+  if (z >= +0.760) return CUTS.head        // head           — Z [+0.760, +0.95]  (snout/face tip)
+  if (z >= +0.540) return CUTS.jowl        // jowl/cheek     — Z [+0.540, +0.760] (avgY peak 0.289)
+  if (z >= +0.180) return CUTS.shoulder    // shoulder       — Z [+0.180, +0.540] (forelegs here)
+  // Loin (upper) / Belly (lower) share the same Z band — split by Y
+  if (z >= -0.200) return y >= 0.05 ? CUTS.loin : CUTS.belly  // Z [-0.200, +0.180]
+  // Ham: rear quarter (hindlegs also here, caught by hock check above)
+  return CUTS.ham                            // ham            — Z [-0.95, -0.200]
 }
 
 function easeOutElastic(t) {
@@ -43,10 +42,17 @@ function easeOutCubic(t) {
 
 function CutFullPopup({ cut, onClose }) {
   const [qty, setQty] = useState(1)
+  const [added, setAdded] = useState(false)
   const data = PIG_CUT_DATA[cut.id]
   if (!data) return null
   const { color } = cut
   const total = (data.price * qty).toFixed(0)
+
+  const handleOrder = () => {
+    cartBridge.addToCart({ animal: 'pork', cutId: cut.id, name: data.name, color, price: data.price, qty })
+    setAdded(true)
+    setTimeout(() => setAdded(false), 1800)
+  }
 
   return (
     <div
@@ -134,8 +140,8 @@ function CutFullPopup({ cut, onClose }) {
               <button className="cpf-qty-btn" onClick={() => setQty((q) => q + 1)}>+</button>
             </div>
           </div>
-          <button className="cpf-add-btn" style={{ background: color }}>
-            Order {qty} {qty === 1 ? 'Cut' : 'Cuts'} — ${total}
+          <button className="cpf-add-btn" style={{ background: added ? '#27ae60' : color }} onClick={handleOrder}>
+            {added ? '✓ Added to Cart!' : `Order ${qty} ${qty === 1 ? 'Cut' : 'Cuts'} — $${total}`}
           </button>
         </div>
 
@@ -157,11 +163,11 @@ function CutMarker({ position, color, cut, onClose }) {
     const ease = easeOutCubic(p)
     groupRef.current.position.set(
       position[0],
-      position[1] + ease * 0.22,
-      position[2] + ease * 0.55
+      position[1] + ease * 0.025,
+      position[2] + ease * 0.07
     )
 
-    const s = easeOutElastic(p) * 0.11
+    const s = easeOutElastic(p) * 0.03
     sphereRef.current.scale.setScalar(Math.max(0, s))
 
     if (p >= 1) {
@@ -184,8 +190,8 @@ function CutMarker({ position, color, cut, onClose }) {
 
       <Html
         center
-        distanceFactor={13}
-        position={[0, 0.7, 0]}
+        distanceFactor={2}
+        position={[0, 0.08, 0]}
         zIndexRange={[50, 0]}
         style={{ pointerEvents: 'none' }}
       >
@@ -197,25 +203,25 @@ function CutMarker({ position, color, cut, onClose }) {
 
 export function Pig({ ...props }) {
   const meshRef = useRef()
-  const { nodes, materials } = useGLTF('/pig_cuts_diagram.glb')
+  const { scene, materials } = useGLTF('/3DPig.glb')
   const [markers, setMarkers] = useState([])
 
-  const mesh = Object.values(nodes).find((n) => n.isMesh) ?? Object.values(nodes)[1]
-  const mat  = Object.values(materials)[0]
+  const meshObj = useMemo(() => {
+    let found = null
+    scene.traverse((c) => { if (!found && c.isMesh) found = c })
+    return found
+  }, [scene])
+
+  const mat = Object.values(materials)[0] ?? meshObj?.material
 
   const handleClick = useCallback((event) => {
     event.stopPropagation()
-    const { uv, point } = event
-    if (!uv) {
-      console.warn('[Pig] No UV on intersection — model may lack UV coords')
-      return
-    }
-    console.log('[Pig] UV click:', uv.x.toFixed(3), uv.y.toFixed(3))
-
-    const cut = findCutByUV(uv.x, uv.y)
-    if (!cut) return
+    const { point } = event
 
     const localPoint = event.object.worldToLocal(point.clone())
+    const cut = findCutByPosition(localPoint)
+    if (!cut) return
+
     const markerId = `${cut.id}-${Date.now()}`
     setMarkers((prev) => [
       ...prev.filter((m) => m.cutId !== cut.id),
@@ -238,7 +244,7 @@ export function Pig({ ...props }) {
         ref={meshRef}
         castShadow
         receiveShadow
-        geometry={mesh?.geometry}
+        geometry={meshObj?.geometry}
         material={mat}
         onClick={handleClick}
         onPointerOver={handlePointerOver}
@@ -257,4 +263,4 @@ export function Pig({ ...props }) {
   )
 }
 
-useGLTF.preload('/pig_cuts_diagram.glb')
+useGLTF.preload('/3DPig.glb')

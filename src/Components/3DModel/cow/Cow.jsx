@@ -1,41 +1,44 @@
-import React, { useRef, useState, useCallback } from 'react'
+import React, { useRef, useState, useCallback, useMemo } from 'react'
 import { useGLTF, Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { BEEF_CUT_DATA } from '../../../data/beefCutData'
+import { cartBridge } from '../../../context/CartContext'
 
-// UV-space cut zones [uMin, uMax, vMin, vMax]
-// v=0 bottom of texture, v=1 top — adjust if model has flipped V
-const UV_CUT_ZONES = [
-  { id: 'chuck',     name: 'Chuck',      u: [0.06, 0.30], v: [0.48, 0.90], color: '#e74c3c' },
-  { id: 'rib',       name: 'Rib',        u: [0.28, 0.50], v: [0.55, 0.92], color: '#e67e22' },
-  { id: 'shortloin', name: 'Short Loin', u: [0.48, 0.62], v: [0.50, 0.88], color: '#f1c40f' },
-  { id: 'sirloin',   name: 'Sirloin',    u: [0.60, 0.74], v: [0.46, 0.82], color: '#2ecc71' },
-  { id: 'round',     name: 'Round',      u: [0.72, 0.96], v: [0.40, 0.86], color: '#1abc9c' },
-  { id: 'brisket',   name: 'Brisket',    u: [0.06, 0.28], v: [0.24, 0.50], color: '#3498db' },
-  { id: 'plate',     name: 'Plate',      u: [0.26, 0.50], v: [0.08, 0.40], color: '#9b59b6' },
-  { id: 'flank',     name: 'Flank',      u: [0.48, 0.72], v: [0.08, 0.38], color: '#e91e63' },
-  { id: 'shank',     name: 'Shank',      u: [0.04, 0.26], v: [0.02, 0.26], color: '#795548' },
-]
+// 3D local-space cut detection — zones derived from 20-bin vertex histogram of 3DCow.glb
+// HEAD at +Z (+0.95), TAIL at -Z (-0.95). Skull crown avgY peak at Z+0.665; neck extends to Z+0.50.
+// Bin peaks: rib @ Z[+0.095,+0.19] n=493; hindquarter @ Z[-0.57,-0.475] n=410.
+const CUTS = {
+  head:      { id: 'head',      name: 'Head',       color: '#922b21' },
+  chuck:     { id: 'chuck',     name: 'Chuck',      color: '#e74c3c' },
+  rib:       { id: 'rib',       name: 'Rib',        color: '#e67e22' },
+  shortloin: { id: 'shortloin', name: 'Short Loin', color: '#f1c40f' },
+  sirloin:   { id: 'sirloin',   name: 'Sirloin',    color: '#2ecc71' },
+  round:     { id: 'round',     name: 'Round',      color: '#1abc9c' },
+  brisket:   { id: 'brisket',   name: 'Brisket',    color: '#3498db' },
+  plate:     { id: 'plate',     name: 'Plate',      color: '#9b59b6' },
+  flank:     { id: 'flank',     name: 'Flank',      color: '#e91e63' },
+  shank:     { id: 'shank',     name: 'Shank',      color: '#795548' },
+}
 
-function findCutByUV(u, v) {
-  // Try direct zone match
-  for (const zone of UV_CUT_ZONES) {
-    if (u >= zone.u[0] && u <= zone.u[1] && v >= zone.v[0] && v <= zone.v[1]) return zone
+function findCutByPosition(lp) {
+  const y = lp.y, z = lp.z
+  // Shank: front & rear legs (Y below mid-body)
+  if (y < -0.22) return CUTS.shank
+  // HEAD at +Z, TAIL at -Z
+  if (z >= +0.50) return CUTS.head         // head + neck    — Z [+0.50, +0.95]  (skull crown + neck piece)
+  // Upper body (spine side, Y >= 0.10)
+  if (y >= 0.10) {
+    if (z >= +0.09) return CUTS.chuck      // chuck/shoulder — Z [+0.09, +0.50]  (forelegs here)
+    if (z >= -0.10) return CUTS.rib        // rib section    — Z [-0.10, +0.09]   (vertex density peak)
+    if (z >= -0.30) return CUTS.shortloin  // short loin     — Z [-0.30, -0.10]
+    if (z >= -0.50) return CUTS.sirloin    // sirloin        — Z [-0.50, -0.30]
+    return CUTS.round                       // round/rump     — Z [-0.95, -0.50]   (hindlegs here)
   }
-  // Also try with flipped V in case model has inverted texture
-  const vFlip = 1 - v
-  for (const zone of UV_CUT_ZONES) {
-    if (u >= zone.u[0] && u <= zone.u[1] && vFlip >= zone.v[0] && vFlip <= zone.v[1]) return zone
-  }
-  // Nearest zone center fallback — always returns a result
-  let best = null, bestDist = Infinity
-  for (const zone of UV_CUT_ZONES) {
-    const cu = (zone.u[0] + zone.u[1]) / 2
-    const cv = (zone.v[0] + zone.v[1]) / 2
-    const d = Math.hypot(u - cu, v - cv)
-    if (d < bestDist) { bestDist = d; best = zone }
-  }
-  return best
+  // Lower/mid body (belly & chest, Y -0.22 to +0.10)
+  if (z >= +0.09) return CUTS.brisket  // front chest    — Z [+0.09, +0.665]
+  if (z >= -0.10) return CUTS.plate    // belly center   — Z [-0.10, +0.09]
+  if (z >= -0.50) return CUTS.flank    // rear belly     — Z [-0.50, -0.10]
+  return CUTS.round                     // rear lower     — Z [-0.95, -0.50]
 }
 
 function easeOutElastic(t) {
@@ -49,10 +52,17 @@ function easeOutCubic(t) {
 
 function CutFullPopup({ cut, onClose }) {
   const [qty, setQty] = useState(1)
+  const [added, setAdded] = useState(false)
   const data = BEEF_CUT_DATA[cut.id]
   if (!data) return null
   const { color } = cut
   const total = (data.price * qty).toFixed(0)
+
+  const handleOrder = () => {
+    cartBridge.addToCart({ animal: 'beef', cutId: cut.id, name: data.name, color, price: data.price, qty })
+    setAdded(true)
+    setTimeout(() => setAdded(false), 1800)
+  }
 
   return (
     <div
@@ -140,8 +150,8 @@ function CutFullPopup({ cut, onClose }) {
               <button className="cpf-qty-btn" onClick={() => setQty((q) => q + 1)}>+</button>
             </div>
           </div>
-          <button className="cpf-add-btn" style={{ background: color }}>
-            Order {qty} {qty === 1 ? 'Cut' : 'Cuts'} — ${total}
+          <button className="cpf-add-btn" style={{ background: added ? '#27ae60' : color }} onClick={handleOrder}>
+            {added ? '✓ Added to Cart!' : `Order ${qty} ${qty === 1 ? 'Cut' : 'Cuts'} — $${total}`}
           </button>
         </div>
 
@@ -163,11 +173,11 @@ function CutMarker({ position, color, cut, onClose }) {
     const ease = easeOutCubic(p)
     groupRef.current.position.set(
       position[0],
-      position[1] + ease * 0.22,
-      position[2] + ease * 0.55
+      position[1] + ease * 0.025,
+      position[2] + ease * 0.07
     )
 
-    const s = easeOutElastic(p) * 0.11
+    const s = easeOutElastic(p) * 0.03
     sphereRef.current.scale.setScalar(Math.max(0, s))
 
     if (p >= 1) {
@@ -190,8 +200,8 @@ function CutMarker({ position, color, cut, onClose }) {
 
       <Html
         center
-        distanceFactor={19}
-        position={[0, 0.7, 0]}
+        distanceFactor={2}
+        position={[0, 0.08, 0]}
         zIndexRange={[50, 0]}
         style={{ pointerEvents: 'none' }}
       >
@@ -203,29 +213,24 @@ function CutMarker({ position, color, cut, onClose }) {
 
 export function Cow({ ...props }) {
   const meshRef = useRef()
-  const { nodes, materials } = useGLTF('/Meshy_AI_Beef_Cuts_Diagram_0326215242_texture.glb')
+  const { scene, materials } = useGLTF('/3DCow.glb')
   const [markers, setMarkers] = useState([])
 
-  const mat =
-    materials['Material_0.003'] ??
-    materials['Material_0.004'] ??
-    Object.values(materials)[0]
+  const meshObj = useMemo(() => {
+    let found = null
+    scene.traverse((c) => { if (!found && c.isMesh) found = c })
+    return found
+  }, [scene])
+
+  const mat = Object.values(materials)[0] ?? meshObj?.material
 
   const handleClick = useCallback((event) => {
     event.stopPropagation()
-    const { uv, point } = event
-    if (!uv) {
-      console.warn('[Cow] No UV on intersection — model may lack UV coords')
-      return
-    }
-    console.log('[Cow] UV click:', uv.x.toFixed(3), uv.y.toFixed(3))
+    const { point } = event
 
-    const cut = findCutByUV(uv.x, uv.y)
-    if (!cut) return
-
-    // Convert world-space hit point to the mesh's local space so the marker
-    // sits correctly regardless of the Center/Bounds offset transform.
     const localPoint = event.object.worldToLocal(point.clone())
+    const cut = findCutByPosition(localPoint)
+    if (!cut) return
 
     const markerId = `${cut.id}-${Date.now()}`
     setMarkers((prev) => [
@@ -254,7 +259,7 @@ export function Cow({ ...props }) {
         ref={meshRef}
         castShadow
         receiveShadow
-        geometry={nodes.Mesh_0.geometry}
+        geometry={meshObj?.geometry}
         material={mat}
         onClick={handleClick}
         onPointerOver={handlePointerOver}
@@ -273,4 +278,4 @@ export function Cow({ ...props }) {
   )
 }
 
-useGLTF.preload('/Meshy_AI_Beef_Cuts_Diagram_0326215242_texture.glb')
+useGLTF.preload('/3DCow.glb')

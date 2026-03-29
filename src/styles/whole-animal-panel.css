@@ -1,0 +1,130 @@
+/* whole-animal-panel.css — left-side panel for buying whole/half/quarter animals */
+
+.wap-panel {
+  position: absolute;
+  left: 20px;
+  top: 30%;
+  transform: translateY(-10%);
+  width: 220px;
+  background: rgba(8, 8, 18, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 14px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
+}
+
+.wap-header {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.wap-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.wap-desc {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.4;
+}
+
+.wap-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wap-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  padding: 9px 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.wap-card:hover {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.wap-card-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.wap-symbol {
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.wap-label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  flex: 1;
+}
+
+.wap-weight {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.45);
+  white-space: nowrap;
+}
+
+.wap-note {
+  font-size: 0.70rem;
+  color: rgba(255, 255, 255, 0.38);
+  line-height: 1.3;
+}
+
+.wap-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+
+.wap-price {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.wap-btn {
+  font-size: 0.70rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent, #c0392b);
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: filter 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+
+.wap-btn:hover { filter: brightness(1.18); transform: translateY(-1px); }
+.wap-btn:active { transform: translateY(0); filter: brightness(0.92); }
+
+.wap-btn--added {
+  background: #27ae60 !important;
+}

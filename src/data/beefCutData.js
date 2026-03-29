@@ -1,4 +1,22 @@
 export const BEEF_CUT_DATA = {
+  head: {
+    name: 'Head',
+    color: '#922b21',
+    section: 'Head & Face',
+    price: 25,
+    description:
+      'The entire bovine head harbours several celebrated cuts. Cheek muscles are worked constantly, building dense collagen that turns extraordinarily silky when braised. The tongue is lean and smooth-textured. In Mexican barbacoa tradition, the whole head is slow-roasted underground for incomparable depth.',
+    popularCuts: ['Beef Tongue', 'Beef Cheeks', 'Barbacoa (Whole Head)', 'Head Cheese', 'Beef Brain'],
+    cookingMethods: [
+      { method: 'Braising',       note: 'Cheeks & tongue: 300 °F, 3–4 hours' },
+      { method: 'Slow Cook',      note: '8–10 hours — cheeks melt completely' },
+      { method: 'Barbacoa',       note: 'Whole head, foil-wrapped, low & slow' },
+      { method: 'Pressure Cook',  note: 'Tongue: 90 min — then peel skin' },
+    ],
+    flavorProfile: 'Intensely rich, gelatinous, deeply beefy — collagen transforms into silky sauce',
+    tenderness: 4,
+    internalTemp: '195–205 °F for full collagen breakdown',
+  },
   chuck: {
     name: 'Chuck',
     color: '#e74c3c',

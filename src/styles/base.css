@@ -1,0 +1,34 @@
+/* base.css — global reset, body, root, animations */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.55) 65%, rgba(0,0,0,0.88) 100%),
+    url('/farm.png') center center / cover no-repeat fixed;
+  color: #fff;
+}
+
+#root {
+  width: 100vw;
+  min-height: 100vh;
+}
+
+.App {
+  min-height: 100vh;
+  position: relative;
+}
+
+@keyframes glow {
+  0%, 100% { text-shadow: 0 0 20px currentColor; }
+  50% { text-shadow: 0 0 40px currentColor, 0 0 60px currentColor; }
+}
+
+.text-glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}
