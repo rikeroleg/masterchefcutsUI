@@ -2,23 +2,28 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 const STATS = [
-  { value: '2,400+', label: 'Local Butcher Shops' },
-  { value: '$180B',  label: 'US Meat Market' },
-  { value: '62%',   label: 'Shoppers Want Local Meat' },
-  { value: '40%',   label: 'Savings vs. Retail' },
+  { value: '2,400+', label: 'Local butcher shops' },
+  { value: '$180B',  label: 'US meat market'      },
+  { value: '62%',    label: 'Want local sourcing'  },
+  { value: '40%',    label: 'Avg buyer savings'    },
+]
+
+const FEATURES = [
+  { icon: '🥩', title: 'Butcher-first',      body: 'We partner with local shops — not big-box suppliers. Every animal is sourced and processed by a professional you can trust.' },
+  { icon: '🤝', title: 'Community pooling',  body: 'Split a whole animal with neighbors. Lower cost, zero waste, stronger community ties.' },
+  { icon: '💰', title: 'Real savings',       body: 'Buying in bulk direct from the butcher cuts out middlemen. Expect 30–50% off typical retail prices.' },
 ]
 
 const STEPS = [
-  { num: '01', title: 'Butcher lists an animal', body: 'Your neighborhood butcher posts a whole, half, or quarter animal with pricing, breed info, and processing date.' },
-  { num: '02', title: 'Buyers claim their share', body: 'Neighbors browse available animals nearby, pick the cuts they want, and pool together until the animal is fully claimed.' },
-  { num: '03', title: 'Everyone wins', body: 'The butcher gets a full order book. Buyers get whole-animal pricing. The community gets better meat and a stronger local economy.' },
+  { n: '01', title: 'Butcher lists an animal', body: 'A local shop posts a whole animal — breed, weight, processing date, and available shares.' },
+  { n: '02', title: 'Buyers claim shares',     body: 'Neighbors browse nearby listings and claim whole, half, or quarter shares to fill the pool.' },
+  { n: '03', title: 'Everyone wins',           body: 'Once the pool fills, the butcher processes the animal and buyers collect fresh, traceable cuts.' },
 ]
 
 export default function About() {
   return (
     <div className="about-page">
 
-      {/* Hero */}
       <section className="about-hero">
         <div className="about-hero-inner">
           <span className="about-eyebrow">Our Mission</span>
@@ -33,9 +38,8 @@ export default function About() {
         </div>
       </section>
 
-      {/* Stats bar */}
       <section className="about-stats">
-        {STATS.map((s) => (
+        {STATS.map(s => (
           <div key={s.label} className="about-stat">
             <span className="about-stat-value">{s.value}</span>
             <span className="about-stat-label">{s.label}</span>
@@ -43,53 +47,42 @@ export default function About() {
         ))}
       </section>
 
-      {/* What we're building */}
       <section className="about-section">
         <div className="about-section-inner about-two-col">
           <div className="about-col-text">
-            <span className="about-eyebrow">What We're Building</span>
-            <h2 className="about-section-title">A marketplace built around the butcher.</h2>
+            <span className="about-eyebrow">What we&apos;re building</span>
+            <h2 className="about-section-title">A marketplace for the whole animal.</h2>
             <p className="about-body">
-              CowPool is a marketplace where local butcher shops list whole animals and nearby buyers
-              pool together to claim shares. The butcher handles the sourcing and processing.
-              We handle the matching and payments. Everyone gets better meat at better prices.
+              CowPool connects local butcher shops with nearby buyers who want better meat without the full commitment of buying an entire animal alone.
             </p>
             <p className="about-body">
-              Unlike farm-direct services, CowPool works through established local butcher shops —
-              giving buyers the trust and convenience of their neighborhood butcher while unlocking
-              bulk pricing that's only ever been available to restaurants and large families.
+              Butchers list whole animals — beef, pork, lamb. Buyers browse, claim shares, and pool together until the animal is fully spoken for. Then the butcher processes it and everyone picks up their fresh cuts.
+            </p>
+            <p className="about-body">
+              No industrial supply chains. No mystery sourcing. Just a straightforward transaction between people who care about food.
             </p>
           </div>
           <div className="about-col-card">
-            <div className="about-feature-card">
-              <span className="about-feature-icon">🥩</span>
-              <h3 className="about-feature-title">Butcher-first</h3>
-              <p className="about-feature-body">We partner with established local shops, not farms. Your butcher knows the animal, the breed, and the best way to cut it for you.</p>
-            </div>
-            <div className="about-feature-card">
-              <span className="about-feature-icon">🤝</span>
-              <h3 className="about-feature-title">Community pooling</h3>
-              <p className="about-feature-body">The person who wants ribeyes naturally connects with the person who wants ground beef. Whole-animal economics finally work for everyone.</p>
-            </div>
-            <div className="about-feature-card">
-              <span className="about-feature-icon">💰</span>
-              <h3 className="about-feature-title">Real savings</h3>
-              <p className="about-feature-body">Whole-animal pricing passes up to 40% savings versus retail cuts. Better quality, lower cost, zero mystery about where it came from.</p>
-            </div>
+            {FEATURES.map(f => (
+              <div key={f.title} className="about-feature-card">
+                <span className="about-feature-icon">{f.icon}</span>
+                <p className="about-feature-title">{f.title}</p>
+                <p className="about-feature-body">{f.body}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* How it works */}
       <section className="about-section about-section--dark">
         <div className="about-section-inner">
-          <span className="about-eyebrow">How It Works</span>
-          <h2 className="about-section-title about-section-title--center">Three steps. One great meal.</h2>
+          <span className="about-eyebrow">How it works</span>
+          <h2 className="about-section-title about-section-title--center">Three steps. Real meat.</h2>
           <div className="about-steps">
-            {STEPS.map((s) => (
-              <div key={s.num} className="about-step">
-                <span className="about-step-num">{s.num}</span>
-                <h3 className="about-step-title">{s.title}</h3>
+            {STEPS.map(s => (
+              <div key={s.n} className="about-step">
+                <span className="about-step-num">{s.n}</span>
+                <p className="about-step-title">{s.title}</p>
                 <p className="about-step-body">{s.body}</p>
               </div>
             ))}
@@ -97,25 +90,24 @@ export default function About() {
         </div>
       </section>
 
-      {/* Where we're headed */}
       <section className="about-section">
-        <div className="about-section-inner about-vision">
-          <span className="about-eyebrow">Where We're Headed</span>
-          <h2 className="about-section-title">The butcher shop as the center of the neighborhood food economy.</h2>
-          <blockquote className="about-vision-quote">
-            "A future where every neighborhood butcher has a full order book and every family
-            has access to whole-animal pricing. Where buying meat is a community act again,
-            not a lonely trip down a fluorescent aisle."
-          </blockquote>
-          <p className="about-body">
-            We're building toward a world where the slow cuts move because the right neighbor wants them,
-            where the butcher sells entire animals instead of hoping for the best, and where fresh,
-            traceable meat is the default — not the luxury.
-          </p>
+        <div className="about-section-inner">
+          <div className="about-vision">
+            <span className="about-eyebrow">Where we&apos;re headed</span>
+            <h2 className="about-section-title">A future where knowing your butcher is normal.</h2>
+            <p className="about-body">
+              We believe the relationship between people and their food should be direct, transparent, and local. CowPool is building the infrastructure to make that possible at scale.
+            </p>
+            <blockquote className="about-vision-quote">
+              "Imagine a world where every neighborhood has a trusted butcher, every family knows exactly where their meat comes from, and buying in bulk with your community is as easy as splitting a dinner tab."
+            </blockquote>
+            <p className="about-body">
+              We&apos;re starting with whole animals because that&apos;s where the biggest gap is — and the biggest opportunity. Our goal is a future where locally sourced, traceable meat is the default, not the luxury.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* CTA footer */}
       <section className="about-section about-section--cta">
         <div className="about-section-inner about-cta-inner">
           <h2 className="about-cta-title">Ready to buy better meat?</h2>

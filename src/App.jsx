@@ -2,12 +2,14 @@ import { OrbitControls, Center, Bounds } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import React, { useState } from "react";
 import { Link, useLocation, Routes, Route } from "react-router-dom";
-import { Beef, ShoppingCart, Home, Info } from "lucide-react";
+import { Beef, ShoppingCart, Home, Info, LayoutList } from "lucide-react";
 import { Cow }  from "./Components/3DModel/cow/Cow";
 import { Pig }  from "./Components/3DModel/pig/Pig";
 import { Lamb } from "./Components/3DModel/lamb/Lamb";
 import CartPage from "./pages/Cart";
 import AboutPage from "./pages/About";
+import HomePage from "./pages/Home";
+import ListingsPage from "./pages/Listings";
 import { useCart } from "./context/CartContext";
 import { WholeAnimalPanel } from "./Components/WholeAnimalPanel";
 import './App.css';
@@ -74,8 +76,12 @@ function App() {
             </Link>
 
             <nav className="ui-nav">
-              <Link to="/shop" className={`ui-nav-link${location.pathname === '/shop' ? ' active' : ''}`}>
+              <Link to="/" className={`ui-nav-link${location.pathname === '/' ? ' active' : ''}`}>
                 <Home size={18} />
+                <span>Home</span>
+              </Link>
+              <Link to="/shop" className={`ui-nav-link${location.pathname === '/shop' ? ' active' : ''}`}>
+                <Beef size={18} />
                 <span>Shop</span>
               </Link>
               <Link to="/cart" className={`ui-nav-link${location.pathname === '/cart' ? ' active' : ''}`}>
@@ -83,7 +89,11 @@ function App() {
                 <span>Cart</span>
                 {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
               </Link>
-              <Link to="/" className={`ui-nav-link${location.pathname === '/' ? ' active' : ''}`}>
+              <Link to="/listings" className={`ui-nav-link${location.pathname === '/listings' ? ' active' : ''}`}>
+                <LayoutList size={18} />
+                <span>Listings</span>
+              </Link>
+              <Link to="/about" className={`ui-nav-link${location.pathname === '/about' ? ' active' : ''}`}>
                 <Info size={18} />
                 <span>About</span>
               </Link>
@@ -118,7 +128,9 @@ function App() {
               </div>
             } />
             <Route path="/cart" element={<CartPage />} />
-            <Route path="/" element={<AboutPage />} />
+            <Route path="/listings" element={<ListingsPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/" element={<HomePage />} />
           </Routes>
         </div>
 

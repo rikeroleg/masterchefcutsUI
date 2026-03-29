@@ -1,4 +1,4 @@
-/* App.css — import aggregator; edit individual files in src/styles/ */
+ï»¿/* App.css ï¿½ import aggregator; edit individual files in src/styles/ */
 @import './styles/base.css';
 @import './styles/header.css';
 @import './styles/shop.css';
@@ -7,3 +7,5 @@
 @import './styles/cart.css';
 @import './styles/whole-animal-panel.css';
 @import './styles/about.css';
+@import './styles/home.css';
+@import './styles/listings.css';
