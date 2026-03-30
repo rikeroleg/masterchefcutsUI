@@ -1,4 +1,4 @@
-import { OrbitControls, Center, Bounds } from "@react-three/drei";
+﻿import { OrbitControls, Center, Bounds } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import React, { useState } from "react";
 import { Link, useLocation, Routes, Route } from "react-router-dom";
@@ -140,7 +140,7 @@ function App() {
                   ))}
                 </div>
                 {/* Whole Animal Panel */}
-                <WholeAnimalPanel activeAnimal={activeAnimal} />
+                <div style={{ pointerEvents: 'auto' }}><WholeAnimalPanel activeAnimal={activeAnimal} /></div>
                 {/* Bottom hint */}
                 <div className="ui-bottom-hint">
                   <span>Drag to rotate &nbsp;·&nbsp; Scroll to zoom</span>

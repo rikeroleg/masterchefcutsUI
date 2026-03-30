@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useMemo } from 'react'
+﻿import React, { useRef, useState, useCallback, useMemo } from 'react'
 import { useGLTF, Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { BEEF_CUT_DATA } from '../../../data/beefCutData'
@@ -279,3 +279,5 @@ export function Cow({ ...props }) {
 }
 
 useGLTF.preload('/3DCow.glb')
+
+

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useMemo } from 'react'
+﻿import React, { useRef, useState, useCallback, useMemo } from 'react'
 import { useGLTF, Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { PIG_CUT_DATA } from '../../../data/pigCutData'
@@ -264,3 +264,6 @@ export function Pig({ ...props }) {
 }
 
 useGLTF.preload('/3DPig.glb')
+
+
+

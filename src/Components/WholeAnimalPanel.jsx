@@ -4,12 +4,14 @@ import { useCart } from '../context/CartContext'
 
 export function WholeAnimalPanel({ activeAnimal }) {
   const { addToCart } = useCart()
+  console.log('[WAP] useCart addToCart type:', typeof addToCart)
   const [added, setAdded] = useState(null)
   const animalKey = activeAnimal === 'beef' ? 'beef' : activeAnimal === 'pork' ? 'pork' : 'lamb'
   const data = WHOLE_ANIMAL_DATA[animalKey]
   if (!data) return null
 
   function handleAdd(opt) {
+    console.log('[WAP] handleAdd fired, addToCart type:', typeof addToCart)
     addToCart({
       animal: animalKey,
       cutId: `${animalKey}-${opt.id}`,
