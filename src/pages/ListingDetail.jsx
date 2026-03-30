@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import PaymentModal from '../components/PaymentModal'
 import '../styles/payment-modal.css'
+import '../styles/listing-animal-viewer.css'
+import ListingAnimalViewer from '../Components/3DModel/ListingAnimalViewer'
 import '../styles/listing-detail.css'
 
 const ANIMAL_META = {
@@ -169,6 +171,8 @@ export default function ListingDetail() {
             🗓 Processing date: <strong>{new Date(listing.processingDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</strong>
           </div>
         )}
+
+        <ListingAnimalViewer animalType={listing.animalType} cuts={listing.cuts} />
 
         {/* Cuts grid */}
         <div className="ld-cuts-section">
