@@ -83,6 +83,32 @@
   font-weight: 600;
 }
 
+.ui-nav-link--login {
+  border: 1px solid rgba(231,76,60,0.3);
+  color: #e74c3c;
+}
+
+.ui-nav-link--login:hover {
+  background: rgba(231,76,60,0.18);
+  border-color: rgba(231,76,60,0.55);
+  color: #ff6b55;
+}
+
+.ui-avatar-chip {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: 0;
+}
+
 .ui-bottom-hint {
   position: absolute;
   bottom: 22px;

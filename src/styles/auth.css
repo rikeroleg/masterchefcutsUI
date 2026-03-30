@@ -1,0 +1,102 @@
+/* auth.css — shared styles for Login, ForgotPassword, ResetPassword */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+}
+
+.auth-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 22px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.auth-header { display: flex; flex-direction: column; gap: 6px; }
+.auth-title  { font-size: 1.6rem; font-weight: 900; color: #fff; margin: 0; letter-spacing: -0.03em; }
+.auth-sub    { font-size: 0.88rem; color: rgba(255,255,255,0.45); margin: 0; }
+
+.auth-form   { display: flex; flex-direction: column; gap: 16px; }
+
+.auth-field  { display: flex; flex-direction: column; gap: 6px; }
+.auth-field label { font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,0.55); }
+
+.auth-input {
+  background: rgba(255,255,255,0.07);
+  border: 1.5px solid rgba(255,255,255,0.14);
+  border-radius: 10px;
+  padding: 11px 14px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.auth-input:focus { border-color: rgba(231,76,60,0.55); }
+.auth-input::placeholder { color: rgba(255,255,255,0.25); }
+
+.auth-submit-btn {
+  padding: 13px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.12s;
+  margin-top: 4px;
+}
+.auth-submit-btn:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+.auth-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.auth-error {
+  font-size: 0.82rem;
+  color: #e74c3c;
+  background: rgba(231,76,60,0.08);
+  border: 1px solid rgba(231,76,60,0.2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 0;
+}
+
+.auth-success {
+  background: rgba(39,174,96,0.08);
+  border: 1px solid rgba(39,174,96,0.2);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.7);
+}
+
+.auth-link {
+  color: #f39c12;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.15s;
+}
+.auth-link:hover { color: #fff; }
+
+.auth-footer-link {
+  text-align: center;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.4);
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .auth-card { padding: 28px 20px; }
+}

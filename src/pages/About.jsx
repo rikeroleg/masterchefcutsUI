@@ -1,12 +1,6 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-
-const STATS = [
-  { value: '2,400+', label: 'Local butcher shops' },
-  { value: '$180B',  label: 'US meat market'      },
-  { value: '62%',    label: 'Want local sourcing'  },
-  { value: '40%',    label: 'Avg buyer savings'    },
-]
+import { api } from '../api/client'
 
 const FEATURES = [
   { icon: '🥩', title: 'Butcher-first',      body: 'We partner with local shops — not big-box suppliers. Every animal is sourced and processed by a professional you can trust.' },
@@ -21,6 +15,15 @@ const STEPS = [
 ]
 
 export default function About() {
+  const [listings, setListings] = useState([])
+
+  useEffect(() => {
+    api.get('/api/listings').then(setListings).catch(() => {})
+  }, [])
+
+  const activeListings = listings.filter(l => l.status === 'ACTIVE' || l.status === 'FULLY_CLAIMED').length
+  const cutsClaimed    = listings.reduce((a, l) => a + l.claimedCuts, 0)
+
   return (
     <div className="about-page">
 
@@ -39,12 +42,22 @@ export default function About() {
       </section>
 
       <section className="about-stats">
-        {STATS.map(s => (
-          <div key={s.label} className="about-stat">
-            <span className="about-stat-value">{s.value}</span>
-            <span className="about-stat-label">{s.label}</span>
-          </div>
-        ))}
+        <div className="about-stat">
+          <span className="about-stat-value">{activeListings || '—'}</span>
+          <span className="about-stat-label">Active listings</span>
+        </div>
+        <div className="about-stat">
+          <span className="about-stat-value">{cutsClaimed || '—'}</span>
+          <span className="about-stat-label">Cuts claimed</span>
+        </div>
+        <div className="about-stat">
+          <span className="about-stat-value">$180B</span>
+          <span className="about-stat-label">US meat market</span>
+        </div>
+        <div className="about-stat">
+          <span className="about-stat-value">40%</span>
+          <span className="about-stat-label">Avg buyer savings</span>
+        </div>
       </section>
 
       <section className="about-section">
@@ -53,7 +66,7 @@ export default function About() {
             <span className="about-eyebrow">What we&apos;re building</span>
             <h2 className="about-section-title">A marketplace for the whole animal.</h2>
             <p className="about-body">
-              CowPool connects local butcher shops with nearby buyers who want better meat without the full commitment of buying an entire animal alone.
+              MasterChef Cuts connects local butcher shops with nearby buyers who want better meat without the full commitment of buying an entire animal alone.
             </p>
             <p className="about-body">
               Butchers list whole animals — beef, pork, lamb. Buyers browse, claim shares, and pool together until the animal is fully spoken for. Then the butcher processes it and everyone picks up their fresh cuts.
@@ -96,7 +109,7 @@ export default function About() {
             <span className="about-eyebrow">Where we&apos;re headed</span>
             <h2 className="about-section-title">A future where knowing your butcher is normal.</h2>
             <p className="about-body">
-              We believe the relationship between people and their food should be direct, transparent, and local. CowPool is building the infrastructure to make that possible at scale.
+              We believe the relationship between people and their food should be direct, transparent, and local. MasterChef Cuts is building the infrastructure to make that possible at scale.
             </p>
             <blockquote className="about-vision-quote">
               "Imagine a world where every neighborhood has a trusted butcher, every family knows exactly where their meat comes from, and buying in bulk with your community is as easy as splitting a dinner tab."

@@ -1,4 +1,4 @@
-/* home.css — CowPool marketplace home page */
+/* home.css — MasterChef Cuts marketplace home page */
 
 /* ── Page shell ── */
 .home-page {
@@ -624,6 +624,109 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
   max-width: 360px;
   line-height: 1.6;
 }
+
+/* ── Mini listing preview cards (buyer card) ── */
+.hp-role-preview-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  margin: 0 0 10px;
+}
+
+.hp-mini-listings {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hp-mini-listing {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hp-mini-listing-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hp-mini-listing-emoji {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.hp-mini-listing-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.hp-mini-listing-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hp-mini-listing-farm {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.45);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hp-mini-listing-price {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #f39c12;
+  flex-shrink: 0;
+}
+
+.hp-mini-listing-price small {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.45);
+}
+
+.hp-mini-listing-bar {
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.hp-mini-listing-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #e74c3c, #f39c12);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.hp-mini-listing-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.45);
+}
+
+.hp-mini-listing-link {
+  color: #f39c12;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.75rem;
+  transition: color 0.15s;
+}
+.hp-mini-listing-link:hover { color: #fff; }
 
 /* ════════════════════════════════
    BOTTOM CTA

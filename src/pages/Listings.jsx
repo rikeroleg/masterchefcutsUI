@@ -1,69 +1,23 @@
-import React, { useState } from 'react'
-
-const MOCK_LISTINGS = [
-  {
-    id: 1, animal: 'Beef', emoji: '🐄', breed: 'Black Angus',
-    farm: 'Green Pastures Farm', location: 'Lancaster, PA',
-    weight: 650, pricePerLb: 5.50, postedDaysAgo: 2,
-    cuts: [
-      { label: 'Chuck',   claimed: true  },
-      { label: 'Rib',     claimed: true  },
-      { label: 'Loin',    claimed: true  },
-      { label: 'Round',   claimed: false },
-      { label: 'Brisket', claimed: true  },
-      { label: 'Plate',   claimed: false },
-      { label: 'Flank',   claimed: false },
-      { label: 'Shank',   claimed: false },
-    ],
-    description: 'Grass-fed, pasture-raised Angus. No hormones, no antibiotics. Dry-aged 14 days before processing.',
-  },
-  {
-    id: 2, animal: 'Pork', emoji: '🐷', breed: 'Berkshire',
-    farm: 'Sunridge Family Farm', location: 'Ephrata, PA',
-    weight: 240, pricePerLb: 4.25, postedDaysAgo: 5,
-    cuts: [
-      { label: 'Shoulder', claimed: true  },
-      { label: 'Loin',     claimed: true  },
-      { label: 'Belly',    claimed: true  },
-      { label: 'Leg (Ham)',claimed: true  },
-      { label: 'Jowl',     claimed: false },
-      { label: 'Hock',     claimed: false },
-    ],
-    description: 'Heritage Berkshire pork, acorn-finished. Rich marbling, exceptional flavor. Raised on open pasture.',
-  },
-  {
-    id: 3, animal: 'Lamb', emoji: '🐑', breed: 'Dorset Cross',
-    farm: 'Blue Ridge Meats', location: 'Roanoke, VA',
-    weight: 85, pricePerLb: 7.00, postedDaysAgo: 1,
-    cuts: [
-      { label: 'Shoulder', claimed: false },
-      { label: 'Rack',     claimed: false },
-      { label: 'Loin',     claimed: false },
-      { label: 'Leg',      claimed: false },
-      { label: 'Breast',   claimed: false },
-      { label: 'Shank',    claimed: false },
-    ],
-    description: 'Fresh spring lamb, locally raised on mixed pasture. Perfect for whole-animal buyers or split orders.',
-  },
-  {
-    id: 4, animal: 'Beef', emoji: '🐄', breed: 'Hereford',
-    farm: 'Oak Hill Ranch', location: 'Frederick, MD',
-    weight: 720, pricePerLb: 5.20, postedDaysAgo: 8,
-    cuts: [
-      { label: 'Chuck',   claimed: true  },
-      { label: 'Rib',     claimed: true  },
-      { label: 'Loin',    claimed: true  },
-      { label: 'Round',   claimed: true  },
-      { label: 'Brisket', claimed: true  },
-      { label: 'Plate',   claimed: true  },
-      { label: 'Flank',   claimed: true  },
-      { label: 'Shank',   claimed: false },
-    ],
-    description: 'Certified grass-fed Hereford. One share remaining — shank is the last unclaimed cut.',
-  },
-]
+import React, { useState, useEffect } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { api } from '../api/client'
+import { useAuth } from '../context/AuthContext'
+import PaymentModal from '../components/PaymentModal'
+import '../styles/payment-modal.css'
 
 const ANIMAL_FILTERS = ['All', 'Beef', 'Pork', 'Lamb']
+
+const ANIMAL_META = {
+  BEEF: { emoji: '�', label: 'Beef' },
+  PORK: { emoji: '🐷', label: 'Pork' },
+  LAMB: { emoji: '🐑', label: 'Lamb' },
+}
+
+function postedAgo(dateStr) {
+  if (!dateStr) return ''
+  const days = Math.floor((Date.now() - new Date(dateStr)) / (1000 * 60 * 60 * 24))
+  return days === 0 ? 'today' : `${days}d ago`
+}
 
 function ShareProgressBar({ cuts }) {
   const total   = cuts.length
@@ -109,21 +63,86 @@ function ShareProgressBar({ cuts }) {
   )
 }
 
-function ListingCard({ listing }) {
-  const [expanded, setExpanded] = useState(false)
+function ListingCard({ listing, onClaimed }) {
+  const { user }                        = useAuth()
+  const navigate                        = useNavigate()
+  const [expanded, setExpanded]         = useState(false)
+  const [payingCut, setPayingCut]       = useState(null)
+  const [claimError, setClaimError]     = useState('')
+  const [confirmed, setConfirmed]       = useState(null)
+  const [onWaitlist, setOnWaitlist]     = useState(false)
+  const [waitlistLoading, setWLLoading] = useState(false)
+
+  const meta      = ANIMAL_META[listing.animalType] || { emoji: '🐄', label: listing.animalType }
   const available = listing.cuts.filter(c => !c.claimed).length
+
+  function handleCutClick(cut) {
+    if (!user) { navigate('/login'); return }
+    setClaimError('')
+    setPayingCut(cut)
+  }
+
+  async function handlePaymentSuccess(paymentIntentId) {
+    const cut = payingCut
+    try {
+      await api.post(`/api/listings/${listing.id}/claims`, { cutId: cut.id, paymentIntentId })
+      setPayingCut(null)
+      setExpanded(false)
+      setConfirmed({ cutLabel: cut.label })
+      onClaimed()
+    } catch (err) {
+      setClaimError(err.message)
+      setPayingCut(null)
+    }
+  }
+
+  async function handleWaitlist() {
+    if (!user) { navigate('/login'); return }
+    setWLLoading(true)
+    try {
+      if (onWaitlist) {
+        await api.delete(`/api/listings/${listing.id}/waitlist`)
+        setOnWaitlist(false)
+      } else {
+        await api.post(`/api/listings/${listing.id}/waitlist`)
+        setOnWaitlist(true)
+      }
+    } catch {}
+    setWLLoading(false)
+  }
+
+  if (confirmed) {
+    return (
+      <div className="lc lc--confirmed">
+        <div className="lc-confirm-inline">
+          <span className="lc-confirm-check">✅</span>
+          <div>
+            <p className="lc-confirm-title">Cut claimed!</p>
+            <p className="lc-confirm-body">You claimed the <strong>{confirmed.cutLabel}</strong> from <strong>{listing.farmerShopName || listing.farmerName}</strong>.</p>
+            {listing.processingDate && (
+              <p className="lc-confirm-date">🗓 Processing: {new Date(listing.processingDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+            )}
+          </div>
+        </div>
+        <div className="lc-confirm-actions">
+          <Link to="/profile" className="lc-details-link">View my claims →</Link>
+          <button className="lc-dismiss-btn" onClick={() => setConfirmed(null)}>Dismiss</button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className={`lc${expanded ? ' lc--expanded' : ''}`}>
       <div className="lc-header">
-        <div className="lc-animal-badge">{listing.emoji}</div>
+        <div className="lc-animal-badge">{meta.emoji}</div>
         <div className="lc-meta">
-          <div className="lc-title">{listing.breed} {listing.animal}</div>
-          <div className="lc-farm">{listing.farm} &middot; {listing.location}</div>
+          <div className="lc-title">{listing.breed} {meta.label}</div>
+          <div className="lc-farm">{listing.farmerShopName || listing.farmerName} &middot; {listing.zipCode}</div>
         </div>
         <div className="lc-price-block">
           <span className="lc-price">${listing.pricePerLb.toFixed(2)}<small>/lb</small></span>
-          <span className="lc-weight">{listing.weight} lbs</span>
+          <span className="lc-weight">{listing.weightLbs} lbs</span>
         </div>
       </div>
 
@@ -133,23 +152,45 @@ function ListingCard({ listing }) {
         <p className="lc-desc">{listing.description}</p>
       )}
 
+      {listing.processingDate && (
+        <div className="lc-processing-date">
+          🗓 Processing: <strong>{new Date(listing.processingDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</strong>
+        </div>
+      )}
+
       <div className="lc-footer">
-        <span className="lc-posted">Posted {listing.postedDaysAgo}d ago</span>
-        {available > 0 ? (
-          <button className="lc-claim-btn" onClick={() => setExpanded(e => !e)}>
-            {expanded ? 'Close' : `Claim a cut (${available} open)`}
-          </button>
-        ) : (
-          <span className="lc-full-badge">Pool Full — Processing Soon</span>
-        )}
+        <span className="lc-posted">Posted {postedAgo(listing.postedAt)}</span>
+        <div className="lc-footer-actions">
+          <Link to={`/listings/${listing.id}`} className="lc-details-link">Details →</Link>
+          {available > 0 ? (
+            <button className="lc-claim-btn" onClick={() => { setExpanded(e => !e); setClaimError('') }}>
+              {expanded ? 'Close' : `Claim a cut (${available} open)`}
+            </button>
+          ) : (
+            <>
+              <span className="lc-full-badge">Pool Full</span>
+              {user?.role === 'buyer' && (
+                <button
+                  className={`lc-waitlist-btn${onWaitlist ? ' lc-waitlist-btn--on' : ''}`}
+                  disabled={waitlistLoading}
+                  onClick={handleWaitlist}
+                >
+                  {waitlistLoading ? '…' : onWaitlist ? '✓ On Waitlist' : 'Join Waitlist'}
+                </button>
+              )}
+            </>
+          )}
+        </div>
       </div>
 
       {expanded && available > 0 && (
         <div className="lc-claim-panel">
           <p className="lc-claim-label">Available cuts — select one to claim</p>
+          {claimError && <p style={{ color: '#e74c3c', fontSize: '0.82rem', margin: '0 0 8px' }}>{claimError}</p>}
           <div className="lc-claim-cuts">
-            {listing.cuts.filter(c => !c.claimed).map((c, i) => (
-              <button key={i} className="lc-claim-cut-btn">
+            {listing.cuts.filter(c => !c.claimed).map(c => (
+              <button key={c.id} className="lc-claim-cut-btn"
+                onClick={() => handleCutClick(c)}>
                 <span className="lc-claim-cut-name">{c.label}</span>
                 <span className="lc-claim-cut-action">Claim →</span>
               </button>
@@ -157,16 +198,51 @@ function ListingCard({ listing }) {
           </div>
         </div>
       )}
+
+      {payingCut && (
+        <PaymentModal
+          listing={listing}
+          cutLabel={payingCut.label}
+          onSuccess={handlePaymentSuccess}
+          onClose={() => setPayingCut(null)}
+        />
+      )}
     </div>
   )
 }
 
 export default function Listings() {
-  const [filter, setFilter] = useState('All')
+  const { user }                = useAuth()
+  const [filter, setFilter]     = useState('All')
+  const [zip, setZip]           = useState(user?.zipCode || '')
+  const [zipInput, setZipInput] = useState(user?.zipCode || '')
+  const [listings, setListings] = useState([])
+  const [loading, setLoading]   = useState(true)
+  const [error, setError]       = useState('')
 
-  const filtered = filter === 'All'
-    ? MOCK_LISTINGS
-    : MOCK_LISTINGS.filter(l => l.animal === filter)
+  useEffect(() => { fetchListings() }, [filter, zip])
+
+  async function fetchListings() {
+    setLoading(true)
+    setError('')
+    try {
+      const params = new URLSearchParams()
+      if (filter !== 'All') params.set('animal', filter.toUpperCase())
+      if (zip)              params.set('zip', zip)
+      const query = params.toString()
+      const data  = await api.get(`/api/listings${query ? `?${query}` : ''}`)
+      setListings(data)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  function applyZip(e) {
+    e.preventDefault()
+    setZip(zipInput.trim())
+  }
 
   return (
     <div className="listings-page">
@@ -178,21 +254,47 @@ export default function Listings() {
             <h1 className="listings-title">Browse Listings</h1>
             <p className="listings-sub">Claim a primal cut from a whole animal near you.</p>
           </div>
-          <div className="listings-filters">
-            {ANIMAL_FILTERS.map(f => (
-              <button
-                key={f}
-                className={`listings-filter-btn${filter === f ? ' active' : ''}`}
-                onClick={() => setFilter(f)}
-              >
-                {f === 'Beef' ? '🐄 ' : f === 'Pork' ? '🐷 ' : f === 'Lamb' ? '🐑 ' : ''}{f}
-              </button>
-            ))}
+          <div className="listings-controls">
+            <form className="listings-zip-form" onSubmit={applyZip}>
+              <input
+                className="listings-zip-input"
+                value={zipInput}
+                onChange={e => setZipInput(e.target.value)}
+                placeholder="ZIP code"
+                maxLength={10}
+              />
+              <button type="submit" className="listings-zip-btn">Go</button>
+              {zip && (
+                <button type="button" className="listings-zip-clear" onClick={() => { setZip(''); setZipInput('') }}>
+                  ✕
+                </button>
+              )}
+            </form>
+            <div className="listings-filters">
+              {ANIMAL_FILTERS.map(f => (
+                <button
+                  key={f}
+                  className={`listings-filter-btn${filter === f ? ' active' : ''}`}
+                  onClick={() => setFilter(f)}
+                >
+                  {f === 'Beef' ? '🐄 ' : f === 'Pork' ? '🐷 ' : f === 'Lamb' ? '🐑 ' : ''}{f}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
+        {zip && <p className="listings-zip-label">📍 Showing listings near <strong>{zip}</strong></p>}
+
+        {loading && <p className="listings-loading">Loading listings…</p>}
+        {error   && <p className="listings-error">{error}</p>}
 
         <div className="listings-grid">
-          {filtered.map(l => <ListingCard key={l.id} listing={l} />)}
+          {!loading && listings.map(l => (
+            <ListingCard key={l.id} listing={l} onClaimed={fetchListings} />
+          ))}
+          {!loading && !error && listings.length === 0 && (
+            <p className="listings-empty">No listings found. Check back soon.</p>
+          )}
         </div>
 
       </div>

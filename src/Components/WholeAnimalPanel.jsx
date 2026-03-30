@@ -1,18 +1,19 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import { WHOLE_ANIMAL_DATA } from '../data/wholeAnimalData'
-import { cartBridge } from '../context/CartContext'
+import { useCart } from '../context/CartContext'
 
 export function WholeAnimalPanel({ activeAnimal }) {
+  const { addToCart } = useCart()
   const [added, setAdded] = useState(null)
   const animalKey = activeAnimal === 'beef' ? 'beef' : activeAnimal === 'pork' ? 'pork' : 'lamb'
   const data = WHOLE_ANIMAL_DATA[animalKey]
   if (!data) return null
 
   function handleAdd(opt) {
-    cartBridge.addToCart({
+    addToCart({
       animal: animalKey,
       cutId: `${animalKey}-${opt.id}`,
-      name: `${data.label} — ${opt.label} (${opt.weight})`,
+      name: `${data.label} \u2014 ${opt.label} (${opt.weight})`,
       color: data.color,
       price: opt.price,
       qty: 1,
@@ -43,7 +44,7 @@ export function WholeAnimalPanel({ activeAnimal }) {
                 style={{ '--accent': data.color }}
                 onClick={() => handleAdd(opt)}
               >
-                {added === opt.id ? '✓ Added' : 'Add to Cart'}
+                {added === opt.id ? '\u2713 Added' : 'Add to Cart'}
               </button>
             </div>
           </div>

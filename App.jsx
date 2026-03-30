@@ -10,9 +10,13 @@ import CartPage from "./pages/Cart";
 import AboutPage from "./pages/About";
 import HomePage from "./pages/Home";
 import ListingsPage from "./pages/Listings";
+import ListingDetailPage from "./pages/ListingDetail";
 import LoginPage from "./pages/Login";
 import ProfilePage from "./pages/Profile";
 import PostListingPage from "./pages/PostListing";
+import ForgotPasswordPage from "./pages/ForgotPassword";
+import ResetPasswordPage from "./pages/ResetPassword";
+import AdminPage from "./pages/Admin";
 import NotificationBell from "./components/NotificationBell";
 import { useAuth } from "./context/AuthContext";
 import { useCart } from "./context/CartContext";
@@ -104,6 +108,11 @@ function App() {
                 <span>About</span>
               </Link>
               {user && <NotificationBell />}
+              {user?.role === 'admin' && (
+                <Link to="/admin" className={`ui-nav-link${location.pathname === '/admin' ? ' active' : ''}`}>
+                  <span>Admin</span>
+                </Link>
+              )}
               {user ? (
                 <Link to="/profile" className={`ui-nav-link ui-nav-link--avatar${location.pathname === '/profile' ? ' active' : ''}`}>
                   <span className="ui-avatar-chip">
@@ -149,10 +158,14 @@ function App() {
             } />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/listings" element={<ListingsPage />} />
+            <Route path="/listings/:id" element={<ListingDetailPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/post" element={<PostListingPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/admin" element={<AdminPage />} />
             <Route path="/" element={<HomePage />} />
           </Routes>
         </div>

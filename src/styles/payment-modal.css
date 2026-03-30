@@ -1,0 +1,141 @@
+/* payment-modal.css */
+
+.pm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  padding: 16px;
+}
+
+.pm-modal {
+  background: #0e0e16;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 460px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+}
+
+.pm-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.pm-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 4px;
+}
+
+.pm-subtitle {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.45);
+  margin: 0;
+}
+
+.pm-close-btn {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.85rem;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.pm-close-btn:hover { color: #fff; background: rgba(255,255,255,0.12); }
+
+.pm-loading {
+  padding: 40px 24px;
+  text-align: center;
+  color: rgba(255,255,255,0.45);
+  font-size: 0.88rem;
+}
+
+.pm-form {
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pm-cut-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(243,156,18,0.08);
+  border: 1px solid rgba(243,156,18,0.2);
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+.pm-cut-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.pm-cut-amount {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f39c12;
+}
+
+.pm-error {
+  font-size: 0.82rem;
+  color: #e74c3c;
+  background: rgba(231,76,60,0.08);
+  border: 1px solid rgba(231,76,60,0.2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 0;
+}
+
+.pm-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.pm-cancel-btn {
+  flex: 1;
+  padding: 13px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(255,255,255,0.14);
+  background: transparent;
+  color: rgba(255,255,255,0.55);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.pm-cancel-btn:hover:not(:disabled) { color: #fff; border-color: rgba(255,255,255,0.3); }
+
+.pm-pay-btn {
+  flex: 2;
+  padding: 13px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.12s;
+}
+.pm-pay-btn:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+.pm-pay-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
