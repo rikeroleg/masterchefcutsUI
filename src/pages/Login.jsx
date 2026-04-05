@@ -3,8 +3,8 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 const ROLES = [
-  { id: 'buyer',  label: 'Buyer',           emoji: '🛒', desc: 'Browse listings and claim shares.' },
-  { id: 'farmer', label: 'Farmer / Butcher', emoji: '🌾', desc: 'List whole animals for buyers to pool.' },
+  { id: 'buyer',  label: 'Participant',       emoji: '🛒', desc: 'Browse listings and claim shares.' },
+  { id: 'farmer', label: 'Farmer / Butcher', emoji: '🌾', desc: 'List whole animals for participants to pool.' },
 ]
 
 export default function Login() {

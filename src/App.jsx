@@ -140,7 +140,7 @@ function App() {
         </header>
 
         {/* Page content */}
-        <div style={{ flex: 1, position: 'relative' }}>
+        <div style={{ flex: 1, position: 'relative', pointerEvents: 'auto' }}>
           <Routes>
             <Route path="/shop" element={
               <div style={{ position: 'relative', height: 'calc(100vh - 72px)', pointerEvents: 'none' }}>

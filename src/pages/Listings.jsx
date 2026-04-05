@@ -134,6 +134,11 @@ function ListingCard({ listing, onClaimed }) {
 
   return (
     <div className={`lc${expanded ? ' lc--expanded' : ''}`}>
+      {listing.imageUrl && (
+        <div className="lc-photo">
+          <img src={listing.imageUrl} alt={`${listing.breed || ''} ${meta.label}`} />
+        </div>
+      )}
       <div className="lc-header">
         <div className="lc-animal-badge">{meta.emoji}</div>
         <div className="lc-meta">

@@ -10,8 +10,8 @@ const FEATURES = [
 
 const STEPS = [
   { n: '01', title: 'Butcher lists an animal', body: 'A local shop posts a whole animal — breed, weight, processing date, and available shares.' },
-  { n: '02', title: 'Buyers claim shares',     body: 'Neighbors browse nearby listings and claim whole, half, or quarter shares to fill the pool.' },
-  { n: '03', title: 'Everyone wins',           body: 'Once the pool fills, the butcher processes the animal and buyers collect fresh, traceable cuts.' },
+  { n: '02', title: 'Participants claim shares',     body: 'Neighbors browse nearby listings and claim whole, half, or quarter shares to fill the pool.' },
+  { n: '03', title: 'Everyone wins',           body: 'Once the pool fills, the butcher processes the animal and participants collect fresh, traceable cuts.' },
 ]
 
 export default function About() {
@@ -56,7 +56,7 @@ export default function About() {
         </div>
         <div className="about-stat">
           <span className="about-stat-value">40%</span>
-          <span className="about-stat-label">Avg buyer savings</span>
+          <span className="about-stat-label">Avg participant savings</span>
         </div>
       </section>
 
@@ -66,10 +66,10 @@ export default function About() {
             <span className="about-eyebrow">What we&apos;re building</span>
             <h2 className="about-section-title">A marketplace for the whole animal.</h2>
             <p className="about-body">
-              MasterChef Cuts connects local butcher shops with nearby buyers who want better meat without the full commitment of buying an entire animal alone.
+              MasterChef Cuts connects local butcher shops with nearby participants who want better meat without the full commitment of buying an entire animal alone.
             </p>
             <p className="about-body">
-              Butchers list whole animals — beef, pork, lamb. Buyers browse, claim shares, and pool together until the animal is fully spoken for. Then the butcher processes it and everyone picks up their fresh cuts.
+              Butchers list whole animals — beef, pork, lamb. Participants browse, claim shares, and pool together until the animal is fully spoken for. Then the butcher processes it and everyone picks up their fresh cuts.
             </p>
             <p className="about-body">
               No industrial supply chains. No mystery sourcing. Just a straightforward transaction between people who care about food.

@@ -32,4 +32,16 @@ export const api = {
   patch:  (path, body)  => request('PATCH',  path, body),
   put:    (path, body)  => request('PUT',    path, body),
   delete: (path)        => request('DELETE', path),
+  upload: (path, formData) => {
+    const token = getToken()
+    const headers = {}
+    if (token) headers['Authorization'] = `Bearer ${token}`
+    return fetch(`${BASE_URL}${path}`, { method: 'POST', headers, body: formData })
+      .then(async res => {
+        const text = await res.text()
+        const data = text ? JSON.parse(text) : null
+        if (!res.ok) throw new Error(data?.error || data?.message || `Upload failed (${res.status})`)
+        return data
+      })
+  },
 }

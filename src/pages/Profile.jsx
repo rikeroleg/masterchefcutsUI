@@ -121,7 +121,7 @@ export default function Profile() {
           <div className="profile-header-info">
             <div className="profile-name">{user.name}</div>
             <div className="profile-role-badge">
-              {isFarmer ? '🌾 Farmer / Butcher' : '🛒 Buyer'}
+              {isFarmer ? '🌾 Farmer / Butcher' : '🛒 Participant'}
             </div>
             {user.shopName && <div className="profile-shop">{user.shopName}</div>}
             {(user.street || user.city || user.zipCode) && (

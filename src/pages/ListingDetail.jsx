@@ -113,6 +113,11 @@ export default function ListingDetail() {
         <Link to="/listings" className="ld-back">← Back to Listings</Link>
 
         {/* Hero card */}
+        {listing.imageUrl && (
+          <div className="ld-photo">
+            <img src={listing.imageUrl} alt={`${listing.breed || ''} ${meta.label}`} />
+          </div>
+        )}
         <div className="ld-hero">
           <div className="ld-hero-left">
             <div className="ld-emoji">{meta.emoji}</div>
@@ -195,7 +200,7 @@ export default function ListingDetail() {
         {/* Reviews section */}
         {reviews.length > 0 && (
           <div className="ld-reviews-section">
-            <h2 className="ld-section-title">Buyer Reviews</h2>
+            <h2 className="ld-section-title">Participant Reviews</h2>
             <div className="ld-reviews">
               {reviews.map(r => (
                 <div key={r.id} className="ld-review">

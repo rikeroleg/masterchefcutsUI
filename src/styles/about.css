@@ -1,6 +1,6 @@
-/* about.css — about page & home page shared styles */
+﻿/* about.css â€” about page & home page shared styles */
 
-/* ── Home page ── */
+/* â”€â”€ Home page â”€â”€ */
 .home-page {
   pointer-events: auto;
   color: #fff;
@@ -14,7 +14,7 @@
   z-index: -1;
   background:
     radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.55) 65%, rgba(0,0,0,0.88) 100%),
-    url('/farm.png') center center / cover no-repeat;
+    url('/farmbkg.png') center center / cover no-repeat;
   filter: blur(8px);
   transform: scale(1.05);
 }
@@ -63,7 +63,7 @@
   margin: 0 0 36px;
 }
 
-/* ── About page ── */
+/* â”€â”€ About page â”€â”€ */
 .about-page {
   pointer-events: auto;
   color: #fff;
@@ -77,7 +77,7 @@
   z-index: -1;
   background:
     radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.55) 65%, rgba(0,0,0,0.88) 100%),
-    url('/farm.png') center center / cover no-repeat;
+    url('/farmbkg.png') center center / cover no-repeat;
   filter: blur(8px);
   transform: scale(1.05);
 }
@@ -155,12 +155,23 @@
   justify-content: center;
   gap: 0;
   flex-wrap: wrap;
-  background:
-    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.07) 10px, rgba(0,0,0,0.07) 11px, transparent 11px, transparent 20px),
-    linear-gradient(168deg, #8a4a12 0%, #9a5c1a 20%, #b06a1e 50%, #9a5c1a 80%, #7a3c0e 100%);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(168deg, #8a4a12 0%, #9a5c1a 20%, #b06a1e 50%, #9a5c1a 80%, #7a3c0e 100%);
   border-top: 3px solid #3a1f07;
   border-bottom: 3px solid #3a1f07;
   color: #1e0800;
+}
+.about-stats::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
 }
 
 .about-stat {
@@ -199,7 +210,6 @@
 
 .about-section--dark {
   background:
-    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.07) 10px, rgba(0,0,0,0.07) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.04) 20px, rgba(255,230,160,0.04) 21px),
     linear-gradient(168deg, #7a3c0e 0%, #8a4a12 25%, #9a5c1a 50%, #8a4a12 75%, #7a3c0e 100%);
   border-top: 3px solid #3a1f07;
   border-bottom: 3px solid #3a1f07;
@@ -207,12 +217,23 @@
 }
 
 .about-section--cta {
-  background:
-    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.07) 10px, rgba(0,0,0,0.07) 11px, transparent 11px, transparent 20px),
-    linear-gradient(168deg, #6b2200 0%, #8b3200 50%, #5a1a00 100%);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(168deg, #6b2200 0%, #8b3200 50%, #5a1a00 100%);
   border-top: 3px solid #3a1f07;
   text-align: center;
   color: #fde8c0;
+}
+.about-section--cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
 }
 
 .about-section-inner {
@@ -260,15 +281,28 @@
 
 .about-feature-card {
   background:
-    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
-    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px),
     linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
   border: 2px solid #3a1f07;
   border-radius: 14px;
   padding: 20px 22px;
   transition: filter 0.2s;
   color: #1e0800;
+  position: relative;
+  overflow: hidden;
   filter: drop-shadow(2px 4px 0px rgba(35,12,0,0.7));
+}
+
+.about-feature-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .about-feature-card:hover {
@@ -305,14 +339,27 @@
 
 .about-step {
   background:
-    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
-    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px),
     linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
   border: 2px solid #3a1f07;
   border-radius: 14px;
   padding: 28px 24px;
   color: #1e0800;
+  position: relative;
+  overflow: hidden;
   filter: drop-shadow(2px 4px 0px rgba(35,12,0,0.7));
+}
+
+.about-step::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .about-step-num {
@@ -390,7 +437,7 @@
   .about-stat { min-width: 50%; }
 }
 
-/* ── Role selector ── */
+/* â”€â”€ Role selector â”€â”€ */
 .home-role-section {
   padding: 0 24px 64px;
 }
@@ -423,7 +470,6 @@
   gap: 10px;
   padding: 36px 28px;
   background:
-    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
     linear-gradient(168deg, #9a5c1a 0%, #c07828 20%, #e6aa3a 50%, #cc8828 80%, #8a4a12 100%);
   border: 2px solid #3a1f07;
   border-radius: 18px;
@@ -432,7 +478,22 @@
   text-align: center;
   color: #1e0800;
   font-family: inherit;
+  position: relative;
+  overflow: hidden;
   filter: drop-shadow(2px 4px 0px rgba(35,12,0,0.7));
+}
+
+.home-role-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .home-role-card:hover {
@@ -465,26 +526,48 @@
   line-height: 1.5;
 }
 
-/* ── Expanded panels ── */
+/* â”€â”€ Expanded panels â”€â”€ */
 .home-expanded {
   padding: 56px 24px 64px;
   border-top: 1px solid rgba(255,255,255,0.07);
 }
 
 .home-expanded--buyer {
-  background:
-    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.07) 10px, rgba(0,0,0,0.07) 11px, transparent 11px, transparent 20px),
-    linear-gradient(168deg, #7a3c0e 0%, #8a4a12 40%, #9a5c1a 100%);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(168deg, #7a3c0e 0%, #8a4a12 40%, #9a5c1a 100%);
   border-top: 3px solid #3a1f07;
   color: #1e0800;
 }
+.home-expanded--buyer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
+}
 
 .home-expanded--farmer {
-  background:
-    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.07) 10px, rgba(0,0,0,0.07) 11px, transparent 11px, transparent 20px),
-    linear-gradient(168deg, #7a3c0e 0%, #8a4a12 40%, #9a5c1a 100%);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(168deg, #7a3c0e 0%, #8a4a12 40%, #9a5c1a 100%);
   border-top: 3px solid #3a1f07;
   color: #1e0800;
+}
+.home-expanded--farmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
 }
 
 .home-expanded-inner {
@@ -500,17 +583,30 @@
   letter-spacing: -0.02em;
 }
 
-/* ── Listing form ── */
+/* â”€â”€ Listing form â”€â”€ */
 .listing-form {
   background:
-    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
-    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px),
     linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
   border: 2px solid #3a1f07;
   border-radius: 20px;
   padding: 36px 36px 40px;
   color: #1e0800;
+  position: relative;
+  overflow: hidden;
   filter: drop-shadow(3px 6px 0px rgba(35,12,0,0.7));
+}
+
+.listing-form::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .listing-form-title {

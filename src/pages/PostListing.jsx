@@ -51,6 +51,17 @@ export default function PostListing() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState('')
+  const [photoFile, setPhotoFile]     = useState(null)
+  const [photoPreview, setPhotoPreview] = useState(null)
+
+  function handlePhotoChange(e) {
+    const file = e.target.files[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) { setError('Photo must be under 5 MB.'); return }
+    setPhotoFile(file)
+    setPhotoPreview(URL.createObjectURL(file))
+    setError('')
+  }
 
   function handleField(e) {
     const { name, value } = e.target
@@ -74,7 +85,7 @@ export default function PostListing() {
     if (selectedCuts.length === 0) { setError('Select at least one primal cut.'); return }
     setLoading(true)
     try {
-      await api.post('/api/listings', {
+      const created = await api.post('/api/listings', {
         animalType:  form.animalType.toUpperCase(),
         breed:       form.breed       || null,
         weightLbs:   parseFloat(form.hangingWeight),
@@ -84,6 +95,13 @@ export default function PostListing() {
         zipCode:     form.zipCode,
         cutLabels:   selectedCuts.map(id => PRIMAL_CUTS[form.animalType].find(c => c.id === id)?.label).filter(Boolean),
       })
+      if (photoFile && created?.id) {
+        try {
+          const fd = new FormData()
+          fd.append('file', photoFile)
+          await api.upload(`/api/listings/${created.id}/photo`, fd)
+        } catch { /* best effort — listing still created */ }
+      }
       setSubmitted(true)
     } catch (err) {
       setError(err.message)
@@ -112,14 +130,14 @@ export default function PostListing() {
 
         <div className="post-header">
           <h1 className="post-title">Post a New Listing</h1>
-          <p className="post-sub">List a whole animal for buyers in your area to pool together.</p>
+          <p className="post-sub">List a whole animal for participants in your area to pool together.</p>
         </div>
 
         {submitted ? (
           <div className="post-success">
             <div className="post-success-check">✓</div>
             <h2>Listing submitted!</h2>
-            <p>Your listing has been posted. Buyers near <strong>{form.sourceFarm}</strong> will be able to find and claim cuts.</p>
+            <p>Your listing has been posted. Participants near <strong>{form.sourceFarm}</strong> will be able to find and claim cuts.</p>
             <div className="post-success-actions">
               <button className="hp-btn-primary" onClick={() => { setSubmitted(false); setForm(f => ({ ...f, animalType: 'beef', breed: '', hangingWeight: '', pricePerLb: '', sourceFarm: '', description: '', shares: {}, prices: {} })) }}>
                 Post another listing
@@ -180,6 +198,40 @@ export default function PostListing() {
             </div>
 
             <div className="hp-form-field">
+              <label>Animal Photo <span className="hp-opt">(optional)</span></label>
+              <div
+                className={`post-photo-drop${photoPreview ? ' post-photo-drop--filled' : ''}`}
+                onClick={() => document.getElementById('post-photo-input').click()}
+              >
+                {photoPreview ? (
+                  <img src={photoPreview} className="post-photo-preview" alt="preview" />
+                ) : (
+                  <div className="post-photo-placeholder">
+                    <span className="post-photo-icon">📷</span>
+                    <span className="post-photo-label">Click to add a photo</span>
+                    <span className="post-photo-hint">JPEG, PNG or WEBP · max 5 MB</span>
+                  </div>
+                )}
+              </div>
+              {photoPreview && (
+                <button
+                  type="button"
+                  className="post-photo-remove"
+                  onClick={() => { setPhotoFile(null); setPhotoPreview(null) }}
+                >
+                  ✕ Remove photo
+                </button>
+              )}
+              <input
+                id="post-photo-input"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                style={{ display: 'none' }}
+                onChange={handlePhotoChange}
+              />
+            </div>
+
+            <div className="hp-form-field">
               <label>Primal cuts available *</label>
               <p className="hp-field-hint" style={{ marginBottom: '8px' }}>Select each cut you&apos;re offering and set a price per cut.</p>
               <div className="hp-shares">
@@ -211,7 +263,7 @@ export default function PostListing() {
                 <label>ZIP Code *</label>
                 <input name="zipCode" value={form.zipCode} onChange={handleField}
                   placeholder="17601" maxLength={10} required />
-                <span className="hp-field-hint">Buyers searching near this ZIP will find your listing</span>
+                <span className="hp-field-hint">Participants searching near this ZIP will find your listing</span>
               </div>
             </div>
 

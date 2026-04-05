@@ -1,4 +1,4 @@
-/* listing-detail.css */
+﻿/* listing-detail.css */
 
 .ld-page {
   pointer-events: auto;
@@ -15,7 +15,7 @@
   z-index: -1;
   background:
     radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.55) 65%, rgba(0,0,0,0.88) 100%),
-    url('/farm.png') center center / cover no-repeat;
+    url('/farmbkg.png') center center / cover no-repeat;
   filter: blur(8px);
   transform: scale(1.05);
 }
@@ -51,7 +51,6 @@
 
 .ld-section--dark {
   background:
-    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.07) 10px, rgba(0,0,0,0.07) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.04) 20px, rgba(255,230,160,0.04) 21px),
     linear-gradient(168deg, #7a3c0e 0%, #8a4a12 25%, #9a5c1a 50%, #8a4a12 75%, #7a3c0e 100%);
   border-top: 3px solid #3a1f07;
   border-bottom: 3px solid #3a1f07;
@@ -78,15 +77,28 @@
 /* Main content wrapper with dark background */
 .ld-content-wrapper {
   background:
-    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
-    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px),
     linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
   border: 2px solid #3a1f07;
   border-radius: 18px;
   padding: 32px;
   margin-top: 24px;
   color: #1e0800;
+  position: relative;
+  overflow: hidden;
   filter: drop-shadow(3px 6px 0px rgba(35,12,0,0.7));
+}
+.ld-content-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: -1;
 }
 
 .ld-back {
@@ -97,6 +109,19 @@
   transition: color 0.15s;
 }
 .ld-back:hover { color: #fff; }
+
+.ld-photo {
+  border-radius: 18px;
+  overflow: hidden;
+  max-height: 300px;
+}
+.ld-photo img {
+  width: 100%;
+  height: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  display: block;
+}
 
 /* Hero */
 .ld-hero {
@@ -248,8 +273,8 @@
 .ld-reviews-section { display: flex; flex-direction: column; }
 .ld-reviews { display: flex; flex-direction: column; gap: 12px; }
 .ld-review {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.2);
   border-radius: 12px;
   padding: 16px 18px;
   display: flex;
@@ -258,9 +283,9 @@
 }
 .ld-review-header { display: flex; justify-content: space-between; align-items: center; }
 .ld-review-stars  { font-size: 1rem; letter-spacing: 2px; }
-.ld-review-date   { font-size: 0.72rem; color: rgba(255,255,255,0.35); }
-.ld-review-comment { font-size: 0.88rem; color: rgba(255,255,255,0.7); line-height: 1.6; margin: 0; }
-.ld-review-author  { font-size: 0.75rem; color: rgba(255,255,255,0.35); margin: 0; }
+.ld-review-date   { font-size: 0.72rem; color: rgba(20,6,0,0.45); }
+.ld-review-comment { font-size: 0.88rem; color: rgba(20,6,0,0.75); line-height: 1.6; margin: 0; }
+.ld-review-author  { font-size: 0.75rem; color: rgba(20,6,0,0.45); margin: 0; }
 
 /* Confirmation screen */
 .ld-confirm {
@@ -268,7 +293,6 @@
   margin: 80px auto;
   text-align: center;
   background:
-    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
     linear-gradient(168deg, #9a5c1a 0%, #c07828 20%, #e6aa3a 50%, #cc8828 80%, #8a4a12 100%);
   border: 2px solid #3a1f07;
   border-radius: 22px;
@@ -278,7 +302,22 @@
   align-items: center;
   gap: 12px;
   color: #1e0800;
+  position: relative;
+  overflow: hidden;
   filter: drop-shadow(3px 6px 0px rgba(35,12,0,0.7));
+}
+.ld-confirm::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: -1;
 }
 .ld-confirm-icon { font-size: 2.8rem; }
 .ld-confirm h2 { font-size: 1.6rem; font-weight: 900; color: #1e0800; margin: 0; }

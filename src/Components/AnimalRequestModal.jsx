@@ -57,7 +57,7 @@ export default function AnimalRequestModal({ onClose }) {
       <div className="arm-overlay" onClick={onClose}>
         <div className="arm-modal" onClick={e => e.stopPropagation()}>
           <button className="arm-close" onClick={onClose}>✕</button>
-          <p className="arm-unauth">You need to be signed in as a buyer to request an animal.</p>
+          <p className="arm-unauth">You need to be signed in as a participant to request an animal.</p>
           <button className="arm-btn-primary" onClick={() => { onClose(); navigate('/login') }}>Sign In →</button>
         </div>
       </div>
@@ -69,7 +69,7 @@ export default function AnimalRequestModal({ onClose }) {
       <div className="arm-overlay" onClick={onClose}>
         <div className="arm-modal" onClick={e => e.stopPropagation()}>
           <button className="arm-close" onClick={onClose}>✕</button>
-          <p className="arm-unauth">Only buyer accounts can submit animal requests.</p>
+          <p className="arm-unauth">Only participant accounts can submit animal requests.</p>
           <button className="arm-btn-secondary" onClick={onClose}>Close</button>
         </div>
       </div>

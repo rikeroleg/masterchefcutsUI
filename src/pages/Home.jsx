@@ -11,8 +11,8 @@ const ANIMAL_META = {
 
 const STEPS = [
   { icon: '📋', title: 'Butcher lists',   body: 'Local shops post whole animals with breed, weight, date, and share prices.' },
-  { icon: '🤝', title: 'Buyers pool',     body: 'Nearby buyers claim whole, half, or quarter shares until the animal is full.' },
-  { icon: '🥩', title: 'Everyone wins',   body: 'Butcher processes. Buyers collect fresh, traceable cuts — at 30–50% off retail.' },
+  { icon: '🤝', title: 'Participants pool',     body: 'Nearby participants claim whole, half, or quarter shares until the animal is full.' },
+  { icon: '🥩', title: 'Everyone wins',   body: 'Butcher processes. Participants collect fresh, traceable cuts — at 30–50% off retail.' },
 ]
 
 function MiniListingCard({ listing }) {
@@ -120,7 +120,7 @@ export default function Home() {
               <div className="hp-role-card-header">
                 <span className="hp-role-emoji">🛒</span>
                 <div>
-                  <div className="hp-role-name">I&apos;m a Buyer</div>
+                  <div className="hp-role-name">I&apos;m a Participant</div>
                   <div className="hp-role-tagline">Find &amp; claim a share near me</div>
                 </div>
                 <span className="hp-role-arrow">{role === 'buyer' ? '↑' : '↓'}</span>
@@ -158,7 +158,7 @@ export default function Home() {
                 <span className="hp-role-emoji">🌾</span>
                 <div>
                   <div className="hp-role-name">I&apos;m a Farmer / Butcher</div>
-                  <div className="hp-role-tagline">List a whole animal for buyers to pool</div>
+                  <div className="hp-role-tagline">List a whole animal for participants to pool</div>
                 </div>
                 <span className="hp-role-arrow">{role === 'farmer' ? '↑' : '↓'}</span>
               </div>
@@ -168,7 +168,7 @@ export default function Home() {
                   <div className="hp-mini-steps">
                     <div className="hp-mini-step"><span className="hp-mini-n">1</span><span>Sign in or create a farmer account.</span></div>
                     <div className="hp-mini-step"><span className="hp-mini-n">2</span><span>Fill in animal details, primal cuts, and your ZIP code.</span></div>
-                    <div className="hp-mini-step"><span className="hp-mini-n">3</span><span>Buyers in your area claim cuts — you set the processing date.</span></div>
+                    <div className="hp-mini-step"><span className="hp-mini-n">3</span><span>Participants in your area claim cuts — you set the processing date.</span></div>
                   </div>
                   <Link to="/post" className="hp-btn-submit" style={{ display: 'inline-block', textDecoration: 'none', marginTop: '16px', textAlign: 'center' }}>
                     Post a Listing →
@@ -185,7 +185,7 @@ export default function Home() {
       <section className="hp-cta">
         <div className="hp-section-inner hp-cta-inner">
           <h2 className="hp-cta-h2">Ready to buy better meat?</h2>
-          <p className="hp-cta-p">Join the network of butchers and buyers building a better food system.</p>
+          <p className="hp-cta-p">Join the network of butchers and participants building a better food system.</p>
           <div className="hp-cta-btns">
             <Link to="/listings" className="hp-btn-primary">Browse Animals →</Link>
             <Link to="/about" className="hp-btn-ghost">Learn more</Link>

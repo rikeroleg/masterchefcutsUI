@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
+import AnimalRequestModal from '../Components/AnimalRequestModal'
 import '../styles/demand-board.css'
 
 const ANIMAL_FILTERS = ['All', 'Beef', 'Pork', 'Lamb']
@@ -189,6 +190,7 @@ export default function DemandBoard() {
   const [myOnly,   setMyOnly]     = useState(false)
   const [loading,  setLoading]    = useState(true)
   const [error,    setError]      = useState('')
+  const [showNew,  setShowNew]    = useState(false)
 
   useEffect(() => { fetchRequests() }, [])
 
@@ -221,10 +223,20 @@ export default function DemandBoard() {
 
         <div className="db-header">
           <div>
-            <p className="db-label">Open buyer requests</p>
+            <p className="db-label">Open participant requests</p>
             <h1 className="db-title">Demand Board</h1>
-            <p className="db-sub">Buyers have specified what they need. Farmers — fulfill a request to create the listing and auto-reserve the buyer's cuts.</p>
+            <p className="db-sub">Participants have specified what they need. Farmers — fulfill a request to create the listing and auto-reserve the participant's cuts.</p>
           </div>
+          {user?.role === 'buyer' && (
+            <button className="db-btn-new" onClick={() => setShowNew(true)}>
+              + Request an Animal
+            </button>
+          )}
+          {!user && (
+            <button className="db-btn-new" onClick={() => setShowNew(true)}>
+              + Request an Animal
+            </button>
+          )}
         </div>
 
         <div className="db-toolbar">
@@ -269,6 +281,12 @@ export default function DemandBoard() {
         </div>
 
       </div>
+
+      {showNew && (
+        <AnimalRequestModal
+          onClose={() => { setShowNew(false); fetchRequests() }}
+        />
+      )}
     </div>
   )
 }

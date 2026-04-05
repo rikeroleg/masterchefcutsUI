@@ -1,6 +1,6 @@
-/* listings.css — Browse listings page & listing cards */
+﻿/* listings.css â€” Browse listings page & listing cards */
 
-/* ── Page shell ── */
+/* â”€â”€ Page shell â”€â”€ */
 .listings-page {
   pointer-events: auto;
   color: #fff;
@@ -15,7 +15,7 @@
   z-index: -1;
   background:
     radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.55) 65%, rgba(0,0,0,0.88) 100%),
-    url('/farm.png') center center / cover no-repeat;
+    url('/farmbkg.png') center center / cover no-repeat;
   filter: blur(8px);
   transform: scale(1.05);
 }
@@ -26,7 +26,7 @@
   padding: 40px 24px 80px;
 }
 
-/* ── Header ── */
+/* â”€â”€ Header â”€â”€ */
 .listings-header {
   display: flex;
   align-items: flex-end;
@@ -50,7 +50,7 @@
   margin: 0;
 }
 
-/* ── Controls (ZIP + filters) ── */
+/* â”€â”€ Controls (ZIP + filters) â”€â”€ */
 .listings-controls {
   display: flex;
   flex-direction: column;
@@ -112,7 +112,7 @@
 }
 .listings-zip-label strong { color: #f39c12; }
 
-/* ── Filters ── */
+/* â”€â”€ Filters â”€â”€ */
 .listings-filters {
   display: flex;
   gap: 8px;
@@ -139,27 +139,51 @@
   color: #fff;
 }
 
-/* ── Grid ── */
+/* â”€â”€ Grid â”€â”€ */
 .listings-grid {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-/* ════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    LISTING CARD
-════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .lc {
   background:
-    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
-    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px),
     linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
   border: 2px solid #3a1f07;
   border-radius: 20px;
   overflow: hidden;
   transition: filter 0.2s;
   color: #1e0800;
+  position: relative;
   filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
+}
+
+.lc-photo {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+}
+.lc-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.lc::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .lc:hover { filter: drop-shadow(4px 7px 0px rgba(35,12,0,0.9)) brightness(1.03); }
@@ -332,9 +356,9 @@
 .lc-claim-cut-name { font-size: 0.88rem; font-weight: 700; }
 .lc-claim-cut-action { font-size: 0.72rem; color: #6b2200; font-weight: 600; }
 
-/* ════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    SHARE PROGRESS BAR
-════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .spb {
   padding: 0 22px 10px;
 }
@@ -531,7 +555,7 @@
 }
 .lc-dismiss-btn:hover { color: #1e0800; border-color: rgba(0,0,0,0.3); }
 
-/* ── Responsive ── */
+/* â”€â”€ Responsive â”€â”€ */
 @media (max-width: 600px) {
   .listings-header { flex-direction: column; align-items: flex-start; }
   .lc-header { flex-wrap: wrap; }
