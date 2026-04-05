@@ -62,6 +62,7 @@ export default function Cart() {
           <div className="cart-items">
             {items.map((item) => {
               const animal  = ANIMAL_INFO[item.animal] ?? { label: item.animal, emoji: '\uD83E\uDD69' }
+              const isClaimCut = Number.isInteger(Number(item.cutId)) && Number(item.cutId) > 0
               const subtotal = item.price * item.qty
               return (
                 <div key={item.id} className="cart-item">
@@ -70,7 +71,7 @@ export default function Cart() {
                     <div className="cart-item-top">
                       <div className="cart-item-info">
                         <span className="cart-item-animal">{animal.emoji} {animal.label}</span>
-                        <h3 className="cart-item-name" style={{ color: item.color }}>{item.name}</h3>
+                        <h3 className="cart-item-name">{item.name}</h3>
                         <span className="cart-item-unit-price">${item.price.toLocaleString()} / cut</span>
                       </div>
                       <button
@@ -83,11 +84,19 @@ export default function Cart() {
                     </div>
                     <div className="cart-item-bottom">
                       <div className="cart-item-qty">
-                        <button className="cart-qty-btn" onClick={() => updateQty(item.id, item.qty - 1)}>&#8722;</button>
+                        <button
+                          className="cart-qty-btn"
+                          onClick={() => updateQty(item.id, isClaimCut ? Math.max(1, item.qty - 1) : item.qty - 1)}
+                          disabled={isClaimCut ? item.qty <= 1 : false}
+                        >&#8722;</button>
                         <span className="cart-qty-val">{item.qty}</span>
-                        <button className="cart-qty-btn" onClick={() => updateQty(item.id, item.qty + 1)}>+</button>
+                        <button
+                          className="cart-qty-btn"
+                          onClick={() => updateQty(item.id, item.qty + 1)}
+                          disabled={isClaimCut}
+                        >+</button>
                       </div>
-                      <span className="cart-item-subtotal" style={{ color: item.color }}>
+                      <span className="cart-item-subtotal">
                         ${subtotal.toLocaleString()}
                       </span>
                     </div>
@@ -118,7 +127,7 @@ export default function Cart() {
               {items.map((item) => (
                 <div key={item.id} className="cart-summary-line">
                   <span className="cart-summary-name">
-                    <span style={{ color: item.color }}>&#9679;</span> {item.name} &times; {item.qty}
+                    <span className="cart-summary-dot" style={{ background: item.color }} /> {item.name} &times; {item.qty}
                   </span>
                   <span className="cart-summary-val">${(item.price * item.qty).toLocaleString()}</span>
                 </div>
@@ -143,7 +152,6 @@ export default function Cart() {
       {paying && (
         <CartPaymentModal
           items={items}
-          totalPrice={totalPrice}
           onSuccess={() => { clearCart(); setPaying(false); setConfirmed(true) }}
           onClose={() => setPaying(false)}
         />

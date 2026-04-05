@@ -17,7 +17,7 @@ const STRIPE_APPEARANCE = {
   },
 }
 
-function CartCheckoutForm({ items, totalPrice, amountCents, onSuccess, onCancel }) {
+function CartCheckoutForm({ items, amountCents, onSuccess, onCancel }) {
   const stripe   = useStripe()
   const elements = useElements()
   const [error,   setError]   = useState('')
@@ -62,7 +62,7 @@ function CartCheckoutForm({ items, totalPrice, amountCents, onSuccess, onCancel 
         ))}
         <div className="pm-cart-total">
           <span>Total</span>
-          <span>${totalPrice.toLocaleString()}</span>
+          <span>${dollars}</span>
         </div>
       </div>
 
@@ -82,20 +82,35 @@ function CartCheckoutForm({ items, totalPrice, amountCents, onSuccess, onCancel 
   )
 }
 
-export default function CartPaymentModal({ items, totalPrice, onSuccess, onClose }) {
+export default function CartPaymentModal({ items, onSuccess, onClose }) {
   const [clientSecret, setClientSecret] = useState(null)
   const [amountCents,  setAmountCents]  = useState(0)
   const [error,        setError]        = useState('')
 
   useEffect(() => {
-    const cents = Math.round(totalPrice * 100)
-    api.post('/api/payments/cart-intent', { amountCents: cents })
+    const parsedCutIds = items.map(item => Number(item.cutId))
+    const hasInvalidItem = parsedCutIds.some(id => !Number.isInteger(id) || id <= 0)
+    const hasInvalidQty = items.some(item => Number(item.qty) !== 1)
+
+    if (hasInvalidItem || hasInvalidQty) {
+      setError('This checkout currently supports claimed listing cuts only. Remove non-claim items and set each quantity to 1.')
+      return
+    }
+
+    const cutIds = parsedCutIds
+
+    if (new Set(cutIds).size !== cutIds.length) {
+      setError('Cart contains duplicate cuts. Please refresh your cart and try again.')
+      return
+    }
+
+    api.post('/api/payments/cart-intent', { cutIds })
       .then(res => {
         setClientSecret(res.clientSecret)
         setAmountCents(res.amountCents)
       })
       .catch(err => setError(err.message || 'Could not initialize payment.'))
-  }, [totalPrice])
+  }, [items])
 
   return (
     <div className="pm-overlay" onClick={onClose}>

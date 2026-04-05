@@ -18,6 +18,7 @@ function mapUser(data) {
     city:      data.city      || '',
     state:     data.state     || '',
     zipCode:   data.zipCode   || '',
+    notificationPreference: data.notificationPreference || 'ALL',
   }
 }
 

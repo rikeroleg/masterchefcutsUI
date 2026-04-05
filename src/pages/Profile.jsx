@@ -50,6 +50,8 @@ export default function Profile() {
   const [deleteLoading, setDeleteLoading]           = useState(false)
   const [pwForm, setPwForm]             = useState({ currentPassword: '', newPassword: '', confirmNew: '' })
   const [pwLoading, setPwLoading]       = useState(false)
+  const [notifPref, setNotifPref]       = useState(user?.notificationPreference || 'ALL')
+  const [notifPrefLoading, setNotifPrefLoading] = useState(false)
 
   useEffect(() => {
     if (!user) return
@@ -125,6 +127,19 @@ export default function Profile() {
     } catch (err) {
       toast.error(err.message || 'Failed to close listing.')
       setClosingId(null)
+    }
+  }
+
+  async function handleNotifPrefChange(pref) {
+    setNotifPrefLoading(true)
+    try {
+      await api.patch('/api/participants/me/notification-preference', { preference: pref })
+      setNotifPref(pref)
+      toast.success('Notification preference saved.')
+    } catch (err) {
+      toast.error(err.message || 'Failed to update preference.')
+    } finally {
+      setNotifPrefLoading(false)
     }
   }
 
@@ -489,6 +504,32 @@ export default function Profile() {
             )}
           </div>
         )}
+
+        {/* ── Notification Preferences ── */}
+        <div className="profile-section">
+          <div className="profile-section-header">
+            <h2 className="profile-section-title">🔔 Notification Preferences</h2>
+          </div>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem', marginBottom: '12px' }}>
+            Choose which notifications you receive.
+          </p>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            {['ALL', 'IMPORTANT_ONLY'].map(opt => (
+              <button
+                key={opt}
+                disabled={notifPrefLoading}
+                className={`profile-date-btn${notifPref === opt ? ' profile-date-btn--active' : ''}`}
+                style={notifPref === opt ? { background: '#f5c97a', color: '#1a0a00', fontWeight: 700, border: 'none' } : {}}
+                onClick={() => notifPref !== opt && handleNotifPrefChange(opt)}
+              >
+                {opt === 'ALL' ? '🔔 All notifications' : '⭐ Important only'}
+              </button>
+            ))}
+          </div>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.78rem', marginTop: '8px' }}>
+            Important: pool full, processing set, order complete.
+          </p>
+        </div>
 
         {/* ── Security ── */}
         <div className="profile-section profile-pw-section">

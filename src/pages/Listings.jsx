@@ -3,8 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
-import PaymentModal from '../components/PaymentModal'
-import '../styles/payment-modal.css'
+import { cartBridge } from '../context/CartContext'
 
 const ANIMAL_FILTERS = ['All', 'Beef', 'Pork', 'Lamb']
 
@@ -67,33 +66,37 @@ function ShareProgressBar({ cuts }) {
 function ListingCard({ listing, onClaimed }) {
   const { user }                        = useAuth()
   const navigate                        = useNavigate()
+  const { toast }                       = useToast()
   const [expanded, setExpanded]         = useState(false)
-  const [payingCut, setPayingCut]       = useState(null)
+  const [claiming,  setClaiming]        = useState(null)
   const [claimError, setClaimError]     = useState('')
-  const [confirmed, setConfirmed]       = useState(null)
   const [onWaitlist, setOnWaitlist]     = useState(false)
   const [waitlistLoading, setWLLoading] = useState(false)
 
   const meta      = ANIMAL_META[listing.animalType] || { emoji: '🐄', label: listing.animalType }
   const available = listing.cuts.filter(c => !c.claimed).length
 
-  function handleCutClick(cut) {
+  async function handleCutClick(cut) {
     if (!user) { navigate('/login'); return }
     setClaimError('')
-    setPayingCut(cut)
-  }
-
-  async function handlePaymentSuccess(paymentIntentId) {
-    const cut = payingCut
+    setClaiming(cut.id)
     try {
-      await api.post(`/api/listings/${listing.id}/claims`, { cutId: cut.id, paymentIntentId })
-      setPayingCut(null)
+      const updated = await api.post(`/api/listings/${listing.id}/claims`, { cutId: cut.id })
+      cartBridge.addToCart({
+        animal: listing.animalType.toLowerCase(),
+        cutId:  cut.id,
+        name:   cut.label,
+        color:  '#f5c97a',
+        price:  Math.round(listing.pricePerLb * listing.weightLbs / listing.totalCuts),
+        qty:    1,
+      })
+      toast.success(`${cut.label} added to cart!`)
       setExpanded(false)
-      setConfirmed({ cutLabel: cut.label })
-      onClaimed()
+      onClaimed(updated)
     } catch (err) {
-      setClaimError(err.message)
-      setPayingCut(null)
+      setClaimError(err.message || 'Failed to claim cut.')
+    } finally {
+      setClaiming(null)
     }
   }
 
@@ -112,25 +115,8 @@ function ListingCard({ listing, onClaimed }) {
     setWLLoading(false)
   }
 
-  if (confirmed) {
-    return (
-      <div className="lc lc--confirmed">
-        <div className="lc-confirm-inline">
-          <span className="lc-confirm-check">✅</span>
-          <div>
-            <p className="lc-confirm-title">Cut claimed!</p>
-            <p className="lc-confirm-body">You claimed the <strong>{confirmed.cutLabel}</strong> from <strong>{listing.farmerShopName || listing.farmerName}</strong>.</p>
-            {listing.processingDate && (
-              <p className="lc-confirm-date">🗓 Processing: {new Date(listing.processingDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
-            )}
-          </div>
-        </div>
-        <div className="lc-confirm-actions">
-          <Link to="/profile" className="lc-details-link">View my claims →</Link>
-          <button className="lc-dismiss-btn" onClick={() => setConfirmed(null)}>Dismiss</button>
-        </div>
-      </div>
-    )
+  if (false) {
+    // confirmed state removed — toast + inline update replaces this
   }
 
   return (
@@ -205,23 +191,16 @@ function ListingCard({ listing, onClaimed }) {
           <div className="lc-claim-cuts">
             {listing.cuts.filter(c => !c.claimed).map(c => (
               <button key={c.id} className="lc-claim-cut-btn"
-                onClick={() => handleCutClick(c)}>
+                onClick={() => handleCutClick(c)}
+                disabled={claiming === c.id}>
                 <span className="lc-claim-cut-name">{c.label}</span>
-                <span className="lc-claim-cut-action">Claim →</span>
+                <span className="lc-claim-cut-action">{claiming === c.id ? '…' : 'Claim →'}</span>
               </button>
             ))}
           </div>
         </div>
       )}
 
-      {payingCut && (
-        <PaymentModal
-          listing={listing}
-          cutLabel={payingCut.label}
-          onSuccess={handlePaymentSuccess}
-          onClose={() => setPayingCut(null)}
-        />
-      )}
     </div>
   )
 }
@@ -377,7 +356,10 @@ export default function Listings() {
 
         <div className="listings-grid">
           {!loading && visible.map(l => (
-            <ListingCard key={l.id} listing={l} onClaimed={() => fetchListings(true)} />
+            <ListingCard key={l.id} listing={l} onClaimed={(updated) => {
+              if (updated?.id) setListings(prev => prev.map(x => x.id === updated.id ? updated : x))
+              else fetchListings(true)
+            }} />
           ))}
           {!loading && !error && visible.length === 0 && (
             <p className="listings-empty">No listings found. Check back soon.</p>

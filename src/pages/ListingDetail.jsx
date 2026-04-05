@@ -3,8 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
-import PaymentModal from '../components/PaymentModal'
-import '../styles/payment-modal.css'
+import { cartBridge } from '../context/CartContext'
 import '../styles/listing-detail.css'
 
 const ANIMAL_META = {
@@ -39,8 +38,7 @@ export default function ListingDetail() {
 
   const [listing,   setListing]   = useState(null)
   const [reviews,   setReviews]   = useState([])
-  const [payingCut, setPayingCut] = useState(null)
-  const [confirmed, setConfirmed] = useState(null)
+  const [claiming,  setClaiming]  = useState(null)
   const [error,     setError]     = useState('')
   const [loading,   setLoading]   = useState(true)
 
@@ -55,26 +53,27 @@ export default function ListingDetail() {
       .finally(() => setLoading(false))
   }, [id])
 
-  async function handlePaymentSuccess(paymentIntentId) {
-    try {
-      await api.post(`/api/listings/${listing.id}/claims`, {
-        cutId: payingCut.id,
-        paymentIntentId,
-      })
-      const updated = await api.get(`/api/listings/${id}`)
-      setListing(updated)
-      setConfirmed({ cut: payingCut, listing: updated })
-      setPayingCut(null)
-    } catch (err) {
-      toast.error(err.message || 'Failed to claim cut.')
-      setPayingCut(null)
-    }
-  }
-
-  function handleCutClick(cut) {
+  async function handleCutClick(cut) {
     if (!user) { navigate('/login'); return }
     if (user.role === 'farmer') return
-    setPayingCut(cut)
+    setClaiming(cut.id)
+    try {
+      const updated = await api.post(`/api/listings/${listing.id}/claims`, { cutId: cut.id })
+      setListing(updated)
+      cartBridge.addToCart({
+        animal: listing.animalType.toLowerCase(),
+        cutId:  cut.id,
+        name:   cut.label,
+        color:  '#f5c97a',
+        price:  Math.round(listing.pricePerLb * listing.weightLbs / listing.totalCuts),
+        qty:    1,
+      })
+      toast.success(`${cut.label} added to cart!`)
+    } catch (err) {
+      toast.error(err.message || 'Failed to claim cut.')
+    } finally {
+      setClaiming(null)
+    }
   }
 
   if (loading) return <div className="ld-loading">Loading listing…</div>
@@ -87,30 +86,6 @@ export default function ListingDetail() {
   const claimed   = listing.cuts.filter(c => c.claimed).length
   const pct       = listing.totalCuts > 0 ? Math.round((claimed / listing.totalCuts) * 100) : 0
   const avgRating = reviews.length > 0 ? reviews.reduce((a, r) => a + r.rating, 0) / reviews.length : null
-
-  if (confirmed) {
-    return (
-      <div className="ld-page">
-        <div className="ld-confirm">
-          <div className="ld-confirm-icon">✅</div>
-          <h2>Cut claimed!</h2>
-          <p>You claimed the <strong>{confirmed.cut.label}</strong> cut from <strong>{confirmed.listing.farmerShopName || confirmed.listing.farmerName}</strong>.</p>
-          {confirmed.listing.processingDate && (
-            <p className="ld-confirm-date">🗓 Processing date: <strong>{new Date(confirmed.listing.processingDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</strong></p>
-          )}
-          {!confirmed.listing.processingDate && (
-            <p className="ld-confirm-sub" style={{ marginBottom: 0 }}>⏳ The farmer will set a processing date soon — check your profile for updates.</p>
-          )}
-          <p className="ld-confirm-farm">📍 {confirmed.listing.sourceFarm} · ZIP {confirmed.listing.zipCode}</p>
-          <p className="ld-confirm-sub">A confirmation email has been sent to you. Check your profile for claim details.</p>
-          <div className="ld-confirm-actions">
-            <Link to="/profile" className="hp-btn-primary">View My Claims →</Link>
-            <Link to="/listings" className="hp-btn-ghost">Browse More</Link>
-          </div>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="ld-page">
@@ -197,8 +172,8 @@ export default function ListingDetail() {
                 {c.claimed ? (
                   <span className="ld-cut-status ld-cut-status--claimed">✓ Claimed</span>
                 ) : listing.status === 'ACTIVE' && user?.role !== 'farmer' ? (
-                  <button className="ld-cut-claim-btn" onClick={() => handleCutClick(c)}>
-                    Claim →
+                  <button className="ld-cut-claim-btn" onClick={() => handleCutClick(c)} disabled={claiming === c.id}>
+                    {claiming === c.id ? '…' : 'Claim →'}
                   </button>
                 ) : listing.status === 'ACTIVE' && user?.role === 'farmer' ? (
                   <span className="ld-cut-status ld-cut-status--closed">Farmer account</span>
@@ -235,14 +210,6 @@ export default function ListingDetail() {
 
       </div>
 
-      {payingCut && (
-        <PaymentModal
-          listing={listing}
-          cutLabel={payingCut.label}
-          onSuccess={handlePaymentSuccess}
-          onClose={() => setPayingCut(null)}
-        />
-      )}
     </div>
   )
 }

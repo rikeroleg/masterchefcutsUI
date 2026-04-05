@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { Bell } from 'lucide-react'
 import { useNotifications } from '../context/NotificationContext'
 import { useAuth } from '../context/AuthContext'
+import '../styles/notification-bell.css'
 
 function timeAgo(iso) {
   const diff = Date.now() - new Date(iso).getTime()
