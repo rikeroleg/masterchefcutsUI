@@ -18,7 +18,8 @@ import ForgotPasswordPage from "./pages/ForgotPassword";
 import ResetPasswordPage from "./pages/ResetPassword";
 import AdminPage from "./pages/Admin";
 import DemandBoardPage from "./pages/DemandBoard";
-// import VerifyEmailPage from "./pages/VerifyEmail";
+import NotFoundPage from "./pages/NotFound";
+import FarmerProfilePage from "./pages/FarmerProfile";
 import NotificationBell from "./components/NotificationBell";
 import AnimalRequestModal from "./Components/AnimalRequestModal";
 import { useAuth } from "./context/AuthContext";
@@ -140,7 +141,7 @@ function App() {
         </header>
 
         {/* Page content */}
-        <div style={{ flex: 1, position: 'relative', pointerEvents: 'auto' }}>
+        <div style={{ flex: 1, position: 'relative', pointerEvents: isShop ? 'none' : 'auto' }}>
           <Routes>
             <Route path="/shop" element={
               <div style={{ position: 'relative', height: 'calc(100vh - 72px)', pointerEvents: 'none' }}>
@@ -196,8 +197,9 @@ function App() {
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/demand" element={<DemandBoardPage />} />
-            {/* <Route path="/verify-email" element={<VerifyEmailPage />} /> */}
+            <Route path="/farmer/:id" element={<FarmerProfilePage />} />
             <Route path="/" element={<HomePage />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>
 

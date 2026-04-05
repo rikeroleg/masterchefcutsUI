@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import { api } from '../api/client'
+import DisputeModal from '../Components/DisputeModal'
 
 const ANIMAL_EMOJI = { BEEF: '🐄', PORK: '🐷', LAMB: '🐑' }
 
@@ -26,6 +28,7 @@ function Avatar({ name, size = 56 }) {
 
 export default function Profile() {
   const { user, logout, updateUser } = useAuth()
+  const { toast } = useToast()
   const navigate = useNavigate()
   const isFarmerUser = user?.role === 'farmer'
   const [editing, setEditing]             = useState(false)
@@ -38,6 +41,15 @@ export default function Profile() {
   const [reviewLoading, setReviewLoading]   = useState(null)
   const [reviewedSet, setReviewedSet]       = useState(new Set())
   const [reviewError, setReviewError]       = useState('')
+  const [disputeClaim, setDisputeClaim]             = useState(null)
+  const [editListingId, setEditListingId]           = useState(null)
+  const [editListingForm, setEditListingForm]       = useState({})
+  const [editListingLoading, setEditListingLoading] = useState(false)
+  const [closingId, setClosingId]                   = useState(null)
+  const [deleteConfirm, setDeleteConfirm]           = useState(false)
+  const [deleteLoading, setDeleteLoading]           = useState(false)
+  const [pwForm, setPwForm]             = useState({ currentPassword: '', newPassword: '', confirmNew: '' })
+  const [pwLoading, setPwLoading]       = useState(false)
 
   useEffect(() => {
     if (!user) return
@@ -81,6 +93,72 @@ export default function Profile() {
       setDateError(err.message || 'Failed to set date')
     } finally {
       setDateLoading(null)
+    }
+  }
+
+  async function handleEditListing(e, id) {
+    e.preventDefault()
+    setEditListingLoading(true)
+    try {
+      await api.patch(`/api/listings/${id}`, {
+        pricePerLb:  parseFloat(editListingForm.pricePerLb),
+        description: editListingForm.description || null,
+      })
+      toast.success('Listing updated.')
+      setEditListingId(null)
+      const updated = await api.get('/api/listings/my')
+      setMyListings(updated)
+    } catch (err) {
+      toast.error(err.message || 'Failed to update listing.')
+    } finally {
+      setEditListingLoading(false)
+    }
+  }
+
+  async function handleCloseListing(id) {
+    if (closingId !== id) { setClosingId(id); return }
+    try {
+      await api.delete(`/api/listings/${id}`)
+      toast.info('Listing closed.')
+      setClosingId(null)
+      setMyListings(prev => prev.filter(l => l.id !== id))
+    } catch (err) {
+      toast.error(err.message || 'Failed to close listing.')
+      setClosingId(null)
+    }
+  }
+
+  async function handleDeleteAccount() {
+    setDeleteLoading(true)
+    try {
+      await api.delete('/api/users/me')
+      logout()
+      navigate('/')
+    } catch (err) {
+      toast.error(err.message || 'Failed to delete account.')
+      setDeleteLoading(false)
+      setDeleteConfirm(false)
+    }
+  }
+
+  async function handleChangePassword(e) {
+    e.preventDefault()
+    if (pwForm.newPassword !== pwForm.confirmNew) {
+      toast.error('New passwords do not match.')
+      return
+    }
+    setPwLoading(true)
+    try {
+      await api.post('/api/auth/change-password', {
+        currentPassword: pwForm.currentPassword,
+        newPassword: pwForm.newPassword,
+      })
+      toast.success('Password changed successfully.')
+      setPwForm({ currentPassword: '', newPassword: '', confirmNew: '' })
+    } catch (err) {
+      toast.error(err.message || 'Failed to change password.')
+    } finally {
+      setPwLoading(false)
     }
   }
 
@@ -202,6 +280,14 @@ export default function Profile() {
               <div className="profile-stat"><strong>{myListings.reduce((a, l) => a + l.claimedCuts, 0)}</strong><span>Cuts claimed</span></div>
               <div className="profile-stat-sep" />
               <div className="profile-stat"><strong>{myListings.reduce((a, l) => a + (l.totalCuts - l.claimedCuts), 0)}</strong><span>Cuts remaining</span></div>
+              {user.approved === false && (
+                <>
+                  <div className="profile-stat-sep" />
+                  <div className="profile-stat profile-stat--pending">
+                    <span>⏳ Pending admin approval</span>
+                  </div>
+                </>
+              )}
             </>
           ) : (
             <>
@@ -209,7 +295,7 @@ export default function Profile() {
               <div className="profile-stat-sep" />
               <div className="profile-stat"><strong>{myClaims.filter(c => c.listingStatus === 'PROCESSING').length}</strong><span>In processing</span></div>
               <div className="profile-stat-sep" />
-              <div className="profile-stat"><strong>$0</strong><span>Total spent</span></div>
+              <div className="profile-stat"><strong>${myClaims.reduce((s, c) => s + (c.pricePaid || 0), 0).toFixed(0)}</strong><span>Total spent</span></div>
             </>
           )}
         </div>
@@ -270,6 +356,9 @@ export default function Profile() {
                     {reviewedSet.has(c.listingId) && (
                       <div className="profile-review-done">✅ Review submitted</div>
                     )}
+                    <button className="profile-dispute-btn" onClick={() => setDisputeClaim(c)}>
+                      ⚠ Report an issue
+                    </button>
                   </div>
                 ))}
               </div>
@@ -339,6 +428,59 @@ export default function Profile() {
                           </button>
                         </div>
                       )}
+                      {/* Inline edit form */}
+                      {editListingId === l.id && (
+                        <form className="profile-listing-edit-form" onSubmit={e => handleEditListing(e, l.id)}>
+                          <div className="profile-listing-edit-row">
+                            <div className="login-field">
+                              <label>Price per lb ($)</label>
+                              <input
+                                type="number" min="0.01" step="0.01"
+                                className="profile-date-input"
+                                style={{ width: '100%' }}
+                                value={editListingForm.pricePerLb || ''}
+                                onChange={e => setEditListingForm(f => ({ ...f, pricePerLb: e.target.value }))}
+                              />
+                            </div>
+                          </div>
+                          <div className="login-field">
+                            <label>Description</label>
+                            <textarea
+                              className="profile-review-text"
+                              rows={2}
+                              value={editListingForm.description || ''}
+                              onChange={e => setEditListingForm(f => ({ ...f, description: e.target.value }))}
+                              placeholder="Update description…"
+                            />
+                          </div>
+                          <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                            <button type="submit" className="profile-date-btn" disabled={editListingLoading}>
+                              {editListingLoading ? 'Saving…' : 'Save Changes'}
+                            </button>
+                            <button type="button" className="profile-listing-sec-btn" onClick={() => setEditListingId(null)}>Cancel</button>
+                          </div>
+                        </form>
+                      )}
+                      {/* Listing actions */}
+                      {editListingId !== l.id && l.status !== 'COMPLETE' && (
+                        <div className="profile-listing-actions">
+                          <button
+                            className="profile-listing-edit-btn"
+                            onClick={() => {
+                              setEditListingId(l.id)
+                              setEditListingForm({ pricePerLb: l.pricePerLb.toFixed(2), description: l.description || '' })
+                            }}
+                          >
+                            ✎ Edit
+                          </button>
+                          <button
+                            className="profile-listing-close-btn"
+                            onClick={() => handleCloseListing(l.id)}
+                          >
+                            {closingId === l.id ? '⚠ Confirm close' : '✕ Close Listing'}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )
                 })}
@@ -348,7 +490,77 @@ export default function Profile() {
           </div>
         )}
 
+        {/* ── Security ── */}
+        <div className="profile-section profile-pw-section">
+          <div className="profile-section-header">
+            <h2 className="profile-section-title">Security</h2>
+          </div>
+          <form className="profile-pw-form" onSubmit={handleChangePassword}>
+            <div className="login-field">
+              <label>Current password</label>
+              <input
+                type="password"
+                autoComplete="current-password"
+                required
+                value={pwForm.currentPassword}
+                onChange={e => setPwForm(f => ({ ...f, currentPassword: e.target.value }))}
+              />
+            </div>
+            <div className="profile-edit-row">
+              <div className="login-field">
+                <label>New password</label>
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  minLength={8}
+                  value={pwForm.newPassword}
+                  onChange={e => setPwForm(f => ({ ...f, newPassword: e.target.value }))}
+                />
+              </div>
+              <div className="login-field">
+                <label>Confirm new password</label>
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  minLength={8}
+                  value={pwForm.confirmNew}
+                  onChange={e => setPwForm(f => ({ ...f, confirmNew: e.target.value }))}
+                />
+              </div>
+            </div>
+            <button type="submit" className="login-submit" disabled={pwLoading} style={{ marginTop: '8px' }}>
+              {pwLoading ? 'Saving…' : 'Change Password'}
+            </button>
+          </form>
+        </div>
+
+        {/* ── Danger zone ── */}
+        <div className="profile-section profile-danger-zone">
+          <div className="profile-section-header">
+            <h2 className="profile-section-title">Account</h2>
+          </div>
+          <p className="profile-danger-desc">Permanently delete your account and all associated data. This cannot be undone.</p>
+          {!deleteConfirm ? (
+            <button className="profile-delete-btn" onClick={() => setDeleteConfirm(true)}>Delete Account</button>
+          ) : (
+            <div className="profile-delete-confirm">
+              <p>Are you sure? This will permanently remove your account.</p>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <button className="profile-delete-confirm-btn" onClick={handleDeleteAccount} disabled={deleteLoading}>
+                  {deleteLoading ? 'Deleting…' : 'Yes, delete my account →'}
+                </button>
+                <button className="profile-date-btn" onClick={() => setDeleteConfirm(false)}>Cancel</button>
+              </div>
+            </div>
+          )}
+        </div>
+
       </div>
+      {disputeClaim && (
+        <DisputeModal claim={disputeClaim} onClose={() => setDisputeClaim(null)} />
+      )}
     </div>
   )
 }

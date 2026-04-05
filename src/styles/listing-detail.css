@@ -123,10 +123,32 @@
   display: block;
 }
 
+/* Shared wood-grain ::before for all amber cards on this page */
+.ld-hero::before,
+.ld-stats::before,
+.ld-progress-wrap::before,
+.ld-description::before,
+.ld-processing-badge::before,
+.ld-cuts-section::before,
+.ld-reviews-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: -1;
+}
+
 /* Hero */
 .ld-hero {
-  background: rgba(0,0,0,0.15);
-  border: 1px solid rgba(0,0,0,0.25);
+  background:
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
   border-radius: 18px;
   padding: 28px;
   display: flex;
@@ -134,12 +156,23 @@
   align-items: flex-start;
   gap: 20px;
   flex-wrap: wrap;
+  position: relative;
+  overflow: hidden;
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
+  color: #1e0800;
 }
 
 .ld-hero-left { display: flex; align-items: flex-start; gap: 18px; }
 .ld-emoji { font-size: 2.8rem; line-height: 1; }
 .ld-title { font-size: 1.6rem; font-weight: 900; color: #1e0800; margin: 0 0 6px; letter-spacing: -0.02em; }
 .ld-farm  { font-size: 0.88rem; color: rgba(20,6,0,0.65); margin: 0 0 4px; }
+.ld-farm-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+.ld-farm-link:hover { border-bottom-color: rgba(20,6,0,0.45); }
 .ld-location { font-size: 0.78rem; color: rgba(20,6,0,0.5); margin: 0; }
 
 .ld-hero-right { text-align: right; }
@@ -154,24 +187,31 @@
   align-items: center;
   gap: 20px;
   padding: 16px 20px;
-  background: rgba(0,0,0,0.15);
-  border: 1px solid rgba(0,0,0,0.22);
+  background:
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
   border-radius: 14px;
   flex-wrap: wrap;
+  position: relative;
+  overflow: hidden;
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
 }
 .ld-stat { display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .ld-stat strong { font-size: 1.1rem; font-weight: 800; color: #1e0800; }
 .ld-stat span { font-size: 0.72rem; color: rgba(20,6,0,0.55); text-transform: uppercase; letter-spacing: 0.06em; }
 .ld-stat-sep { width: 1px; height: 30px; background: rgba(0,0,0,0.18); }
 .ld-stars-label { font-size: 0.75rem; color: rgba(20,6,0,0.55); margin-left: 4px; }
-.ld-stars-label { font-size: 0.75rem; color: rgba(255,255,255,0.45); margin-left: 4px; }
 
 /* Progress bar */
 .ld-progress-wrap {
-  background: rgba(0,0,0,0.15);
-  border: 1px solid rgba(0,0,0,0.22);
+  background:
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
   border-radius: 14px;
   padding: 18px 24px;
+  position: relative;
+  overflow: hidden;
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
 }
 .ld-progress-header {
   display: flex;
@@ -195,21 +235,29 @@
   font-size: 0.9rem;
   color: rgba(20,6,0,0.82);
   line-height: 1.7;
-  background: rgba(0,0,0,0.12);
-  border: 1px solid rgba(0,0,0,0.2);
+  background:
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
   border-radius: 14px;
   padding: 20px;
   margin: 0;
+  position: relative;
+  overflow: hidden;
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
 }
 
 /* Processing badge */
 .ld-processing-badge {
   font-size: 0.85rem;
   color: rgba(20,6,0,0.82);
-  background: rgba(0,0,0,0.12);
-  border: 1px solid rgba(0,0,0,0.2);
+  background:
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
   border-radius: 10px;
   padding: 12px 18px;
+  position: relative;
+  overflow: hidden;
+  filter: drop-shadow(3px 4px 0px rgba(35,12,0,0.6));
 }
 .ld-processing-badge strong { color: #4a1a00; }
 
@@ -223,21 +271,28 @@
 }
 
 /* Cuts grid */
-.ld-cuts-section { display: flex; flex-direction: column; }
+.ld-cuts-section {
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
+  border-radius: 18px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
+}
 .ld-claim-error {
   font-size: 0.82rem; color: #e74c3c;
-  background: rgba(231,76,60,0.08);
-  border: 1px solid rgba(231,76,60,0.2);
+  background: rgba(231,76,60,0.12);
+  border: 1px solid rgba(231,76,60,0.35);
   border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;
 }
 .ld-cuts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 10px;
-  background: rgba(0,0,0,0.12);
-  border: 1px solid rgba(0,0,0,0.2);
-  border-radius: 14px;
-  padding: 20px;
 }
 .ld-cut {
   background: rgba(0,0,0,0.12);
@@ -270,7 +325,18 @@
 .ld-cut-status--closed  { color: rgba(20,6,0,0.4); }
 
 /* Reviews */
-.ld-reviews-section { display: flex; flex-direction: column; }
+.ld-reviews-section {
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
+  border-radius: 18px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
+}
 .ld-reviews { display: flex; flex-direction: column; gap: 12px; }
 .ld-review {
   background: rgba(0,0,0,0.12);

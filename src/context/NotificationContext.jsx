@@ -12,6 +12,8 @@ export function NotificationProvider({ children }) {
   useEffect(() => {
     if (!user) { setNotifications([]); setUnreadCount(0); return }
     fetchAll()
+    const t = setInterval(fetchAll, 30_000)
+    return () => clearInterval(t)
   }, [user])
 
   async function fetchAll() {

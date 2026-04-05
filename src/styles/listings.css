@@ -112,6 +112,21 @@
 }
 .listings-zip-label strong { color: #f39c12; }
 
+.listings-load-more {
+  background: rgba(243,156,18,0.15);
+  border: 1px solid rgba(243,156,18,0.4);
+  color: #f5c97a;
+  border-radius: 24px;
+  padding: 10px 28px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+}
+.listings-load-more:hover { background: rgba(243,156,18,0.28); border-color: rgba(243,156,18,0.65); }
+
 /* â”€â”€ Filters â”€â”€ */
 .listings-filters {
   display: flex;
@@ -138,6 +153,76 @@
   border-color: rgba(231,76,60,0.5);
   color: #fff;
 }
+
+/* Advanced filters row */
+.listings-more-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  padding: 16px 0 4px;
+  margin-bottom: 8px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.listings-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 110px;
+}
+
+.listings-filter-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
+
+.listings-filter-input {
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  font-size: 0.84rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+.listings-filter-input:focus { border-color: rgba(255,255,255,0.3); }
+.listings-filter-input::placeholder { color: rgba(255,255,255,0.25); }
+
+.listings-sort-select {
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  font-size: 0.84rem;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  min-width: 160px;
+}
+.listings-sort-select option { background: #2a1200; color: #fff; }
+
+.listings-filter-clear {
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(231,76,60,0.4);
+  background: rgba(231,76,60,0.1);
+  color: #e74c3c;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+  align-self: flex-end;
+}
+.listings-filter-clear:hover { background: rgba(231,76,60,0.2); }
 
 /* â”€â”€ Grid â”€â”€ */
 .listings-grid {
@@ -225,6 +310,14 @@
   font-size: 0.78rem;
   color: rgba(20,6,0,0.55);
 }
+
+.lc-farm-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+.lc-farm-link:hover { border-bottom-color: rgba(20,6,0,0.4); }
 
 .lc-price-block {
   text-align: right;

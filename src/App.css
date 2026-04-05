@@ -12,5 +12,8 @@
 @import './styles/listing-detail.css';
 @import './styles/login.css';
 @import './styles/profile.css';
-@import './styles/post.css';@import './styles/demand-board.css';
+@import './styles/post.css';
+@import './styles/demand-board.css';
 @import './styles/animal-request-modal.css';
+@import './styles/toast.css';
+@import './styles/dispute-modal.css';

@@ -11,6 +11,7 @@ function mapUser(data) {
     lastName:  data.lastName,
     email:     data.email,
     role:      data.role?.toLowerCase(),
+    approved:  data.approved ?? null,
     shopName:  data.shopName  || '',
     street:    data.street    || '',
     apt:       data.apt       || '',

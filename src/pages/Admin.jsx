@@ -9,10 +9,12 @@ const ROLE_COLOR = { BUYER: '#3498db', FARMER: '#27ae60', ADMIN: '#9b59b6' }
 export default function Admin() {
   const { user } = useAuth()
   const navigate = useNavigate()
-  const [tab,      setTab]      = useState('stats')
-  const [stats,    setStats]    = useState(null)
-  const [users,    setUsers]    = useState([])
-  const [listings, setListings] = useState([])
+  const [tab,        setTab]       = useState('stats')
+  const [stats,      setStats]     = useState(null)
+  const [users,      setUsers]     = useState([])
+  const [listings,   setListings]  = useState([])
+  const [disputes,   setDisputes]  = useState([])
+  const [resolutionText, setResolutionText] = useState({})
   const [loading,  setLoading]  = useState(false)
   const [error,    setError]    = useState('')
 
@@ -21,6 +23,7 @@ export default function Admin() {
     loadStats()
     loadUsers()
     loadListings()
+    loadDisputes()
   }, [user])
 
   async function loadStats() {
@@ -33,6 +36,21 @@ export default function Admin() {
 
   async function loadListings() {
     try { setListings(await api.get('/api/listings')) } catch {}
+  }
+
+  async function loadDisputes() {
+    try { setDisputes(await api.get('/api/admin/disputes')) } catch {}
+  }
+
+  async function resolveDispute(id) {
+    const resolution = (resolutionText[id] || '').trim()
+    if (!resolution) return
+    setLoading(true)
+    try {
+      await api.patch(`/api/admin/disputes/${id}/resolve`, { resolution })
+      await loadDisputes()
+    } catch (err) { setError(err.message) }
+    setLoading(false)
   }
 
   async function approveFarmer(id) {
@@ -67,24 +85,31 @@ export default function Admin() {
 
   const farmers = users.filter(u => u.role === 'FARMER')
   const pending = farmers.filter(u => !u.approved)
+  const openDisputes = disputes.filter(d => d.status !== 'RESOLVED')
 
   return (
     <div className="admin-page">
       <div className="admin-inner">
         <div className="admin-header">
           <h1 className="admin-title">Admin Panel</h1>
-          {pending.length > 0 && (
-            <span className="admin-badge">{pending.length} pending farmer{pending.length !== 1 ? 's' : ''}</span>
-          )}
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {pending.length > 0 && (
+              <span className="admin-badge">{pending.length} pending farmer{pending.length !== 1 ? 's' : ''}</span>
+            )}
+            {openDisputes.length > 0 && (
+              <span className="admin-badge admin-badge--dispute">{openDisputes.length} open dispute{openDisputes.length !== 1 ? 's' : ''}</span>
+            )}
+          </div>
         </div>
 
         {error && <p className="admin-error">{error}</p>}
 
         <div className="admin-tabs">
-          {['stats', 'users', 'listings'].map(t => (
+          {['stats', 'users', 'listings', 'disputes'].map(t => (
             <button key={t} className={`admin-tab${tab === t ? ' active' : ''}`} onClick={() => setTab(t)}>
               {t.charAt(0).toUpperCase() + t.slice(1)}
               {t === 'users' && pending.length > 0 && <span className="admin-tab-dot" />}
+              {t === 'disputes' && openDisputes.length > 0 && <span className="admin-tab-dot" />}
             </button>
           ))}
         </div>
@@ -173,6 +198,65 @@ export default function Admin() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* ── Disputes ── */}
+        {tab === 'disputes' && (
+          <div className="admin-table-wrap">
+            {openDisputes.length === 0 && disputes.filter(d => d.status === 'RESOLVED').length === 0 && (
+              <p className="admin-section-label">No disputes submitted yet.</p>
+            )}
+            {openDisputes.length > 0 && (
+              <>
+                <p className="admin-section-label">⚠️ Open disputes ({openDisputes.length})</p>
+                {openDisputes.map(d => (
+                  <div key={d.id} className="admin-dispute-row">
+                    <div className="admin-dispute-header">
+                      <span className={`admin-dispute-type admin-dispute-type--${(d.type || 'other').toLowerCase()}`}>{d.type || 'OTHER'}</span>
+                      <span className="admin-dispute-date">{d.createdAt ? new Date(d.createdAt).toLocaleDateString() : ''}</span>
+                    </div>
+                    <p className="admin-dispute-desc">{d.description}</p>
+                    <div className="admin-dispute-meta">
+                      <span>Buyer: {d.buyerName || d.buyerId}</span>
+                      <span>Farmer: {d.farmerName || d.farmerId}</span>
+                      {d.listingId && <span>Listing #{d.listingId}</span>}
+                    </div>
+                    <div className="admin-resolve-form">
+                      <textarea
+                        className="admin-resolve-textarea"
+                        placeholder="Enter resolution notes…"
+                        rows={2}
+                        value={resolutionText[d.id] || ''}
+                        onChange={e => setResolutionText(prev => ({ ...prev, [d.id]: e.target.value }))}
+                      />
+                      <button
+                        className="admin-approve-btn"
+                        disabled={loading || !(resolutionText[d.id] || '').trim()}
+                        onClick={() => resolveDispute(d.id)}
+                      >
+                        Mark Resolved
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+            {disputes.filter(d => d.status === 'RESOLVED').length > 0 && (
+              <>
+                <p className="admin-section-label" style={{ marginTop: '20px' }}>Resolved disputes</p>
+                {disputes.filter(d => d.status === 'RESOLVED').map(d => (
+                  <div key={d.id} className="admin-dispute-row admin-dispute-row--resolved">
+                    <div className="admin-dispute-header">
+                      <span className={`admin-dispute-type admin-dispute-type--${(d.type || 'other').toLowerCase()}`}>{d.type || 'OTHER'}</span>
+                      <span className="admin-resolved-badge">✓ Resolved</span>
+                    </div>
+                    <p className="admin-dispute-desc">{d.description}</p>
+                    {d.resolution && <p className="admin-dispute-resolution">“{d.resolution}”</p>}
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         )}
 

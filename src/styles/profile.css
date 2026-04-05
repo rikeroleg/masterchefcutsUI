@@ -281,6 +281,18 @@
   flex-shrink: 0;
 }
 
+.profile-stat--pending span {
+  color: #7a3a00;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+  background: rgba(255,180,0,0.25);
+  border: 1px solid rgba(180,100,0,0.3);
+  border-radius: 20px;
+  padding: 3px 10px;
+}
+
 /* â”€â”€ Section â”€â”€ */
 .profile-section {
   background:
@@ -591,6 +603,141 @@
   color: #27ae60;
   font-weight: 600;
 }
+
+/* ── Dispute button ── */
+.profile-dispute-btn {
+  margin-top: 10px;
+  background: none;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: rgba(20,6,0,0.5);
+  cursor: pointer;
+  transition: all 0.15s;
+  width: fit-content;
+}
+.profile-dispute-btn:hover { background: rgba(139,0,0,0.08); border-color: rgba(139,0,0,0.3); color: #8b0000; }
+
+/* ── Farmer listing actions ── */
+.profile-listing-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.profile-listing-edit-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(0,0,0,0.22);
+  background: rgba(0,0,0,0.1);
+  color: rgba(20,6,0,0.65);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.profile-listing-edit-btn:hover { background: rgba(0,0,0,0.18); color: #1e0800; }
+
+.profile-listing-close-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(139,0,0,0.3);
+  background: rgba(139,0,0,0.07);
+  color: #8b1a00;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.profile-listing-close-btn:hover { background: rgba(139,0,0,0.14); }
+
+.profile-listing-sec-btn {
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(0,0,0,0.22);
+  background: rgba(0,0,0,0.1);
+  color: rgba(20,6,0,0.65);
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.profile-listing-sec-btn:hover { background: rgba(0,0,0,0.18); }
+
+.profile-listing-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0,0,0,0.15);
+  margin-top: 4px;
+}
+
+.profile-listing-edit-row { display: grid; grid-template-columns: 1fr; gap: 8px; }
+
+/* ── Danger zone ── */
+.profile-danger-zone { border-color: rgba(139,0,0,0.35) !important; }
+
+.profile-pw-section {}
+
+.profile-pw-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-danger-desc {
+  font-size: 0.82rem;
+  color: rgba(20,6,0,0.5);
+  margin: 0 0 16px;
+}
+
+.profile-delete-btn {
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(139,0,0,0.35);
+  background: rgba(139,0,0,0.08);
+  color: #8b1a00;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.profile-delete-btn:hover { background: rgba(139,0,0,0.15); }
+
+.profile-delete-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.profile-delete-confirm p {
+  font-size: 0.85rem;
+  color: rgba(20,6,0,0.65);
+  margin: 0;
+}
+
+.profile-delete-confirm-btn {
+  padding: 8px 20px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(170deg, #8b0000 0%, #c0392b 100%);
+  color: #fff;
+  font-size: 0.84rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.profile-delete-confirm-btn:hover:not(:disabled) { filter: brightness(1.1); }
+.profile-delete-confirm-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* â”€â”€ Responsive â”€â”€ */
 @media (max-width: 600px) {

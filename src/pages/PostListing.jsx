@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import { api } from '../api/client'
 
 const ANIMAL_TYPES = [
@@ -40,6 +41,7 @@ const PRIMAL_CUTS = {
 
 export default function PostListing() {
   const { user } = useAuth()
+  const { toast } = useToast()
   const navigate = useNavigate()
 
   const [form, setForm] = useState({
@@ -100,10 +102,12 @@ export default function PostListing() {
           const fd = new FormData()
           fd.append('file', photoFile)
           await api.upload(`/api/listings/${created.id}/photo`, fd)
-        } catch { /* best effort — listing still created */ }
+        } catch (_) {}
       }
       setSubmitted(true)
+      toast.success('Listing posted successfully!')
     } catch (err) {
+      toast.error(err.message || 'Failed to post listing.')
       setError(err.message)
     } finally {
       setLoading(false)
@@ -116,6 +120,19 @@ export default function PostListing() {
         <div className="post-unauth">
           <p>You need a Farmer / Butcher account to post a listing.</p>
           <Link to="/login" className="hp-btn-primary">Sign In →</Link>
+        </div>
+      </div>
+    )
+  }
+
+  if (user.approved === false) {
+    return (
+      <div className="post-page">
+        <div className="post-unauth" style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>⏳</div>
+          <h2 style={{ color: '#f5c97a', marginBottom: '8px' }}>Pending Admin Approval</h2>
+          <p style={{ opacity: 0.75, marginBottom: '20px' }}>Your farmer account is waiting for admin review. You&apos;ll be able to post listings once approved.</p>
+          <Link to="/profile" className="hp-btn-primary">← Back to Profile</Link>
         </div>
       </div>
     )

@@ -9,7 +9,16 @@ const CartContext = createContext({
 export const cartBridge = { addToCart: noop }
 
 export function CartProvider({ children }) {
-  const [items, setItems] = useState([])
+  const [items, setItems] = useState(() => {
+    try {
+      const stored = localStorage.getItem('mc_cart')
+      return stored ? JSON.parse(stored) : []
+    } catch (_) { return [] }
+  })
+
+  React.useEffect(() => {
+    try { localStorage.setItem('mc_cart', JSON.stringify(items)) } catch (_) {}
+  }, [items])
 
   function addToCart({ animal, cutId, name, color, price, qty }) {
     const id = `${animal}-${cutId}`

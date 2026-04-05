@@ -36,7 +36,10 @@ export default function Cart() {
           <ShoppingCart size={64} color="rgba(255,255,255,0.12)" />
           <h2 className="cart-empty-title">Your cart is empty</h2>
           <p className="cart-empty-sub">Browse our premium cuts and add them to your order.</p>
-          <Link to="/" className="cart-browse-btn">&#8592; Browse Cuts</Link>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link to="/listings" className="cart-browse-btn">&#8592; Browse Listings</Link>
+            <Link to="/shop" className="cart-browse-btn">Browse Shop →</Link>
+          </div>
         </div>
       </div>
     )

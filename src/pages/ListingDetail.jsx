@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import PaymentModal from '../components/PaymentModal'
 import '../styles/payment-modal.css'
 import '../styles/listing-detail.css'
@@ -34,6 +35,7 @@ export default function ListingDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { toast } = useToast()
 
   const [listing,   setListing]   = useState(null)
   const [reviews,   setReviews]   = useState([])
@@ -64,13 +66,14 @@ export default function ListingDetail() {
       setConfirmed({ cut: payingCut, listing: updated })
       setPayingCut(null)
     } catch (err) {
-      setError(err.message)
+      toast.error(err.message || 'Failed to claim cut.')
       setPayingCut(null)
     }
   }
 
   function handleCutClick(cut) {
     if (!user) { navigate('/login'); return }
+    if (user.role === 'farmer') return
     setPayingCut(cut)
   }
 
@@ -79,7 +82,7 @@ export default function ListingDetail() {
   if (!listing) return null
 
   const meta      = ANIMAL_META[listing.animalType] || { emoji: '🥩', label: listing.animalType }
-  const status    = STATUS_META[listing.status] || { color: '#ccc', label: listing.status }
+  const status    = STATUS_META[listing.status] || { color: '#ccc', label: (listing.status || '').replace(/_/g, ' ') }
   const available = listing.cuts.filter(c => !c.claimed).length
   const claimed   = listing.cuts.filter(c => c.claimed).length
   const pct       = listing.totalCuts > 0 ? Math.round((claimed / listing.totalCuts) * 100) : 0
@@ -94,6 +97,9 @@ export default function ListingDetail() {
           <p>You claimed the <strong>{confirmed.cut.label}</strong> cut from <strong>{confirmed.listing.farmerShopName || confirmed.listing.farmerName}</strong>.</p>
           {confirmed.listing.processingDate && (
             <p className="ld-confirm-date">🗓 Processing date: <strong>{new Date(confirmed.listing.processingDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</strong></p>
+          )}
+          {!confirmed.listing.processingDate && (
+            <p className="ld-confirm-sub" style={{ marginBottom: 0 }}>⏳ The farmer will set a processing date soon — check your profile for updates.</p>
           )}
           <p className="ld-confirm-farm">📍 {confirmed.listing.sourceFarm} · ZIP {confirmed.listing.zipCode}</p>
           <p className="ld-confirm-sub">A confirmation email has been sent to you. Check your profile for claim details.</p>
@@ -123,7 +129,12 @@ export default function ListingDetail() {
             <div className="ld-emoji">{meta.emoji}</div>
             <div>
               <h1 className="ld-title">{listing.breed} {meta.label}</h1>
-              <p className="ld-farm">{listing.farmerShopName || listing.farmerName} · {listing.sourceFarm}</p>
+              <p className="ld-farm">
+                <Link to={`/farmer/${listing.farmerId}`} className="ld-farm-link">
+                  {listing.farmerShopName || listing.farmerName}
+                </Link>
+                {' · '}{listing.sourceFarm}
+              </p>
               <p className="ld-location">📍 ZIP {listing.zipCode}</p>
             </div>
           </div>
@@ -185,10 +196,12 @@ export default function ListingDetail() {
                 <div className="ld-cut-label">{c.label}</div>
                 {c.claimed ? (
                   <span className="ld-cut-status ld-cut-status--claimed">✓ Claimed</span>
-                ) : listing.status === 'ACTIVE' ? (
+                ) : listing.status === 'ACTIVE' && user?.role !== 'farmer' ? (
                   <button className="ld-cut-claim-btn" onClick={() => handleCutClick(c)}>
                     Claim →
                   </button>
+                ) : listing.status === 'ACTIVE' && user?.role === 'farmer' ? (
+                  <span className="ld-cut-status ld-cut-status--closed">Farmer account</span>
                 ) : (
                   <span className="ld-cut-status ld-cut-status--closed">Unavailable</span>
                 )}

@@ -271,3 +271,110 @@
 }
 .admin-delete-btn:hover:not(:disabled) { background: rgba(120,21,0,0.12); color: #7c1a1a; }
 .admin-approve-btn:disabled, .admin-reject-btn:disabled, .admin-delete-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── Disputes ── */
+.admin-badge--dispute {
+  background: rgba(180,60,0,0.18);
+  color: #8a2a00;
+  border-color: rgba(180,60,0,0.35);
+}
+
+.admin-dispute-row {
+  background:
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  filter: drop-shadow(2px 3px 0px rgba(35,12,0,0.5));
+}
+
+.admin-dispute-row--resolved {
+  opacity: 0.65;
+}
+
+.admin-dispute-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-dispute-type {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(0,0,0,0.15);
+}
+.admin-dispute-type--quality  { background: rgba(39,174,96,0.2);  color: #145a32; }
+.admin-dispute-type--no_show  { background: rgba(231,76,60,0.2);  color: #7b241c; }
+.admin-dispute-type--weight   { background: rgba(52,152,219,0.2); color: #1a5276; }
+.admin-dispute-type--billing  { background: rgba(155,89,182,0.2); color: #4a235a; }
+.admin-dispute-type--other    { background: rgba(0,0,0,0.12);     color: #3d2b00; }
+
+.admin-dispute-date {
+  font-size: 0.72rem;
+  color: rgba(35,12,0,0.55);
+  margin-left: auto;
+}
+
+.admin-dispute-desc {
+  font-size: 0.85rem;
+  color: rgba(20,6,0,0.8);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.admin-dispute-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 0.72rem;
+  color: rgba(35,12,0,0.55);
+  flex-wrap: wrap;
+}
+
+.admin-dispute-resolution {
+  font-size: 0.8rem;
+  color: rgba(20,40,0,0.7);
+  font-style: italic;
+  margin: 0;
+  padding: 6px 10px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 6px;
+}
+
+.admin-resolve-form {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.admin-resolve-textarea {
+  flex: 1;
+  background: rgba(255,255,255,0.45);
+  border: 1px solid rgba(58,31,7,0.35);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+  font-family: inherit;
+  color: rgba(20,6,0,0.9);
+  resize: none;
+}
+.admin-resolve-textarea:focus { outline: none; border-color: rgba(58,31,7,0.7); }
+
+.admin-resolved-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #145a32;
+  background: rgba(39,174,96,0.2);
+  border: 1px solid rgba(39,174,96,0.35);
+  border-radius: 20px;
+  padding: 3px 10px;
+}

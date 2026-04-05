@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import PaymentModal from '../components/PaymentModal'
 import '../styles/payment-modal.css'
 
@@ -143,7 +144,12 @@ function ListingCard({ listing, onClaimed }) {
         <div className="lc-animal-badge">{meta.emoji}</div>
         <div className="lc-meta">
           <div className="lc-title">{listing.breed} {meta.label}</div>
-          <div className="lc-farm">{listing.farmerShopName || listing.farmerName} &middot; {listing.zipCode}</div>
+          <div className="lc-farm">
+            <Link to={`/farmer/${listing.farmerId}`} className="lc-farm-link">
+              {listing.farmerShopName || listing.farmerName}
+            </Link>
+            &middot; {listing.zipCode}
+          </div>
         </div>
         <div className="lc-price-block">
           <span className="lc-price">${listing.pricePerLb.toFixed(2)}<small>/lb</small></span>
@@ -168,9 +174,13 @@ function ListingCard({ listing, onClaimed }) {
         <div className="lc-footer-actions">
           <Link to={`/listings/${listing.id}`} className="lc-details-link">Details →</Link>
           {available > 0 ? (
-            <button className="lc-claim-btn" onClick={() => { setExpanded(e => !e); setClaimError('') }}>
-              {expanded ? 'Close' : `Claim a cut (${available} open)`}
-            </button>
+            user?.role === 'farmer' ? (
+              <span className="lc-full-badge" style={{ color: 'rgba(20,6,0,0.45)' }}>Farmer accounts cannot claim</span>
+            ) : (
+              <button className="lc-claim-btn" onClick={() => { setExpanded(e => !e); setClaimError('') }}>
+                {expanded ? 'Close' : `Claim a cut (${available} open)`}
+              </button>
+            )
           ) : (
             <>
               <span className="lc-full-badge">Pool Full</span>
@@ -218,27 +228,44 @@ function ListingCard({ listing, onClaimed }) {
 
 export default function Listings() {
   const { user }                = useAuth()
-  const [filter, setFilter]     = useState('All')
-  const [zip, setZip]           = useState(user?.zipCode || '')
-  const [zipInput, setZipInput] = useState(user?.zipCode || '')
-  const [listings, setListings] = useState([])
-  const [loading, setLoading]   = useState(true)
-  const [error, setError]       = useState('')
+  const { toast }               = useToast()
+  const [filter, setFilter]         = useState('All')
+  const [zip, setZip]               = useState(user?.zipCode || '')
+  const [zipInput, setZipInput]     = useState(user?.zipCode || '')
+  const [listings, setListings]     = useState([])
+  const [loading, setLoading]       = useState(true)
+  const [error, setError]           = useState('')
+  const [page, setPage]             = useState(0)
+  const [hasMore, setHasMore]       = useState(true)
+  const [priceMin, setPriceMin]     = useState('')
+  const [priceMax, setPriceMax]     = useState('')
+  const [breedFilter, setBreedFilter] = useState('')
+  const [sortBy, setSortBy]         = useState('newest')
+  const [moreFilters, setMoreFilters] = useState(false)
 
-  useEffect(() => { fetchListings() }, [filter, zip])
+  useEffect(() => { fetchListings(true) }, [filter, zip])
 
-  async function fetchListings() {
+  async function fetchListings(reset = true) {
+    const nextPage = reset ? 0 : page + 1
     setLoading(true)
     setError('')
     try {
       const params = new URLSearchParams()
       if (filter !== 'All') params.set('animal', filter.toUpperCase())
       if (zip)              params.set('zip', zip)
-      const query = params.toString()
-      const data  = await api.get(`/api/listings${query ? `?${query}` : ''}`)
-      setListings(data)
+      params.set('page', String(nextPage))
+      params.set('size', '12')
+      const data  = await api.get(`/api/listings?${params.toString()}`)
+      if (reset) {
+        setListings(data)
+      } else {
+        setListings(prev => [...prev, ...data])
+      }
+      setPage(nextPage)
+      setHasMore(data.length === 12)
     } catch (err) {
       setError(err.message)
+      toast.error(err.message || 'Failed to load listings.')
     } finally {
       setLoading(false)
     }
@@ -248,6 +275,19 @@ export default function Listings() {
     e.preventDefault()
     setZip(zipInput.trim())
   }
+
+  const visible = listings
+    .filter(l => {
+      if (priceMin && l.pricePerLb < parseFloat(priceMin)) return false
+      if (priceMax && l.pricePerLb > parseFloat(priceMax)) return false
+      if (breedFilter && !(l.breed || '').toLowerCase().includes(breedFilter.toLowerCase())) return false
+      return true
+    })
+    .sort((a, b) => {
+      if (sortBy === 'price-asc')  return a.pricePerLb - b.pricePerLb
+      if (sortBy === 'price-desc') return b.pricePerLb - a.pricePerLb
+      return new Date(b.postedAt) - new Date(a.postedAt)
+    })
 
   return (
     <div className="listings-page">
@@ -285,8 +325,50 @@ export default function Listings() {
                   {f === 'Beef' ? '🐄 ' : f === 'Pork' ? '🐷 ' : f === 'Lamb' ? '🐑 ' : ''}{f}
                 </button>
               ))}
+              <button
+                className={`listings-filter-btn${moreFilters ? ' active' : ''}`}
+                onClick={() => setMoreFilters(p => !p)}
+              >
+                ⋯ Filters{(priceMin || priceMax || breedFilter || sortBy !== 'newest') ? ' •' : ''}
+              </button>
             </div>
           </div>
+          {moreFilters && (
+            <div className="listings-more-filters">
+              <div className="listings-filter-group">
+                <label className="listings-filter-label">Min price/lb ($)</label>
+                <input className="listings-filter-input" type="number" min="0" step="0.01"
+                  placeholder="0.00" value={priceMin}
+                  onChange={e => setPriceMin(e.target.value)} />
+              </div>
+              <div className="listings-filter-group">
+                <label className="listings-filter-label">Max price/lb ($)</label>
+                <input className="listings-filter-input" type="number" min="0" step="0.01"
+                  placeholder="Any" value={priceMax}
+                  onChange={e => setPriceMax(e.target.value)} />
+              </div>
+              <div className="listings-filter-group">
+                <label className="listings-filter-label">Breed</label>
+                <input className="listings-filter-input" type="text"
+                  placeholder="e.g. Angus" value={breedFilter}
+                  onChange={e => setBreedFilter(e.target.value)} />
+              </div>
+              <div className="listings-filter-group">
+                <label className="listings-filter-label">Sort by</label>
+                <select className="listings-sort-select" value={sortBy} onChange={e => setSortBy(e.target.value)}>
+                  <option value="newest">Newest first</option>
+                  <option value="price-asc">Price: low to high</option>
+                  <option value="price-desc">Price: high to low</option>
+                </select>
+              </div>
+              {(priceMin || priceMax || breedFilter || sortBy !== 'newest') && (
+                <button className="listings-filter-clear"
+                  onClick={() => { setPriceMin(''); setPriceMax(''); setBreedFilter(''); setSortBy('newest') }}>
+                  Clear filters
+                </button>
+              )}
+            </div>
+          )}
         </div>
         {zip && <p className="listings-zip-label">📍 Showing listings near <strong>{zip}</strong></p>}
 
@@ -294,13 +376,24 @@ export default function Listings() {
         {error   && <p className="listings-error">{error}</p>}
 
         <div className="listings-grid">
-          {!loading && listings.map(l => (
-            <ListingCard key={l.id} listing={l} onClaimed={fetchListings} />
+          {!loading && visible.map(l => (
+            <ListingCard key={l.id} listing={l} onClaimed={() => fetchListings(true)} />
           ))}
-          {!loading && !error && listings.length === 0 && (
+          {!loading && !error && visible.length === 0 && (
             <p className="listings-empty">No listings found. Check back soon.</p>
           )}
         </div>
+
+        {hasMore && !loading && !error && visible.length > 0 && (
+          <div style={{ textAlign: 'center', marginTop: '28px' }}>
+            <button className="listings-load-more" onClick={() => fetchListings(false)}>
+              Load More Listings
+            </button>
+          </div>
+        )}
+        {loading && listings.length > 0 && (
+          <p className="listings-loading" style={{ textAlign: 'center', marginTop: '16px' }}>Loading more…</p>
+        )}
 
       </div>
     </div>

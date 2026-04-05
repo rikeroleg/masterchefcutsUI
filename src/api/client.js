@@ -18,6 +18,13 @@ async function request(method, path, body) {
   const text = await res.text()
   const data = text ? JSON.parse(text) : null
 
+  if (res.status === 401) {
+    localStorage.removeItem('mc_token')
+    localStorage.removeItem('mc_user')
+    window.location.href = '/login'
+    return null
+  }
+
   if (!res.ok) {
     const message = data?.error || data?.message || `Request failed (${res.status})`
     throw new Error(message)
