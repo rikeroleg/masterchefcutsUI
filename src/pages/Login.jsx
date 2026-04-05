@@ -11,6 +11,7 @@ export default function Login() {
   const [tab, setTab]       = useState('signin')
   const [error, setError]   = useState('')
   const [loading, setLoad]  = useState(false)
+  const [verified, setVerified] = useState(false)
   const { login, register } = useAuth()
   const navigate            = useNavigate()
 
@@ -27,8 +28,9 @@ export default function Login() {
     setLoad(true)
     const res = await login({ email: signin.email, password: signin.password })
     setLoad(false)
-    if (res.error) setError(res.error)
-    else navigate('/profile')
+    if (res.error) {
+      setError(res.error)
+    } else navigate('/profile')
   }
 
   async function handleSignup(e) {

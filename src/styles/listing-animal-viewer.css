@@ -4,10 +4,9 @@
   width: 100%;
   border-radius: 14px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(8, 8, 18, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid #3a1f07;
+  background: rgba(15, 7, 2, 0.72);
+  filter: drop-shadow(2px 4px 0px rgba(35,12,0,0.6));
   margin-bottom: 24px;
 }
 
@@ -23,7 +22,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 200, 140, 0.55);
   font-size: 0.85rem;
   letter-spacing: 0.04em;
 }
@@ -33,7 +32,11 @@
   flex-wrap: wrap;
   gap: 8px 16px;
   padding: 12px 16px 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 2px solid #3a1f07;
+  background:
+    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px),
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
 }
 
 .lav-item {
@@ -51,12 +54,12 @@
 }
 
 .lav-name {
-  color: rgba(255, 255, 255, 0.75);
+  color: #1e0800;
   font-weight: 500;
 }
 
 .lav-item--claimed .lav-name {
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(20,6,0,0.4);
   text-decoration: line-through;
 }
 
@@ -70,13 +73,13 @@
 }
 
 .lav-tag--avail {
-  background: rgba(39, 174, 96, 0.18);
-  color: #27ae60;
+  background: rgba(0,60,0,0.14);
+  color: #1a5c2a;
 }
 
 .lav-tag--claimed {
-  background: rgba(255, 255, 255, 0.07);
-  color: rgba(255, 255, 255, 0.3);
+  background: rgba(0,0,0,0.12);
+  color: rgba(20,6,0,0.45);
 }
 
 @media (max-width: 600px) {

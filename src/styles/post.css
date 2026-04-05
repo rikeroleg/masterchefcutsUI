@@ -38,9 +38,13 @@
 }
 
 .post-form {
-  background: rgba(10,10,20,0.82);
-  border: 1px solid rgba(255,255,255,0.18);
+  background:
+    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px),
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
   border-radius: 16px;
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
   padding: 28px;
   display: flex;
   flex-direction: column;
@@ -49,9 +53,13 @@
 
 /* Success state */
 .post-success {
-  background: rgba(39,174,96,0.08);
-  border: 1px solid rgba(39,174,96,0.25);
+  background:
+    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px),
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
   border-radius: 16px;
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
   padding: 48px 32px;
   text-align: center;
   display: flex;
@@ -64,17 +72,17 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: rgba(39,174,96,0.2);
-  border: 2px solid #27ae60;
+  background: rgba(0,0,0,0.12);
+  border: 2px solid rgba(0,0,0,0.28);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.6rem;
-  color: #27ae60;
+  color: #1e0800;
 }
 
-.post-success h2 { margin: 0; font-size: 1.4rem; color: #fff; }
-.post-success p  { margin: 0; font-size: 0.9rem; color: rgba(255,255,255,0.75); }
+.post-success h2 { margin: 0; font-size: 1.4rem; color: #1e0800; }
+.post-success p  { margin: 0; font-size: 0.9rem; color: rgba(20,6,0,0.65); }
 
 .post-success-actions {
   display: flex;

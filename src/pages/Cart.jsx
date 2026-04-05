@@ -1,24 +1,43 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ShoppingCart, Trash2, ArrowLeft, Package } from 'lucide-react'
 import { useCart } from '../context/CartContext'
+import CartPaymentModal from '../components/CartPaymentModal'
+import '../styles/cart.css'
 
 const ANIMAL_INFO = {
-  beef: { label: 'Beef', emoji: '🐄' },
-  pork: { label: 'Pork', emoji: '🐷' },
-  lamb: { label: 'Lamb', emoji: '🐑' },
+  beef: { label: 'Beef',  emoji: '\uD83D\uDC04' },
+  pork: { label: 'Pork',  emoji: '\uD83D\uDC37' },
+  lamb: { label: 'Lamb',  emoji: '\uD83D\uDC11' },
 }
 
 export default function Cart() {
   const { items, removeFromCart, updateQty, totalPrice, clearCart } = useCart()
+  const [paying, setPaying]     = useState(false)
+  const [confirmed, setConfirmed] = useState(false)
+
+  if (confirmed) {
+    return (
+      <div className="cart-page">
+        <div className="cart-confirmed">
+          <div className="cart-confirmed-icon">&#10003;</div>
+          <h2>Order placed!</h2>
+          <p>Your payment was processed successfully. We&apos;ll be in touch shortly to coordinate delivery.</p>
+          <Link to="/" className="cart-browse-btn">&#8592; Continue Shopping</Link>
+        </div>
+      </div>
+    )
+  }
 
   if (items.length === 0) {
     return (
-      <div className="cart-empty">
-        <ShoppingCart size={64} color="rgba(255,255,255,0.12)" />
-        <h2 className="cart-empty-title">Your cart is empty</h2>
-        <p className="cart-empty-sub">Browse our premium cuts and add them to your order.</p>
-        <Link to="/" className="cart-browse-btn">← Browse Cuts</Link>
+      <div className="cart-page">
+        <div className="cart-empty">
+          <ShoppingCart size={64} color="rgba(255,255,255,0.12)" />
+          <h2 className="cart-empty-title">Your cart is empty</h2>
+          <p className="cart-empty-sub">Browse our premium cuts and add them to your order.</p>
+          <Link to="/" className="cart-browse-btn">&#8592; Browse Cuts</Link>
+        </div>
       </div>
     )
   }
@@ -27,7 +46,7 @@ export default function Cart() {
     <div className="cart-page">
       <div className="cart-container">
 
-        {/* Left — items list */}
+        {/* Left - items list */}
         <div className="cart-items-col">
           <div className="cart-heading-row">
             <h1 className="cart-title">
@@ -39,7 +58,7 @@ export default function Cart() {
 
           <div className="cart-items">
             {items.map((item) => {
-              const animal = ANIMAL_INFO[item.animal] ?? { label: item.animal, emoji: '🥩' }
+              const animal  = ANIMAL_INFO[item.animal] ?? { label: item.animal, emoji: '\uD83E\uDD69' }
               const subtotal = item.price * item.qty
               return (
                 <div key={item.id} className="cart-item">
@@ -61,7 +80,7 @@ export default function Cart() {
                     </div>
                     <div className="cart-item-bottom">
                       <div className="cart-item-qty">
-                        <button className="cart-qty-btn" onClick={() => updateQty(item.id, item.qty - 1)}>−</button>
+                        <button className="cart-qty-btn" onClick={() => updateQty(item.id, item.qty - 1)}>&#8722;</button>
                         <span className="cart-qty-val">{item.qty}</span>
                         <button className="cart-qty-btn" onClick={() => updateQty(item.id, item.qty + 1)}>+</button>
                       </div>
@@ -84,7 +103,7 @@ export default function Cart() {
           </div>
         </div>
 
-        {/* Right — order summary */}
+        {/* Right - order summary */}
         <div className="cart-summary-col">
           <div className="cart-summary">
             <h2 className="cart-summary-title">
@@ -96,7 +115,7 @@ export default function Cart() {
               {items.map((item) => (
                 <div key={item.id} className="cart-summary-line">
                   <span className="cart-summary-name">
-                    <span style={{ color: item.color }}>●</span> {item.name} × {item.qty}
+                    <span style={{ color: item.color }}>&#9679;</span> {item.name} &times; {item.qty}
                   </span>
                   <span className="cart-summary-val">${(item.price * item.qty).toLocaleString()}</span>
                 </div>
@@ -110,13 +129,22 @@ export default function Cart() {
               <span className="cart-summary-total-val">${totalPrice.toLocaleString()}</span>
             </div>
 
-            <button className="cart-checkout-btn">
-              Place Order — ${totalPrice.toLocaleString()}
+            <button className="cart-checkout-btn" onClick={() => setPaying(true)}>
+              Place Order &#8212; ${totalPrice.toLocaleString()}
             </button>
           </div>
         </div>
 
       </div>
+
+      {paying && (
+        <CartPaymentModal
+          items={items}
+          totalPrice={totalPrice}
+          onSuccess={() => { clearCart(); setPaying(false); setConfirmed(true) }}
+          onClose={() => setPaying(false)}
+        />
+      )}
     </div>
   )
 }

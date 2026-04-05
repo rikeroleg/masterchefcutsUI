@@ -14,9 +14,9 @@
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(ellipse at center, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.65) 60%, rgba(0,0,0,0.92) 100%),
+    radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.55) 65%, rgba(0,0,0,0.88) 100%),
     url('/farm.png') center center / cover no-repeat;
-  filter: blur(6px);
+  filter: blur(8px);
   transform: scale(1.05);
 }
 
@@ -150,16 +150,20 @@
    LISTING CARD
 ════════════════════════════════ */
 .lc {
-  background: rgba(12,12,20,0.88);
-  border: 1.5px solid rgba(255,255,255,0.09);
+  background:
+    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px),
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
   border-radius: 20px;
   overflow: hidden;
-  backdrop-filter: blur(20px);
-  transition: border-color 0.2s;
+  transition: filter 0.2s;
+  color: #1e0800;
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
 }
 
-.lc:hover { border-color: rgba(255,255,255,0.18); }
-.lc--expanded { border-color: rgba(231,76,60,0.35); }
+.lc:hover { filter: drop-shadow(4px 7px 0px rgba(35,12,0,0.9)) brightness(1.03); }
+.lc--expanded { border-color: #2a0e00; }
 
 /* Card header */
 .lc-header {
@@ -174,7 +178,7 @@
   width: 52px;
   height: 52px;
   border-radius: 14px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.15);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -186,7 +190,7 @@
 .lc-title {
   font-size: 1.05rem;
   font-weight: 800;
-  color: #fff;
+  color: #1e0800;
   margin-bottom: 3px;
   white-space: nowrap;
   overflow: hidden;
@@ -195,7 +199,7 @@
 
 .lc-farm {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.38);
+  color: rgba(20,6,0,0.55);
 }
 
 .lc-price-block {
@@ -207,23 +211,23 @@
   display: block;
   font-size: 1.25rem;
   font-weight: 900;
-  color: #fff;
+  color: #1e0800;
   letter-spacing: -0.02em;
 }
 
-.lc-price small { font-size: 0.65rem; font-weight: 400; color: rgba(255,255,255,0.4); }
+.lc-price small { font-size: 0.65rem; font-weight: 400; color: rgba(20,6,0,0.5); }
 
 .lc-weight {
   display: block;
   font-size: 0.72rem;
-  color: rgba(255,255,255,0.35);
+  color: rgba(20,6,0,0.5);
   margin-top: 2px;
 }
 
 /* Description */
 .lc-desc {
   font-size: 0.82rem;
-  color: rgba(255,255,255,0.38);
+  color: rgba(20,6,0,0.62);
   line-height: 1.6;
   margin: 0 22px 0;
   padding-bottom: 14px;
@@ -232,14 +236,14 @@
 /* Processing date badge */
 .lc-processing-date {
   font-size: 0.8rem;
-  color: rgba(255,255,255,0.55);
-  background: rgba(52,152,219,0.10);
-  border: 1px solid rgba(52,152,219,0.2);
+  color: rgba(20,6,0,0.75);
+  background: rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.2);
   border-radius: 8px;
   padding: 7px 14px;
   margin: 0 22px 10px;
 }
-.lc-processing-date strong { color: #3498db; }
+.lc-processing-date strong { color: #4a1a00; }
 
 /* Footer */
 .lc-footer {
@@ -252,27 +256,25 @@
 
 .lc-posted {
   font-size: 0.72rem;
-  color: rgba(255,255,255,0.28);
+  color: rgba(20,6,0,0.45);
 }
 
 .lc-claim-btn {
   padding: 9px 20px;
   border-radius: 50px;
-  border: 1.5px solid rgba(231,76,60,0.4);
-  background: rgba(231,76,60,0.12);
-  color: #e74c3c;
+  border: 1.5px solid #4a0e00;
+  background: linear-gradient(170deg, #8b1a00 0%, #a82800 50%, #781500 100%);
+  color: #fde8c0;
   font-size: 0.82rem;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: filter 0.15s;
   white-space: nowrap;
 }
 
 .lc-claim-btn:hover {
-  background: rgba(231,76,60,0.22);
-  border-color: rgba(231,76,60,0.7);
-  color: #ff6b55;
+  filter: brightness(1.15);
 }
 
 .lc-full-badge {
@@ -288,7 +290,7 @@
 
 /* Claim panel */
 .lc-claim-panel {
-  border-top: 1px solid rgba(255,255,255,0.07);
+  border-top: 1px solid rgba(0,0,0,0.2);
   padding: 16px 22px 22px;
 }
 
@@ -297,7 +299,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
+  color: rgba(20,6,0,0.5);
   margin: 0 0 12px;
 }
 
@@ -313,22 +315,22 @@
   gap: 10px;
   padding: 10px 16px;
   border-radius: 12px;
-  border: 1.5px solid rgba(231,76,60,0.25);
-  background: rgba(231,76,60,0.07);
-  color: rgba(255,255,255,0.8);
+  border: 1.5px solid rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.12);
+  color: rgba(20,6,0,0.82);
   font-family: inherit;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .lc-claim-cut-btn:hover {
-  border-color: rgba(231,76,60,0.55);
-  background: rgba(231,76,60,0.16);
-  color: #fff;
+  border-color: rgba(0,0,0,0.32);
+  background: rgba(0,0,0,0.18);
+  color: #1e0800;
 }
 
 .lc-claim-cut-name { font-size: 0.88rem; font-weight: 700; }
-.lc-claim-cut-action { font-size: 0.72rem; color: #e74c3c; font-weight: 600; }
+.lc-claim-cut-action { font-size: 0.72rem; color: #6b2200; font-weight: 600; }
 
 /* ════════════════════════════════
    SHARE PROGRESS BAR
@@ -349,26 +351,26 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.32);
+  color: rgba(20,6,0,0.5);
 }
 
 .spb-count {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.5);
+  color: rgba(20,6,0,0.65);
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.spb-count strong { color: #fff; font-weight: 800; }
+.spb-count strong { color: #1e0800; font-weight: 800; }
 
 .spb-pct {
   font-size: 0.7rem;
   font-weight: 700;
   padding: 2px 8px;
   border-radius: 50px;
-  background: rgba(255,255,255,0.07);
-  color: rgba(255,255,255,0.45);
+  background: rgba(0,0,0,0.12);
+  color: rgba(20,6,0,0.55);
 }
 
 .spb-pct--full {
@@ -388,7 +390,7 @@
 
 .spb-seg {
   border-radius: 2px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.15);
   transition: background 0.2s;
 }
 
@@ -414,17 +416,17 @@
 }
 
 .spb-cut--claimed {
-  background: rgba(231,76,60,0.12);
-  border-color: rgba(231,76,60,0.3);
-  color: rgba(255,255,255,0.45);
+  background: rgba(100,34,0,0.12);
+  border-color: rgba(100,34,0,0.3);
+  color: rgba(20,6,0,0.45);
   text-decoration: line-through;
-  text-decoration-color: rgba(231,76,60,0.4);
+  text-decoration-color: rgba(100,34,0,0.4);
 }
 
 .spb-cut--open {
-  background: rgba(255,255,255,0.04);
-  border-color: rgba(255,255,255,0.14);
-  color: rgba(255,255,255,0.75);
+  background: rgba(0,0,0,0.12);
+  border-color: rgba(0,0,0,0.2);
+  color: rgba(20,6,0,0.78);
 }
 
 /* Legend */
@@ -438,7 +440,7 @@
   align-items: center;
   gap: 5px;
   font-size: 0.68rem;
-  color: rgba(255,255,255,0.3);
+  color: rgba(20,6,0,0.5);
 }
 
 .spb-legend-item span {
@@ -448,8 +450,8 @@
   display: inline-block;
 }
 
-.spb-legend-item--claimed span { background: linear-gradient(90deg, #c0392b, #e74c3c); }
-.spb-legend-item--open    span { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+.spb-legend-item--claimed span { background: linear-gradient(90deg, #6b1a00, #a83200); }
+.spb-legend-item--open    span { background: rgba(0,0,0,0.15); border: 1px solid rgba(0,0,0,0.2); }
 
 /* Footer actions group */
 .lc-footer-actions {
@@ -462,15 +464,15 @@
 .lc-details-link {
   font-size: 0.75rem;
   font-weight: 600;
-  color: rgba(255,255,255,0.4);
+  color: rgba(20,6,0,0.55);
   text-decoration: none;
   padding: 6px 10px;
   border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.10);
+  border: 1px solid rgba(0,0,0,0.18);
   transition: all 0.15s;
   white-space: nowrap;
 }
-.lc-details-link:hover { color: #fff; border-color: rgba(255,255,255,0.25); }
+.lc-details-link:hover { color: #1e0800; border-color: rgba(0,0,0,0.3); }
 
 /* Waitlist button */
 .lc-waitlist-btn {
@@ -506,10 +508,10 @@
   padding: 20px 22px 12px;
 }
 .lc-confirm-check { font-size: 1.6rem; line-height: 1; flex-shrink: 0; }
-.lc-confirm-title { font-size: 1rem; font-weight: 800; color: #fff; margin: 0 0 5px; }
-.lc-confirm-body  { font-size: 0.85rem; color: rgba(255,255,255,0.6); margin: 0 0 4px; line-height: 1.5; }
-.lc-confirm-body strong { color: #fff; }
-.lc-confirm-date  { font-size: 0.78rem; color: #3498db; margin: 0; }
+.lc-confirm-title { font-size: 1rem; font-weight: 800; color: #1e0800; margin: 0 0 5px; }
+.lc-confirm-body  { font-size: 0.85rem; color: rgba(20,6,0,0.72); margin: 0 0 4px; line-height: 1.5; }
+.lc-confirm-body strong { color: #1e0800; }
+.lc-confirm-date  { font-size: 0.78rem; color: #4a1a00; margin: 0; }
 .lc-confirm-actions {
   display: flex;
   align-items: center;
@@ -519,15 +521,15 @@
 .lc-dismiss-btn {
   padding: 6px 12px;
   border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid rgba(0,0,0,0.18);
   background: transparent;
-  color: rgba(255,255,255,0.35);
+  color: rgba(20,6,0,0.48);
   font-size: 0.78rem;
   font-family: inherit;
   cursor: pointer;
   transition: all 0.15s;
 }
-.lc-dismiss-btn:hover { color: #fff; border-color: rgba(255,255,255,0.25); }
+.lc-dismiss-btn:hover { color: #1e0800; border-color: rgba(0,0,0,0.3); }
 
 /* ── Responsive ── */
 @media (max-width: 600px) {

@@ -26,9 +26,9 @@
 }
 
 .admin-badge {
-  background: rgba(231,76,60,0.15);
-  border: 1px solid rgba(231,76,60,0.3);
-  color: #e74c3c;
+  background: rgba(0,0,0,0.13);
+  border: 1px solid rgba(0,0,0,0.25);
+  color: #6b2c00;
   font-size: 0.78rem;
   font-weight: 700;
   border-radius: 50px;
@@ -37,9 +37,9 @@
 
 .admin-error {
   font-size: 0.82rem;
-  color: #e74c3c;
-  background: rgba(231,76,60,0.08);
-  border: 1px solid rgba(231,76,60,0.2);
+  color: #7c1a1a;
+  background: rgba(120,21,0,0.1);
+  border: 1px solid rgba(120,21,0,0.25);
   border-radius: 8px;
   padding: 10px 14px;
   margin: 0;
@@ -49,9 +49,13 @@
 .admin-tabs {
   display: flex;
   gap: 6px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  background:
+    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px),
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
   border-radius: 14px;
+  filter: drop-shadow(2px 3px 0px rgba(35,12,0,0.5));
   padding: 6px;
 }
 
@@ -61,7 +65,7 @@
   border-radius: 10px;
   border: none;
   background: transparent;
-  color: rgba(255,255,255,0.45);
+  color: rgba(20,6,0,0.5);
   font-size: 0.88rem;
   font-weight: 600;
   font-family: inherit;
@@ -74,8 +78,8 @@
   gap: 6px;
 }
 .admin-tab.active {
-  background: rgba(255,255,255,0.08);
-  color: #fff;
+  background: rgba(0,0,0,0.15);
+  color: #1e0800;
 }
 .admin-tab-dot {
   width: 7px;
@@ -92,8 +96,8 @@
 }
 
 .admin-stat-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.13);
+  border: 1px solid rgba(0,0,0,0.22);
   border-radius: 16px;
   padding: 24px 20px;
   display: flex;
@@ -103,22 +107,26 @@
 .admin-stat-card strong {
   font-size: 2rem;
   font-weight: 900;
-  color: #fff;
+  color: #1e0800;
 }
 .admin-stat-card span {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.45);
+  color: rgba(20,6,0,0.5);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
-.admin-stat-card--warn { border-color: rgba(231,76,60,0.3); }
-.admin-stat-card--warn strong { color: #e74c3c; }
+.admin-stat-card--warn { border-color: rgba(120,21,0,0.35); }
+.admin-stat-card--warn strong { color: #7c1a1a; }
 
 /* Tables */
 .admin-table-wrap {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  background:
+    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px),
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
   border-radius: 16px;
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -130,7 +138,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255,255,255,0.35);
+  color: rgba(20,6,0,0.5);
   margin: 0;
 }
 
@@ -139,7 +147,7 @@
   flex-direction: column;
   gap: 10px;
   padding-bottom: 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
+  border-bottom: 1px solid rgba(0,0,0,0.18);
 }
 
 .admin-users-list, .admin-listings-list {
@@ -154,15 +162,15 @@
   justify-content: space-between;
   gap: 12px;
   padding: 12px 14px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.2);
   border-radius: 10px;
   flex-wrap: wrap;
 }
 
 .admin-user-row--pending {
-  border-color: rgba(231,76,60,0.25);
-  background: rgba(231,76,60,0.05);
+  border-color: rgba(120,21,0,0.3);
+  background: rgba(120,21,0,0.08);
 }
 
 .admin-user-info, .admin-listing-info {
@@ -176,15 +184,15 @@
 .admin-user-name, .admin-listing-title {
   font-size: 0.88rem;
   font-weight: 600;
-  color: #fff;
+  color: #1e0800;
 }
 
 .admin-user-email, .admin-listing-meta {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.4);
+  color: rgba(20,6,0,0.5);
 }
 
-.admin-user-shop { font-size: 0.78rem; color: rgba(255,255,255,0.5); font-style: italic; }
+.admin-user-shop { font-size: 0.78rem; color: rgba(20,6,0,0.55); font-style: italic; }
 
 .admin-role-badge {
   font-size: 0.72rem;
@@ -196,16 +204,16 @@
 .admin-pending-badge {
   font-size: 0.72rem;
   font-weight: 700;
-  background: rgba(231,76,60,0.12);
-  color: #e74c3c;
-  border: 1px solid rgba(231,76,60,0.25);
+  background: rgba(120,21,0,0.12);
+  color: #7c1a1a;
+  border: 1px solid rgba(120,21,0,0.28);
   border-radius: 50px;
   padding: 2px 10px;
 }
 
 .admin-listing-status {
   font-size: 0.72rem;
-  color: rgba(255,255,255,0.4);
+  color: rgba(20,6,0,0.45);
 }
 
 .admin-user-actions { display: flex; gap: 8px; }
@@ -213,42 +221,42 @@
 .admin-approve-btn {
   padding: 6px 14px;
   border-radius: 8px;
-  border: 1.5px solid rgba(39,174,96,0.4);
-  background: rgba(39,174,96,0.10);
-  color: #27ae60;
+  border: 1.5px solid rgba(0,80,30,0.4);
+  background: rgba(0,80,30,0.12);
+  color: #1a5c2a;
   font-size: 0.78rem;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
   transition: background 0.15s;
 }
-.admin-approve-btn:hover:not(:disabled) { background: rgba(39,174,96,0.22); }
+.admin-approve-btn:hover:not(:disabled) { background: rgba(0,80,30,0.22); }
 
 .admin-reject-btn {
   padding: 6px 14px;
   border-radius: 8px;
-  border: 1.5px solid rgba(231,76,60,0.3);
-  background: rgba(231,76,60,0.08);
-  color: #e74c3c;
+  border: 1px solid #4a0e00;
+  background: linear-gradient(170deg, #8b1a00 0%, #a82800 50%, #781500 100%);
+  color: #fde8c0;
   font-size: 0.78rem;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
   transition: background 0.15s;
 }
-.admin-reject-btn:hover:not(:disabled) { background: rgba(231,76,60,0.18); }
+.admin-reject-btn:hover:not(:disabled) { background: linear-gradient(170deg, #a82000 0%, #c03000 50%, #961a00 100%); }
 
 .admin-delete-btn {
   padding: 6px 12px;
   border-radius: 8px;
-  border: 1.5px solid rgba(231,76,60,0.3);
+  border: 1.5px solid rgba(120,21,0,0.35);
   background: transparent;
-  color: rgba(231,76,60,0.7);
+  color: rgba(120,21,0,0.75);
   font-size: 0.78rem;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
   transition: all 0.15s;
 }
-.admin-delete-btn:hover:not(:disabled) { background: rgba(231,76,60,0.10); color: #e74c3c; }
+.admin-delete-btn:hover:not(:disabled) { background: rgba(120,21,0,0.12); color: #7c1a1a; }
 .admin-approve-btn:disabled, .admin-reject-btn:disabled, .admin-delete-btn:disabled { opacity: 0.45; cursor: not-allowed; }

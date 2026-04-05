@@ -1,8 +1,39 @@
 /* listing-detail.css */
 
 .ld-page {
+  pointer-events: auto;
+  color: #fff;
   min-height: 100vh;
+  position: relative;
   padding: 40px 0 80px;
+}
+
+.ld-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.55) 65%, rgba(0,0,0,0.88) 100%),
+    url('/farm.png') center center / cover no-repeat;
+  filter: blur(8px);
+  transform: scale(1.05);
+}
+
+/* Hero section */
+.ld-hero-section {
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px 40px;
+  text-align: center;
+  position: relative;
+}
+
+.ld-hero-section-inner {
+  max-width: 760px;
+  margin: 0 auto;
 }
 
 .ld-loading, .ld-error {
@@ -13,6 +44,28 @@
 }
 .ld-error a { color: #f39c12; text-decoration: none; margin-left: 8px; }
 
+/* Content sections */
+.ld-section {
+  padding: 60px 24px;
+}
+
+.ld-section--dark {
+  background:
+    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.07) 10px, rgba(0,0,0,0.07) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.04) 20px, rgba(255,230,160,0.04) 21px),
+    linear-gradient(168deg, #7a3c0e 0%, #8a4a12 25%, #9a5c1a 50%, #8a4a12 75%, #7a3c0e 100%);
+  border-top: 3px solid #3a1f07;
+  border-bottom: 3px solid #3a1f07;
+  color: #1e0800;
+}
+
+.ld-section-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 .ld-inner {
   max-width: 860px;
   margin: 0 auto;
@@ -20,6 +73,20 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+/* Main content wrapper with dark background */
+.ld-content-wrapper {
+  background:
+    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px),
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
+  border-radius: 18px;
+  padding: 32px;
+  margin-top: 24px;
+  color: #1e0800;
+  filter: drop-shadow(3px 6px 0px rgba(35,12,0,0.7));
 }
 
 .ld-back {
@@ -33,8 +100,8 @@
 
 /* Hero */
 .ld-hero {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.15);
+  border: 1px solid rgba(0,0,0,0.25);
   border-radius: 18px;
   padding: 28px;
   display: flex;
@@ -46,14 +113,14 @@
 
 .ld-hero-left { display: flex; align-items: flex-start; gap: 18px; }
 .ld-emoji { font-size: 2.8rem; line-height: 1; }
-.ld-title { font-size: 1.6rem; font-weight: 900; color: #fff; margin: 0 0 6px; letter-spacing: -0.02em; }
-.ld-farm  { font-size: 0.88rem; color: rgba(255,255,255,0.55); margin: 0 0 4px; }
-.ld-location { font-size: 0.78rem; color: rgba(255,255,255,0.35); margin: 0; }
+.ld-title { font-size: 1.6rem; font-weight: 900; color: #1e0800; margin: 0 0 6px; letter-spacing: -0.02em; }
+.ld-farm  { font-size: 0.88rem; color: rgba(20,6,0,0.65); margin: 0 0 4px; }
+.ld-location { font-size: 0.78rem; color: rgba(20,6,0,0.5); margin: 0; }
 
 .ld-hero-right { text-align: right; }
-.ld-price { font-size: 1.8rem; font-weight: 900; color: #f39c12; }
-.ld-price small { font-size: 0.9rem; font-weight: 400; color: rgba(255,255,255,0.4); }
-.ld-weight { font-size: 0.82rem; color: rgba(255,255,255,0.45); margin: 4px 0; }
+.ld-price { font-size: 1.8rem; font-weight: 900; color: #6b2200; }
+.ld-price small { font-size: 0.9rem; font-weight: 400; color: rgba(20,6,0,0.5); }
+.ld-weight { font-size: 0.82rem; color: rgba(20,6,0,0.6); margin: 4px 0; }
 .ld-status { font-size: 0.8rem; font-weight: 600; margin-top: 6px; }
 
 /* Stats */
@@ -61,23 +128,23 @@
   display: flex;
   align-items: center;
   gap: 20px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  padding: 16px 20px;
+  background: rgba(0,0,0,0.15);
+  border: 1px solid rgba(0,0,0,0.22);
   border-radius: 14px;
-  padding: 16px 24px;
   flex-wrap: wrap;
 }
 .ld-stat { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-.ld-stat strong { font-size: 1.1rem; font-weight: 800; color: #fff; }
-.ld-stat span { font-size: 0.72rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.06em; }
-.ld-stat-sep { width: 1px; height: 30px; background: rgba(255,255,255,0.08); }
-.ld-stars { display: flex; align-items: center; gap: 3px; font-size: 1rem; }
+.ld-stat strong { font-size: 1.1rem; font-weight: 800; color: #1e0800; }
+.ld-stat span { font-size: 0.72rem; color: rgba(20,6,0,0.55); text-transform: uppercase; letter-spacing: 0.06em; }
+.ld-stat-sep { width: 1px; height: 30px; background: rgba(0,0,0,0.18); }
+.ld-stars-label { font-size: 0.75rem; color: rgba(20,6,0,0.55); margin-left: 4px; }
 .ld-stars-label { font-size: 0.75rem; color: rgba(255,255,255,0.45); margin-left: 4px; }
 
 /* Progress bar */
 .ld-progress-wrap {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.15);
+  border: 1px solid rgba(0,0,0,0.22);
   border-radius: 14px;
   padding: 18px 24px;
 }
@@ -85,7 +152,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.8rem;
-  color: rgba(255,255,255,0.45);
+  color: rgba(20,6,0,0.6);
   margin-bottom: 10px;
 }
 .ld-progress-track {
@@ -95,37 +162,37 @@
   overflow: hidden;
   gap: 2px;
 }
-.ld-seg { background: rgba(255,255,255,0.1); border-radius: 2px; }
+.ld-seg { background: rgba(0,0,0,0.15); border-radius: 2px; }
 .ld-seg--claimed { background: linear-gradient(90deg, #c0392b, #e74c3c); }
 
 /* Description */
 .ld-description {
   font-size: 0.9rem;
-  color: rgba(255,255,255,0.55);
+  color: rgba(20,6,0,0.82);
   line-height: 1.7;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 12px;
-  padding: 18px 22px;
+  background: rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 14px;
+  padding: 20px;
   margin: 0;
 }
 
 /* Processing badge */
 .ld-processing-badge {
   font-size: 0.85rem;
-  color: rgba(255,255,255,0.6);
-  background: rgba(52,152,219,0.10);
-  border: 1px solid rgba(52,152,219,0.25);
+  color: rgba(20,6,0,0.82);
+  background: rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.2);
   border-radius: 10px;
   padding: 12px 18px;
 }
-.ld-processing-badge strong { color: #3498db; }
+.ld-processing-badge strong { color: #4a1a00; }
 
 /* Section title */
 .ld-section-title {
   font-size: 1rem;
   font-weight: 700;
-  color: #fff;
+  color: #1e0800;
   margin: 0 0 14px;
   letter-spacing: -0.01em;
 }
@@ -142,10 +209,14 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 10px;
+  background: rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 14px;
+  padding: 20px;
 }
 .ld-cut {
-  background: rgba(255,255,255,0.05);
-  border: 1.5px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.12);
+  border: 1.5px solid rgba(0,0,0,0.2);
   border-radius: 12px;
   padding: 14px 16px;
   display: flex;
@@ -153,25 +224,25 @@
   gap: 10px;
   transition: border-color 0.15s;
 }
-.ld-cut:not(.ld-cut--claimed):hover { border-color: rgba(243,156,18,0.35); }
+.ld-cut:not(.ld-cut--claimed):hover { border-color: rgba(0,0,0,0.35); }
 .ld-cut--claimed { opacity: 0.5; }
-.ld-cut-label { font-size: 0.9rem; font-weight: 600; color: #fff; }
+.ld-cut-label { font-size: 0.9rem; font-weight: 600; color: #1e0800; }
 .ld-cut-claim-btn {
   padding: 7px 0;
   border-radius: 8px;
-  border: 1.5px solid rgba(231,76,60,0.5);
-  background: rgba(231,76,60,0.10);
-  color: #e74c3c;
+  border: 1.5px solid #4a0e00;
+  background: linear-gradient(170deg, #8b1a00 0%, #a82800 50%, #781500 100%);
+  color: #fde8c0;
   font-size: 0.82rem;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: filter 0.15s;
 }
-.ld-cut-claim-btn:hover { background: rgba(231,76,60,0.20); }
+.ld-cut-claim-btn:hover { filter: brightness(1.15); }
 .ld-cut-status { font-size: 0.75rem; font-weight: 600; }
-.ld-cut-status--claimed { color: #27ae60; }
-.ld-cut-status--closed  { color: rgba(255,255,255,0.3); }
+.ld-cut-status--claimed { color: #2d6a1e; }
+.ld-cut-status--closed  { color: rgba(20,6,0,0.4); }
 
 /* Reviews */
 .ld-reviews-section { display: flex; flex-direction: column; }
@@ -196,22 +267,26 @@
   max-width: 500px;
   margin: 80px auto;
   text-align: center;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.10);
+  background:
+    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 20%, #e6aa3a 50%, #cc8828 80%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
   border-radius: 22px;
   padding: 48px 36px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
+  color: #1e0800;
+  filter: drop-shadow(3px 6px 0px rgba(35,12,0,0.7));
 }
 .ld-confirm-icon { font-size: 2.8rem; }
-.ld-confirm h2 { font-size: 1.6rem; font-weight: 900; color: #fff; margin: 0; }
-.ld-confirm p { font-size: 0.9rem; color: rgba(255,255,255,0.6); margin: 0; line-height: 1.6; }
-.ld-confirm strong { color: #fff; }
-.ld-confirm-date { color: #3498db !important; font-size: 0.88rem !important; }
-.ld-confirm-farm { color: rgba(255,255,255,0.45) !important; font-size: 0.82rem !important; }
-.ld-confirm-sub  { color: rgba(255,255,255,0.38) !important; font-size: 0.78rem !important; }
+.ld-confirm h2 { font-size: 1.6rem; font-weight: 900; color: #1e0800; margin: 0; }
+.ld-confirm p { font-size: 0.9rem; color: rgba(20,6,0,0.72); margin: 0; line-height: 1.6; }
+.ld-confirm strong { color: #1e0800; }
+.ld-confirm-date { color: #4a1a00 !important; font-size: 0.88rem !important; }
+.ld-confirm-farm { color: rgba(20,6,0,0.6) !important; font-size: 0.82rem !important; }
+.ld-confirm-sub  { color: rgba(20,6,0,0.5) !important; font-size: 0.78rem !important; }
 .ld-confirm-actions { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
 
 @media (max-width: 600px) {

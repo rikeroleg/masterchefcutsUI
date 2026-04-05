@@ -42,6 +42,9 @@ export function AuthProvider({ children }) {
         role: role?.toUpperCase(),
         shopName, street, apt, city, state, zipCode,
       })
+      if (!data.token) {
+        return { verify: true }
+      }
       localStorage.setItem('mc_token', data.token)
       setUser(mapUser(data))
       return { ok: true }

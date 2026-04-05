@@ -13,13 +13,16 @@
 }
 
 .pm-modal {
-  background: #0e0e16;
-  border: 1px solid rgba(255,255,255,0.14);
+  background:
+    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px),
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
   border-radius: 20px;
   width: 100%;
   max-width: 460px;
   overflow: hidden;
-  box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
 }
 
 .pm-header {
@@ -27,27 +30,27 @@
   align-items: flex-start;
   justify-content: space-between;
   padding: 24px 24px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(0,0,0,0.18);
 }
 
 .pm-title {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #fff;
+  color: #1e0800;
   margin: 0 0 4px;
 }
 
 .pm-subtitle {
   font-size: 0.8rem;
-  color: rgba(255,255,255,0.45);
+  color: rgba(20,6,0,0.55);
   margin: 0;
 }
 
 .pm-close-btn {
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.22);
   border-radius: 8px;
-  color: rgba(255,255,255,0.5);
+  color: rgba(20,6,0,0.55);
   font-size: 0.85rem;
   padding: 6px 10px;
   cursor: pointer;
@@ -55,12 +58,12 @@
   flex-shrink: 0;
   margin-left: 12px;
 }
-.pm-close-btn:hover { color: #fff; background: rgba(255,255,255,0.12); }
+.pm-close-btn:hover { color: #1e0800; background: rgba(0,0,0,0.2); }
 
 .pm-loading {
   padding: 40px 24px;
   text-align: center;
-  color: rgba(255,255,255,0.45);
+  color: rgba(20,6,0,0.5);
   font-size: 0.88rem;
 }
 
@@ -75,8 +78,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(243,156,18,0.08);
-  border: 1px solid rgba(243,156,18,0.2);
+  background: rgba(0,0,0,0.13);
+  border: 1px solid rgba(0,0,0,0.22);
   border-radius: 10px;
   padding: 12px 16px;
 }
@@ -84,20 +87,20 @@
 .pm-cut-name {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #fff;
+  color: #1e0800;
 }
 
 .pm-cut-amount {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #f39c12;
+  color: #6b2c00;
 }
 
 .pm-error {
   font-size: 0.82rem;
-  color: #e74c3c;
-  background: rgba(231,76,60,0.08);
-  border: 1px solid rgba(231,76,60,0.2);
+  color: #7c1a1a;
+  background: rgba(120,21,0,0.1);
+  border: 1px solid rgba(120,21,0,0.25);
   border-radius: 8px;
   padding: 10px 14px;
   margin: 0;
@@ -113,24 +116,24 @@
   flex: 1;
   padding: 13px;
   border-radius: 10px;
-  border: 1.5px solid rgba(255,255,255,0.14);
-  background: transparent;
-  color: rgba(255,255,255,0.55);
+  border: 1.5px solid rgba(0,0,0,0.22);
+  background: rgba(0,0,0,0.1);
+  color: rgba(20,6,0,0.6);
   font-size: 0.9rem;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
   transition: color 0.15s, border-color 0.15s;
 }
-.pm-cancel-btn:hover:not(:disabled) { color: #fff; border-color: rgba(255,255,255,0.3); }
+.pm-cancel-btn:hover:not(:disabled) { color: #1e0800; border-color: rgba(0,0,0,0.35); }
 
 .pm-pay-btn {
   flex: 2;
   padding: 13px;
   border-radius: 10px;
-  border: none;
-  background: linear-gradient(135deg, #c0392b, #e74c3c);
-  color: #fff;
+  border: 1px solid #4a0e00;
+  background: linear-gradient(170deg, #8b1a00 0%, #a82800 50%, #781500 100%);
+  color: #fde8c0;
   font-size: 0.95rem;
   font-weight: 700;
   font-family: inherit;

@@ -13,9 +13,9 @@
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(ellipse at center, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.65) 60%, rgba(0,0,0,0.92) 100%),
+    radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.55) 65%, rgba(0,0,0,0.88) 100%),
     url('/farm.png') center center / cover no-repeat;
-  filter: blur(6px);
+  filter: blur(8px);
   transform: scale(1.05);
 }
 
@@ -59,10 +59,13 @@
 
 /* ── Header card ── */
 .profile-header-card {
-  background: rgba(12,12,20,0.88);
-  border: 1.5px solid rgba(255,255,255,0.09);
+  background:
+    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px),
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
   border-radius: 20px;
-  backdrop-filter: blur(20px);
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
   padding: 28px;
   display: flex;
   align-items: flex-start;
@@ -81,7 +84,7 @@
 .profile-name {
   font-size: 1.4rem;
   font-weight: 900;
-  color: #fff;
+  color: #1e0800;
   letter-spacing: -0.02em;
 }
 
@@ -93,14 +96,14 @@
   font-weight: 700;
   padding: 4px 12px;
   border-radius: 50px;
-  background: rgba(231,76,60,0.12);
-  border: 1px solid rgba(231,76,60,0.25);
-  color: rgba(255,255,255,0.75);
+  background: rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.22);
+  color: rgba(20,6,0,0.72);
   width: fit-content;
   margin: 4px 0;
 }
 
-.profile-shop    { font-size: 0.88rem; color: rgba(255,255,255,0.6); font-weight: 600; }
+.profile-shop    { font-size: 0.88rem; color: rgba(20,6,0,0.72); font-weight: 600; }
 
 .profile-address {
   display: flex;
@@ -116,14 +119,14 @@
   flex-direction: column;
   gap: 1px;
   font-size: 0.82rem;
-  color: rgba(255,255,255,0.45);
+  color: rgba(20,6,0,0.55);
   line-height: 1.5;
 }
 
-.profile-address-lines span:first-child { color: rgba(255,255,255,0.65); }
+.profile-address-lines span:first-child { color: rgba(20,6,0,0.72); }
 
-.profile-zip { font-weight: 700; color: rgba(255,255,255,0.6); }
-.profile-joined  { font-size: 0.75rem; color: rgba(255,255,255,0.28); margin-top: 4px; }
+.profile-zip { font-weight: 700; color: rgba(20,6,0,0.65); }
+.profile-joined  { font-size: 0.75rem; color: rgba(20,6,0,0.4); margin-top: 4px; }
 
 .profile-header-actions {
   display: flex;
@@ -135,9 +138,9 @@
 .profile-edit-btn {
   padding: 9px 20px;
   border-radius: 10px;
-  border: 1.5px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.7);
+  border: 1.5px solid rgba(0,0,0,0.25);
+  background: rgba(0,0,0,0.13);
+  color: rgba(20,6,0,0.75);
   font-size: 0.82rem;
   font-weight: 600;
   font-family: inherit;
@@ -146,14 +149,14 @@
   white-space: nowrap;
 }
 
-.profile-edit-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.profile-edit-btn:hover { background: rgba(0,0,0,0.2); color: #1e0800; }
 
 .profile-logout-btn {
   padding: 9px 20px;
   border-radius: 10px;
-  border: 1.5px solid rgba(231,76,60,0.25);
-  background: rgba(231,76,60,0.08);
-  color: #e74c3c;
+  border: 1px solid #4a0e00;
+  background: linear-gradient(170deg, #8b1a00 0%, #a82800 50%, #781500 100%);
+  color: #fde8c0;
   font-size: 0.82rem;
   font-weight: 600;
   font-family: inherit;
@@ -162,14 +165,17 @@
   white-space: nowrap;
 }
 
-.profile-logout-btn:hover { background: rgba(231,76,60,0.18); border-color: rgba(231,76,60,0.5); }
+.profile-logout-btn:hover { background: linear-gradient(170deg, #a82000 0%, #c03000 50%, #961a00 100%); }
 
 /* ── Edit form ── */
 .profile-edit-form {
-  background: rgba(12,12,20,0.88);
-  border: 1.5px solid rgba(243,156,18,0.25);
+  background:
+    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px),
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
   border-radius: 20px;
-  backdrop-filter: blur(20px);
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
   padding: 24px 28px;
   display: flex;
   flex-direction: column;
@@ -181,7 +187,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #f39c12;
+  color: #6b2c00;
   margin-bottom: 4px;
 }
 
@@ -193,10 +199,13 @@
 
 /* ── Stats row ── */
 .profile-stats {
-  background: rgba(12,12,20,0.88);
-  border: 1.5px solid rgba(255,255,255,0.09);
+  background:
+    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px),
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
   border-radius: 20px;
-  backdrop-filter: blur(20px);
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
   padding: 22px 28px;
   display: flex;
   align-items: center;
@@ -215,13 +224,13 @@
 .profile-stat strong {
   font-size: 1.6rem;
   font-weight: 900;
-  color: #fff;
+  color: #1e0800;
   letter-spacing: -0.02em;
 }
 
 .profile-stat span {
   font-size: 0.7rem;
-  color: rgba(255,255,255,0.38);
+  color: rgba(20,6,0,0.5);
   text-transform: uppercase;
   letter-spacing: 0.07em;
 }
@@ -229,16 +238,19 @@
 .profile-stat-sep {
   width: 1px;
   height: 40px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.18);
   flex-shrink: 0;
 }
 
 /* ── Section ── */
 .profile-section {
-  background: rgba(12,12,20,0.88);
-  border: 1.5px solid rgba(255,255,255,0.09);
+  background:
+    repeating-linear-gradient(180deg, transparent 0px, transparent 10px, rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px, transparent 11px, transparent 20px, rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px),
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
   border-radius: 20px;
-  backdrop-filter: blur(20px);
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
   padding: 24px 28px;
 }
 
@@ -252,13 +264,13 @@
 .profile-section-title {
   font-size: 1rem;
   font-weight: 800;
-  color: #fff;
+  color: #1e0800;
   margin: 0;
 }
 
 .profile-section-link {
   font-size: 0.78rem;
-  color: #e74c3c;
+  color: #7a3a00;
   text-decoration: none;
   font-weight: 600;
 }
@@ -276,7 +288,7 @@
 }
 
 .profile-empty p {
-  color: rgba(255,255,255,0.35);
+  color: rgba(20,6,0,0.45);
   font-size: 0.9rem;
   margin: 0;
 }
@@ -289,8 +301,8 @@
 }
 
 .profile-claim-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.13);
+  border: 1px solid rgba(0,0,0,0.22);
   border-radius: 14px;
   padding: 16px 18px;
   display: grid;
@@ -307,20 +319,20 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
+  color: rgba(20,6,0,0.45);
   margin-bottom: 4px;
 }
 
 .profile-claim-cut {
   font-size: 1.05rem;
   font-weight: 800;
-  color: #fff;
+  color: #1e0800;
   grid-column: 1;
 }
 
 .profile-claim-farm {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.38);
+  color: rgba(20,6,0,0.5);
   grid-column: 1 / -1;
 }
 
@@ -333,7 +345,7 @@
 
 .profile-claim-date {
   font-size: 0.7rem;
-  color: rgba(255,255,255,0.25);
+  color: rgba(20,6,0,0.4);
   grid-column: 1 / -1;
 }
 
@@ -345,8 +357,8 @@
 }
 
 .profile-listing-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.13);
+  border: 1px solid rgba(0,0,0,0.22);
   border-radius: 14px;
   padding: 16px 18px;
   display: flex;
@@ -364,12 +376,12 @@
 .profile-listing-title {
   font-size: 0.98rem;
   font-weight: 800;
-  color: #fff;
+  color: #1e0800;
 }
 
 .profile-listing-meta {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.38);
+  color: rgba(20,6,0,0.5);
   margin-top: 2px;
 }
 
@@ -390,34 +402,34 @@
   flex: 1;
   height: 8px;
   border-radius: 4px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
   overflow: hidden;
 }
 
 .profile-listing-bar-fill {
   height: 100%;
   border-radius: 4px;
-  background: linear-gradient(90deg, #c0392b, #e74c3c);
+  background: linear-gradient(90deg, #781500, #a82800);
   transition: width 0.4s ease;
 }
 
 .profile-listing-bar-label {
   font-size: 0.72rem;
-  color: rgba(255,255,255,0.38);
+  color: rgba(20,6,0,0.5);
   white-space: nowrap;
 }
 
 /* Processing date (farmer listing cards) */
 .profile-listing-date {
   font-size: 0.8rem;
-  color: rgba(255,255,255,0.55);
-  background: rgba(52,152,219,0.08);
-  border: 1px solid rgba(52,152,219,0.18);
+  color: rgba(20,6,0,0.62);
+  background: rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.2);
   border-radius: 8px;
   padding: 7px 12px;
   margin-top: 10px;
 }
-.profile-listing-date strong { color: #3498db; }
+.profile-listing-date strong { color: #1e0800; }
 
 .profile-listing-date-row {
   display: flex;
@@ -430,25 +442,25 @@
 .profile-date-input {
   flex: 1;
   min-width: 140px;
-  background: rgba(255,255,255,0.06);
-  border: 1.5px solid rgba(255,255,255,0.14);
+  background: rgba(0,0,0,0.14);
+  border: 1.5px solid rgba(0,0,0,0.28);
   border-radius: 8px;
   padding: 7px 10px;
-  color: #fff;
+  color: #1e0800;
   font-size: 0.82rem;
   font-family: inherit;
   outline: none;
   transition: border-color 0.15s;
-  color-scheme: dark;
+  color-scheme: light;
 }
-.profile-date-input:focus { border-color: rgba(52,152,219,0.5); }
+.profile-date-input:focus { border-color: rgba(58,31,7,0.6); }
 
 .profile-date-btn {
   padding: 7px 14px;
   border-radius: 8px;
-  border: 1.5px solid rgba(52,152,219,0.4);
-  background: rgba(52,152,219,0.12);
-  color: #3498db;
+  border: 1px solid #4a0e00;
+  background: linear-gradient(170deg, #8b1a00 0%, #a82800 50%, #781500 100%);
+  color: #fde8c0;
   font-size: 0.82rem;
   font-weight: 700;
   font-family: inherit;
@@ -456,14 +468,14 @@
   white-space: nowrap;
   transition: background 0.15s;
 }
-.profile-date-btn:hover:not(:disabled) { background: rgba(52,152,219,0.22); }
+.profile-date-btn:hover:not(:disabled) { background: linear-gradient(170deg, #a82000 0%, #c03000 50%, #961a00 100%); }
 .profile-date-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .profile-date-error {
   font-size: 0.8rem;
-  color: #e74c3c;
-  background: rgba(231,76,60,0.08);
-  border: 1px solid rgba(231,76,60,0.2);
+  color: #7c1a1a;
+  background: rgba(120,21,0,0.1);
+  border: 1px solid rgba(120,21,0,0.25);
   border-radius: 8px;
   padding: 8px 12px;
   margin-bottom: 10px;
@@ -473,7 +485,7 @@
 .profile-review-form {
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid rgba(0,0,0,0.18);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -484,7 +496,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255,255,255,0.35);
+  color: rgba(20,6,0,0.45);
   margin: 0;
 }
 
@@ -497,7 +509,7 @@
   background: none;
   border: none;
   font-size: 1.3rem;
-  color: rgba(255,255,255,0.2);
+  color: rgba(20,6,0,0.2);
   cursor: pointer;
   padding: 0 2px;
   transition: color 0.12s, transform 0.1s;
@@ -507,19 +519,19 @@
 .profile-star-btn.active { color: #f39c12; }
 
 .profile-review-text {
-  background: rgba(255,255,255,0.06);
-  border: 1.5px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.14);
+  border: 1.5px solid rgba(0,0,0,0.28);
   border-radius: 8px;
   padding: 8px 10px;
-  color: #fff;
+  color: #1e0800;
   font-size: 0.82rem;
   font-family: inherit;
   resize: vertical;
   outline: none;
   transition: border-color 0.15s;
 }
-.profile-review-text:focus  { border-color: rgba(243,156,18,0.4); }
-.profile-review-text::placeholder { color: rgba(255,255,255,0.25); }
+.profile-review-text:focus  { border-color: rgba(58,31,7,0.6); }
+.profile-review-text::placeholder { color: rgba(20,6,0,0.35); }
 
 .profile-review-done {
   margin-top: 8px;

@@ -1,4 +1,4 @@
-﻿import { OrbitControls, Center, Bounds } from "@react-three/drei";
+import { OrbitControls, Center, Bounds } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import React, { useState } from "react";
 import { Link, useLocation, Routes, Route } from "react-router-dom";
@@ -10,10 +10,17 @@ import CartPage from "./pages/Cart";
 import AboutPage from "./pages/About";
 import HomePage from "./pages/Home";
 import ListingsPage from "./pages/Listings";
+import ListingDetailPage from "./pages/ListingDetail";
 import LoginPage from "./pages/Login";
 import ProfilePage from "./pages/Profile";
 import PostListingPage from "./pages/PostListing";
+import ForgotPasswordPage from "./pages/ForgotPassword";
+import ResetPasswordPage from "./pages/ResetPassword";
+import AdminPage from "./pages/Admin";
+import DemandBoardPage from "./pages/DemandBoard";
+// import VerifyEmailPage from "./pages/VerifyEmail";
 import NotificationBell from "./components/NotificationBell";
+import AnimalRequestModal from "./Components/AnimalRequestModal";
 import { useAuth } from "./context/AuthContext";
 import { useCart } from "./context/CartContext";
 import { WholeAnimalPanel } from "./Components/WholeAnimalPanel";
@@ -28,11 +35,13 @@ const ANIMALS = [
 function App() {
   const location = useLocation();
   const [activeAnimal, setActiveAnimal] = useState('beef');
+  const [showRequestModal, setShowRequestModal] = useState(false);
   const { totalItems } = useCart();
   const { user } = useAuth();
   const isShop = location.pathname === '/shop';
 
   return (
+    <>
     <div style={{ width: '100vw', height: isShop ? '100vh' : 'auto', minHeight: '100vh', overflow: isShop ? 'hidden' : 'visible', background: 'transparent', position: 'relative' }}>
 
       {/* 3D Canvas — fixed background, only mounted on shop route */}
@@ -99,11 +108,20 @@ function App() {
                 <LayoutList size={18} />
                 <span>Listings</span>
               </Link>
+              <Link to="/demand" className={`ui-nav-link${location.pathname === '/demand' ? ' active' : ''}`}>
+                <LayoutList size={18} />
+                <span>Demand</span>
+              </Link>
               <Link to="/about" className={`ui-nav-link${location.pathname === '/about' ? ' active' : ''}`}>
                 <Info size={18} />
                 <span>About</span>
               </Link>
               {user && <NotificationBell />}
+              {user?.role === 'admin' && (
+                <Link to="/admin" className={`ui-nav-link${location.pathname === '/admin' ? ' active' : ''}`}>
+                  <span>Admin</span>
+                </Link>
+              )}
               {user ? (
                 <Link to="/profile" className={`ui-nav-link ui-nav-link--avatar${location.pathname === '/profile' ? ' active' : ''}`}>
                   <span className="ui-avatar-chip">
@@ -140,7 +158,27 @@ function App() {
                   ))}
                 </div>
                 {/* Whole Animal Panel */}
-                <div style={{ pointerEvents: 'auto' }}><WholeAnimalPanel activeAnimal={activeAnimal} /></div>
+                <div style={{ pointerEvents: 'auto', zIndex: 100 }}><WholeAnimalPanel activeAnimal={activeAnimal} /></div>
+                {/* Shop action chooser */}
+                <div className="shop-action-chooser" style={{ pointerEvents: 'auto' }}>
+                  <p className="shop-action-label">What are you looking for?</p>
+                  <div className="shop-action-btns">
+                    <Link to="/listings" className="shop-action-btn">
+                      <span className="shop-action-icon">📋</span>
+                      <span className="shop-action-text">
+                        <strong>Browse Listings</strong>
+                        <small>See available animals near you</small>
+                      </span>
+                    </Link>
+                    <button className="shop-action-btn" onClick={() => setShowRequestModal(true)}>
+                      <span className="shop-action-icon">✏️</span>
+                      <span className="shop-action-text">
+                        <strong>Request an Animal</strong>
+                        <small>Tell a farmer exactly what you need</small>
+                      </span>
+                    </button>
+                  </div>
+                </div>
                 {/* Bottom hint */}
                 <div className="ui-bottom-hint">
                   <span>Drag to rotate &nbsp;·&nbsp; Scroll to zoom</span>
@@ -149,16 +187,25 @@ function App() {
             } />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/listings" element={<ListingsPage />} />
+            <Route path="/listings/:id" element={<ListingDetailPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/post" element={<PostListingPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/demand" element={<DemandBoardPage />} />
+            {/* <Route path="/verify-email" element={<VerifyEmailPage />} /> */}
             <Route path="/" element={<HomePage />} />
           </Routes>
         </div>
 
       </div>
     </div>
+
+    {showRequestModal && <AnimalRequestModal onClose={() => setShowRequestModal(false)} />}
+    </>
   );
 }
 

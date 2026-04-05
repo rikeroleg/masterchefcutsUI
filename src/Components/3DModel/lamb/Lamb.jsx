@@ -20,7 +20,7 @@ function findCutByPosition(lp) {
   // Shank: lower legs (very low Y regardless of Z)
   if (y < -0.28) return CUTS.shank
   // HEAD at +Z --- Shoulder: front forequarter
-  if (z >= +0.20) return y >= -0.05 ? CUTS.shoulder : CUTS.breast
+  if (z >= +0.20) return y >= 0.12 ? CUTS.shoulder : CUTS.breast
   // Mid body: Rack (upper) / Breast (lower)
   if (z >= -0.10) return y >= 0.0 ? CUTS.rack : CUTS.breast
   // Upper-rear: Loin (upper) / Breast-flank (lower)
@@ -213,7 +213,6 @@ export function Lamb({ ...props }) {
     event.stopPropagation()
     const { point } = event
     const localPoint = event.object.worldToLocal(point.clone())
-    console.log('[Lamb] click lp:', localPoint.x.toFixed(3), localPoint.y.toFixed(3), localPoint.z.toFixed(3))
     const cut = findCutByPosition(localPoint)
     if (!cut) return
 
