@@ -2,15 +2,17 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 
 const noop = () => {}
 const CartContext = createContext({
-  items: [], addToCart: noop, removeFromCart: noop,
+  items: [], addToCart: noop, removeFromCart: noop, removeItems: noop,
   updateQty: noop, clearCart: noop, totalItems: 0, totalPrice: 0,
 })
 
 export const cartBridge = { addToCart: noop }
+export const cartClearBridge = { clearCart: noop }
 
 export function CartProvider({ children }) {
   const [items, setItems] = useState(() => {
     try {
+      if (!localStorage.getItem('mc_user')) return []
       const stored = localStorage.getItem('mc_cart')
       return stored ? JSON.parse(stored) : []
     } catch (_) { return [] }
@@ -20,14 +22,14 @@ export function CartProvider({ children }) {
     try { localStorage.setItem('mc_cart', JSON.stringify(items)) } catch (_) {}
   }, [items])
 
-  function addToCart({ animal, cutId, name, color, price, qty }) {
+  function addToCart({ animal, cutId, name, color, price, qty, listingId, breed, sourceFarm }) {
     const id = `${animal}-${cutId}`
     setItems((prev) => {
       const existing = prev.find((i) => i.id === id)
       if (existing) {
         return prev.map((i) => i.id === id ? { ...i, qty: i.qty + qty } : i)
       }
-      return [...prev, { id, animal, cutId, name, color, price, qty }]
+      return [...prev, { id, animal, cutId, name, color, price, qty, listingId, breed, sourceFarm }]
     })
   }
 
@@ -48,11 +50,19 @@ export function CartProvider({ children }) {
     setItems([])
   }
 
+  useEffect(() => {
+    cartClearBridge.clearCart = clearCart
+  })
+
+  function removeItems(ids) {
+    setItems((prev) => prev.filter((i) => !ids.includes(i.id)))
+  }
+
   const totalItems = items.reduce((sum, i) => sum + i.qty, 0)
   const totalPrice = items.reduce((sum, i) => sum + i.price * i.qty, 0)
 
   return (
-    <CartContext.Provider value={{ items, addToCart, removeFromCart, updateQty, clearCart, totalItems, totalPrice }}>
+    <CartContext.Provider value={{ items, addToCart, removeFromCart, removeItems, updateQty, clearCart, totalItems, totalPrice }}>
       {children}
     </CartContext.Provider>
   )

@@ -2,19 +2,53 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
+import { useCart } from '../context/CartContext'
 import { api } from '../api/client'
 import DisputeModal from '../Components/DisputeModal'
+import BalancePaymentModal from '../Components/BalancePaymentModal'
 
 const ANIMAL_EMOJI = { BEEF: '🐄', PORK: '🐷', LAMB: '🐑' }
 
+function parseExpiry(v) {
+  if (Array.isArray(v)) {
+    return new Date(v[0], v[1] - 1, v[2], v[3] || 0, v[4] || 0, v[5] || 0)
+  }
+  return new Date(v)
+}
+
+function ClaimCountdown({ expiresAt }) {
+  const [remaining, setRemaining] = useState('')
+  const [urgent, setUrgent] = useState(false)
+
+  useEffect(() => {
+    function tick() {
+      const diff = parseExpiry(expiresAt) - Date.now()
+      if (diff <= 0) { setRemaining('Expired'); setUrgent(true); return }
+      const h = Math.floor(diff / 3600000)
+      const m = Math.floor((diff % 3600000) / 60000)
+      setRemaining(`${h}h ${m}m left to pay`)
+      setUrgent(h < 2)
+    }
+    tick()
+    const id = setInterval(tick, 30000)
+    return () => clearInterval(id)
+  }, [expiresAt])
+
+  return (
+    <div className={`profile-claim-expiry${urgent ? ' profile-claim-expiry--urgent' : ''}`}>
+      ⏰ {remaining}
+    </div>
+  )
+}
+
 const STATUS_STYLE = {
-  ACTIVE:         { color: '#27ae60', label: 'Active' },
-  FULLY_CLAIMED:  { color: '#e67e22', label: 'Claimed — awaiting processing' },
-  PROCESSING:     { color: '#3498db', label: 'Processing soon' },
-  COMPLETE:       { color: '#95a5a6', label: 'Complete' },
-  claimed:        { color: '#e67e22', label: 'Claimed — awaiting pool' },
-  processing:     { color: '#27ae60', label: 'Processing soon' },
-  complete:       { color: '#3498db', label: 'Complete — ready for pickup' },
+  ACTIVE:         { color: '#0d5c2f', label: 'Active' },
+  FULLY_CLAIMED:  { color: '#8b4513', label: 'Claimed — awaiting processing' },
+  PROCESSING:     { color: '#1a5276', label: 'Processing soon' },
+  COMPLETE:       { color: '#4a4a4a', label: 'Complete' },
+  claimed:        { color: '#8b4513', label: 'Claimed — awaiting pool' },
+  processing:     { color: '#0d5c2f', label: 'Processing soon' },
+  complete:       { color: '#1a5276', label: 'Complete — ready for pickup' },
 }
 
 function Avatar({ name, size = 56 }) {
@@ -29,11 +63,13 @@ function Avatar({ name, size = 56 }) {
 export default function Profile() {
   const { user, logout, updateUser } = useAuth()
   const { toast } = useToast()
+  const { addToCart, items: cartItems } = useCart()
   const navigate = useNavigate()
   const isFarmerUser = user?.role === 'farmer'
   const [editing, setEditing]             = useState(false)
   const [myListings, setMyListings]         = useState([])
   const [myClaims, setMyClaims]             = useState([])
+  const [claimsError, setClaimsError]       = useState('')
   const [dateInputs, setDateInputs]         = useState({})
   const [dateLoading, setDateLoading]       = useState(null)
   const [dateError, setDateError]           = useState('')
@@ -42,6 +78,13 @@ export default function Profile() {
   const [reviewedSet, setReviewedSet]       = useState(new Set())
   const [reviewError, setReviewError]       = useState('')
   const [disputeClaim, setDisputeClaim]             = useState(null)
+  const [myOrders, setMyOrders]                     = useState([])
+  const [ordersLoading, setOrdersLoading]           = useState(false)
+  const [farmerOrders, setFarmerOrders]             = useState([])
+  const [farmerOrdersLoading, setFarmerOrdersLoading] = useState(false)
+  const [updatingOrderId, setUpdatingOrderId]       = useState(null)
+  const [confirmingOrderId, setConfirmingOrderId]   = useState(null)
+  const [balanceOrder, setBalanceOrder]             = useState(null)
   const [editListingId, setEditListingId]           = useState(null)
   const [editListingForm, setEditListingForm]       = useState({})
   const [editListingLoading, setEditListingLoading] = useState(false)
@@ -57,15 +100,55 @@ export default function Profile() {
     if (!user) return
     if (isFarmerUser) {
       api.get('/api/listings/my').then(setMyListings).catch(() => {})
+      // Load farmer orders
+      setFarmerOrdersLoading(true)
+      api.get('/api/orders/farmer').then(setFarmerOrders).catch(() => {}).finally(() => setFarmerOrdersLoading(false))
     } else {
-      api.get('/api/claims/my').then(setMyClaims).catch(() => {})
+      setClaimsError('')
+      api.get('/api/claims/my')
+        .then(setMyClaims)
+        .catch(err => {
+          setMyClaims([])
+          setClaimsError(err.message || 'Failed to load your claims.')
+        })
+      setOrdersLoading(true)
+      api.get('/api/orders/my').then(setMyOrders).catch(() => {}).finally(() => setOrdersLoading(false))
     }
-  }, [user])
+  }, [user, isFarmerUser])
   const [form, setForm] = useState({
     name: user?.name || '', shopName: user?.shopName || '',
     street: user?.street || '', apt: user?.apt || '',
     city: user?.city || '', state: user?.state || '', zipCode: user?.zipCode || '',
   })
+
+  // Add all unpaid claims from same listing to cart and navigate to checkout
+  function handlePayClaims(claim) {
+    // Find all unpaid claims from the same listing
+    const unpaidFromListing = myClaims.filter(c => c.listingId === claim.listingId && !c.paid)
+    
+    // Add each claim to cart (if not already there)
+    unpaidFromListing.forEach(c => {
+      const cartId = `${c.animalType.toLowerCase()}-${c.cutId}`
+      const alreadyInCart = cartItems.some(item => item.id === cartId)
+      if (!alreadyInCart) {
+        addToCart({
+          animal: c.animalType.toLowerCase(),
+          cutId: c.cutId,
+          name: c.cutLabel,
+          color: '#b84a00',
+          price: c.price || 0,
+          qty: 1,
+          listingId: c.listingId,
+          breed: c.breed,
+          sourceFarm: c.sourceFarm
+        })
+      }
+    })
+    
+    // Navigate to cart with listingId to pre-select only those items
+    toast.success(`${unpaidFromListing.length} claim${unpaidFromListing.length > 1 ? 's' : ''} added to cart`)
+    navigate('/cart', { state: { selectListingId: claim.listingId } })
+  }
 
   async function handleSubmitReview(listingId) {
     const { rating, comment } = reviewInputs[listingId] || {}
@@ -79,6 +162,38 @@ export default function Profile() {
       setReviewError(err.message || 'Failed to submit review')
     } finally {
       setReviewLoading(null)
+    }
+  }
+
+  // Farmer: update order status
+  async function handleUpdateOrderStatus(orderId, newStatus) {
+    setUpdatingOrderId(orderId)
+    try {
+      await api.patch(`/api/orders/${orderId}/status`, { status: newStatus })
+      toast.success(`Order marked as ${newStatus.toLowerCase()}`)
+      // Refresh farmer orders
+      const updated = await api.get('/api/orders/farmer')
+      setFarmerOrders(updated)
+    } catch (err) {
+      toast.error(err.message || 'Failed to update order status')
+    } finally {
+      setUpdatingOrderId(null)
+    }
+  }
+
+  // Buyer: confirm receipt of order
+  async function handleConfirmReceipt(orderId) {
+    setConfirmingOrderId(orderId)
+    try {
+      await api.post(`/api/orders/${orderId}/confirm-receipt`)
+      toast.success('Order marked as completed. Thank you!')
+      // Refresh buyer orders
+      const updated = await api.get('/api/orders/my')
+      setMyOrders(updated)
+    } catch (err) {
+      toast.error(err.message || 'Failed to confirm receipt')
+    } finally {
+      setConfirmingOrderId(null)
     }
   }
 
@@ -200,6 +315,56 @@ export default function Profile() {
   }
 
   const isFarmer = isFarmerUser
+
+  // Helper functions for order status workflow
+  function getNextStatus(status) {
+    if (!status) return null
+    const s = status.toUpperCase()
+    if (s === 'PAID' || s === 'DEPOSIT_PAID' || s === 'SHIPPED') return 'ACCEPTED'
+    if (s === 'ACCEPTED') return 'PROCESSING'
+    if (s === 'PROCESSING') return 'READY'
+    return null // READY and COMPLETED have no next status for farmer
+  }
+
+  function getActionLabel(status) {
+    if (!status) return ''
+    const s = status.toUpperCase()
+    if (s === 'PAID' || s === 'DEPOSIT_PAID' || s === 'SHIPPED') return 'Accept Order →'
+    if (s === 'ACCEPTED') return 'Start Processing →'
+    if (s === 'PROCESSING') return 'Mark Ready for Pickup →'
+    return ''
+  }
+
+  function getStatusLabel(status) {
+    if (!status) return 'Unknown'
+    const s = status.toUpperCase()
+    const labels = {
+      'PAID': 'Paid - Awaiting Acceptance',
+      'DEPOSIT_PAID': 'Deposit Paid',
+      'ACCEPTED': 'Accepted',
+      'PROCESSING': 'Processing',
+      'READY': 'Ready for Pickup',
+      'COMPLETED': 'Completed',
+      'SHIPPED': 'Shipped - Balance Due'
+    }
+    return labels[s] || status
+  }
+
+  function getStatusColor(status) {
+    if (!status) return '#666'
+    const s = status.toUpperCase()
+    const colors = {
+      'PAID': '#e67e22',
+      'DEPOSIT_PAID': '#e67e22',
+      'ACCEPTED': '#3498db',
+      'PROCESSING': '#9b59b6',
+      'READY': '#27ae60',
+      'COMPLETED': '#7f8c8d',
+      'SHIPPED': '#e67e22'
+    }
+    return colors[s] || '#666'
+  }
+
   const joinDate = user.joinedAt
     ? new Date(user.joinedAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     : null
@@ -322,6 +487,7 @@ export default function Profile() {
               <h2 className="profile-section-title">My Claims</h2>
               <Link to="/listings" className="profile-section-link">Browse listings →</Link>
             </div>
+            {claimsError && <p className="profile-date-error">{claimsError}</p>}
             {myClaims.length === 0 ? (
               <div className="profile-empty">
                 <p>You haven&apos;t claimed any cuts yet.</p>
@@ -331,13 +497,64 @@ export default function Profile() {
               <div className="profile-claims">
                 {myClaims.map(c => (
                   <div key={c.id} className="profile-claim-card">
-                    <div className="profile-claim-animal">{ANIMAL_EMOJI[c.animalType] || '🥩'} {c.breed}</div>
-                    <div className="profile-claim-cut">{c.cutLabel}</div>
-                    <div className="profile-claim-farm">{c.sourceFarm} &middot; {c.zipCode}</div>
-                    <div className="profile-claim-status" style={{ color: STATUS_STYLE[c.listingStatus]?.color }}>
-                      ● {STATUS_STYLE[c.listingStatus]?.label}
+                    {/* Header row */}
+                    <div className="profile-claim-header">
+                      <span className="profile-claim-animal">{ANIMAL_EMOJI[c.animalType] || '🥩'} {c.breed}</span>
+                      {c.paid ? (
+                        <span className="profile-claim-badge paid">✓ Paid</span>
+                      ) : (
+                        <button
+                          type="button"
+                          className="profile-claim-badge unpaid clickable"
+                          onClick={() => handlePayClaims(c)}
+                        >
+                          Pay Now →
+                        </button>
+                      )}
                     </div>
-                    <div className="profile-claim-date">Claimed {c.claimedAt ? new Date(c.claimedAt).toLocaleDateString() : ''}</div>
+
+                    {/* Cut name + view link */}
+                    <div className="profile-claim-cut-row">
+                      <div className="profile-claim-cut">{c.cutLabel}</div>
+                      <Link to={`/listings/${c.listingId}`} className="profile-claim-view-link">View Listing →</Link>
+                    </div>
+
+                    {/* Info grid */}
+                    <div className="profile-claim-info">
+                      <div className="profile-claim-info-item">
+                        <span className="profile-claim-info-label">Farm</span>
+                        <span className="profile-claim-info-value">{c.sourceFarm}</span>
+                      </div>
+                      <div className="profile-claim-info-item">
+                        <span className="profile-claim-info-label">Location</span>
+                        <span className="profile-claim-info-value">{c.zipCode}</span>
+                      </div>
+                      {c.weight && (
+                        <div className="profile-claim-info-item">
+                          <span className="profile-claim-info-label">Weight</span>
+                          <span className="profile-claim-info-value">{c.weight} lbs</span>
+                        </div>
+                      )}
+                      {c.price && (
+                        <div className="profile-claim-info-item">
+                          <span className="profile-claim-info-label">Price</span>
+                          <span className="profile-claim-info-value">${c.price.toFixed(2)}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Status + timer row */}
+                    <div className="profile-claim-footer">
+                      <div className="profile-claim-status" style={{ color: STATUS_STYLE[c.listingStatus]?.color }}>
+                        ● {STATUS_STYLE[c.listingStatus]?.label}
+                      </div>
+                      <div className="profile-claim-date">Claimed {c.claimedAt ? new Date(c.claimedAt).toLocaleDateString() : ''}</div>
+                    </div>
+
+                    {/* Timer for unpaid claims */}
+                    {!c.paid && c.expiresAt && (
+                      <ClaimCountdown expiresAt={c.expiresAt} />
+                    )}
                     {(c.listingStatus === 'PROCESSING' || c.listingStatus === 'COMPLETE') && !reviewedSet.has(c.listingId) && (
                       <div className="profile-review-form">
                         <p className="profile-review-label">Leave a review</p>
@@ -376,6 +593,64 @@ export default function Profile() {
                     </button>
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Farmer: Customer Orders ── */}
+        {isFarmer && (
+          <div className="profile-section">
+            <div className="profile-section-header">
+              <h2 className="profile-section-title">Customer Orders</h2>
+            </div>
+            {farmerOrdersLoading ? (
+              <p className="profile-loading">Loading orders...</p>
+            ) : farmerOrders.length === 0 ? (
+              <div className="profile-empty">
+                <p>No paid orders yet. Orders will appear here once customers pay.</p>
+              </div>
+            ) : (
+              <div className="profile-orders">
+                {farmerOrders.map(order => {
+                  const items = order.items ? JSON.parse(order.items) : []
+                  const nextStatus = getNextStatus(order.status)
+                  const statusLabel = getStatusLabel(order.status)
+                  const statusColor = getStatusColor(order.status)
+                  return (
+                    <div key={order.id} className="profile-order-card">
+                      <div className="profile-order-header">
+                        <span className="profile-order-id">Order #{order.id.slice(0, 8)}</span>
+                        <span className="profile-order-status" style={{ color: statusColor }}>
+                          ● {statusLabel}
+                        </span>
+                      </div>
+                      <div className="profile-order-amount">
+                        ${order.totalAmount?.toFixed(2) || '0.00'}
+                        {order.paymentType === 'DEPOSIT' && order.remainingAmountCents > 0 && (
+                          <span className="profile-order-deposit"> (deposit paid, ${(order.remainingAmountCents / 100).toFixed(2)} balance due)</span>
+                        )}
+                      </div>
+                      <div className="profile-order-items">
+                        {items.map((item, idx) => (
+                          <span key={idx} className="profile-order-item">{item.cutLabel}</span>
+                        ))}
+                      </div>
+                      <div className="profile-order-date">
+                        Ordered {order.orderDate ? new Date(order.orderDate).toLocaleDateString() : ''}
+                      </div>
+                      {nextStatus && (
+                        <button
+                          className="profile-order-action-btn"
+                          onClick={() => handleUpdateOrderStatus(order.id, nextStatus)}
+                          disabled={updatingOrderId === order.id}
+                        >
+                          {updatingOrderId === order.id ? 'Updating...' : getActionLabel(order.status)}
+                        </button>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             )}
           </div>
@@ -505,6 +780,88 @@ export default function Profile() {
           </div>
         )}
 
+        {/* ── Buyer: My Orders ── */}
+        {!isFarmer && (
+          <div className="profile-section">
+            <div className="profile-section-header">
+              <h2 className="profile-section-title">My Orders</h2>
+            </div>
+            {ordersLoading ? (
+              <p style={{ color: 'rgba(20,6,0,0.5)', fontSize: '0.88rem' }}>Loading orders…</p>
+            ) : myOrders.length === 0 ? (
+              <div className="profile-empty">
+                <p>No orders yet.</p>
+              </div>
+            ) : (
+              <div className="profile-orders">
+                {myOrders.map(o => {
+                  const items = (() => { try { return JSON.parse(o.items) } catch { return [] } })()
+                  const statusInfo = {
+                    PENDING_PAYMENT:  { color: '#e67e22', label: 'Pending', icon: '⏳' },
+                    PAYMENT_FAILED:   { color: '#c0392b', label: 'Failed', icon: '✕' },
+                    DEPOSIT_PAID:     { color: '#3498db', label: 'Deposit Paid', icon: '½' },
+                    PAID:             { color: '#27ae60', label: 'Paid — Awaiting Acceptance', icon: '✓' },
+                    ACCEPTED:         { color: '#3498db', label: 'Accepted by Farmer', icon: '👍' },
+                    PROCESSING:       { color: '#9b59b6', label: 'Processing', icon: '🔪' },
+                    READY:            { color: '#27ae60', label: 'Ready for Pickup!', icon: '📦' },
+                    COMPLETED:        { color: '#7f8c8d', label: 'Completed', icon: '✅' },
+                    SHIPPED:          { color: '#8e44ad', label: 'Shipped — Balance Due', icon: '📦' },
+                  }[o.status] || { color: '#95a5a6', label: o.status, icon: '•' }
+                  const canPayBalance = (o.status === 'DEPOSIT_PAID' || o.status === 'SHIPPED')
+                    && o.remainingAmountCents > 0
+                  const canConfirmReceipt = o.status === 'READY'
+                  return (
+                    <div key={o.id} className="profile-order-card">
+                      <div className="profile-order-header">
+                        <span className="profile-order-date">
+                          {o.orderDate ? new Date(o.orderDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
+                        </span>
+                        <span className="profile-order-status" style={{ color: statusInfo.color }}>
+                          {statusInfo.icon} {statusInfo.label}
+                        </span>
+                      </div>
+                      {items.length > 0 && (
+                        <ul className="profile-order-items">
+                          {items.map((it, i) => (
+                            <li key={i}>{it.cutLabel || it.label || 'Cut'}{it.breed ? ` — ${it.breed}` : ''}</li>
+                          ))}
+                        </ul>
+                      )}
+                      <div className="profile-order-footer">
+                        <span className="profile-order-total">
+                          ${o.amountCents != null ? (o.amountCents / 100).toFixed(2) : o.totalAmount?.toFixed(2) || '0.00'}
+                        </span>
+                        {o.paidAt && (
+                          <span className="profile-order-paid-at">
+                            Paid {new Date(o.paidAt).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                      {canPayBalance && (
+                        <button
+                          className="profile-pay-balance-btn"
+                          onClick={() => setBalanceOrder(o)}
+                        >
+                          Pay Remaining ${(o.remainingAmountCents / 100).toFixed(2)} →
+                        </button>
+                      )}
+                      {canConfirmReceipt && (
+                        <button
+                          className="profile-order-action-btn"
+                          onClick={() => handleConfirmReceipt(o.id)}
+                          disabled={confirmingOrderId === o.id}
+                        >
+                          {confirmingOrderId === o.id ? 'Confirming...' : 'Confirm Receipt ✓'}
+                        </button>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* ── Notification Preferences ── */}
         <div className="profile-section">
           <div className="profile-section-header">
@@ -601,6 +958,16 @@ export default function Profile() {
       </div>
       {disputeClaim && (
         <DisputeModal claim={disputeClaim} onClose={() => setDisputeClaim(null)} />
+      )}
+      {balanceOrder && (
+        <BalancePaymentModal
+          order={balanceOrder}
+          onSuccess={() => {
+            setBalanceOrder(null)
+            api.get('/api/orders/my').then(setMyOrders).catch(() => {})
+          }}
+          onClose={() => setBalanceOrder(null)}
+        />
       )}
     </div>
   )

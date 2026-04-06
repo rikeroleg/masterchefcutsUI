@@ -233,6 +233,45 @@
 .login-submit:hover:not(:disabled) { filter: brightness(1.12); transform: translateY(-1px); }
 .login-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
+/* ── Registration Confirmation ── */
+.login-confirmed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.login-confirmed-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.login-confirmed-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1e0800;
+  margin: 0 0 12px;
+}
+
+.login-confirmed-text {
+  font-size: 0.9rem;
+  color: rgba(30,8,0,0.75);
+  line-height: 1.6;
+  margin: 0 0 16px;
+}
+
+.login-confirmed-text strong {
+  color: #1e0800;
+  font-weight: 700;
+}
+
+.login-confirmed-subtext {
+  font-size: 0.82rem;
+  color: rgba(30,8,0,0.5);
+  margin: 0 0 24px;
+}
+
 /* Forgot password */
 .login-forgot {
   text-align: right;

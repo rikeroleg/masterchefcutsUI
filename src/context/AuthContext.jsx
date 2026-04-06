@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { api } from '../api/client'
+import { cartClearBridge } from './CartContext'
 
 const AuthContext = createContext(null)
 
@@ -59,8 +60,9 @@ export function AuthProvider({ children }) {
     try {
       const data = await api.post('/api/auth/login', { email, password })
       localStorage.setItem('mc_token', data.token)
-      setUser(mapUser(data))
-      return { ok: true }
+      const mapped = mapUser(data)
+      setUser(mapped)
+      return { ok: true, role: mapped.role }
     } catch (err) {
       return { error: err.message }
     }
@@ -68,6 +70,8 @@ export function AuthProvider({ children }) {
 
   function logout() {
     setUser(null)
+    localStorage.removeItem('mc_cart')
+    cartClearBridge.clearCart()
   }
 
   async function updateUser(fields) {

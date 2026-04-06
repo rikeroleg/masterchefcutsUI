@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import '../styles/admin.css'
 
-const ROLE_COLOR = { BUYER: '#3498db', FARMER: '#27ae60', ADMIN: '#9b59b6' }
+const ROLE_COLOR = { BUYER: '#2b00ec', FARMER: '#cc1a1a', ADMIN: '#faf8fa' }
 
 export default function Admin() {
   const { user } = useAuth()
@@ -23,7 +23,6 @@ export default function Admin() {
     loadStats()
     loadUsers()
     loadListings()
-    loadDisputes()
   }, [user])
 
   async function loadStats() {
@@ -141,7 +140,7 @@ export default function Admin() {
                 {pending.map(u => (
                   <div key={u.id} className="admin-user-row admin-user-row--pending">
                     <div className="admin-user-info">
-                      <span className="admin-user-name">{u.firstName} {u.lastName}</span>
+                      <Link to={`/admin/user/${u.id}`} className="admin-user-name admin-user-link">{u.firstName} {u.lastName}</Link>
                       <span className="admin-user-email">{u.email}</span>
                       <span className="admin-user-shop">{u.shopName}</span>
                     </div>
@@ -159,7 +158,7 @@ export default function Admin() {
               {users.map(u => (
                 <div key={u.id} className="admin-user-row">
                   <div className="admin-user-info">
-                    <span className="admin-user-name">{u.firstName} {u.lastName}</span>
+                    <Link to={`/admin/user/${u.id}`} className="admin-user-name admin-user-link">{u.firstName} {u.lastName}</Link>
                     <span className="admin-user-email">{u.email}</span>
                     <span className="admin-role-badge" style={{ background: ROLE_COLOR[u.role] + '22', color: ROLE_COLOR[u.role] }}>
                       {u.role}

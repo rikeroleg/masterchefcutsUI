@@ -56,6 +56,52 @@
   font-weight: 500;
 }
 
+/* Select all / checkbox row */
+.cart-select-all-row {
+  margin-bottom: 14px;
+}
+
+.cart-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+}
+
+.cart-checkbox-label input[type="checkbox"] {
+  accent-color: #f39c12;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.cart-item-check {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-right: 6px;
+  cursor: pointer;
+}
+
+.cart-item-check input[type="checkbox"] {
+  accent-color: #f39c12;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.cart-item--dim {
+  opacity: 0.45;
+}
+
+.cart-item-listing {
+  font-size: 0.72rem;
+  color: rgba(20,6,0,0.48);
+  font-weight: 600;
+}
+
 .cart-items {
   display: flex;
   flex-direction: column;
@@ -382,6 +428,77 @@
 .cart-checkout-btn:active {
   transform: translateY(0);
   filter: brightness(0.95);
+}
+
+/* Summary empty */
+.cart-summary-empty {
+  font-size: 0.85rem;
+  color: rgba(20,6,0,0.45);
+  text-align: center;
+  padding: 20px 0;
+  margin: 0;
+}
+
+/* Payment type toggle */
+.cart-pay-type {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cart-pay-type-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(20,6,0,0.5);
+}
+
+.cart-pay-type-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.cart-pay-type-btn {
+  flex: 1;
+  padding: 8px 6px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(0,0,0,0.22);
+  background: rgba(0,0,0,0.08);
+  color: rgba(20,6,0,0.6);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+
+.cart-pay-type-btn:hover {
+  background: rgba(0,0,0,0.14);
+}
+
+.cart-pay-type-btn.active {
+  background: linear-gradient(170deg, #8b1a00 0%, #a82800 50%, #781500 100%);
+  color: #fde8c0;
+  border-color: #4a0e00;
+  font-weight: 700;
+}
+
+.cart-deposit-note {
+  font-size: 0.72rem;
+  color: rgba(20,6,0,0.45);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.cart-summary-remaining-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 16px;
+  font-size: 0.78rem;
+  color: rgba(20,6,0,0.5);
 }
 
 /* Empty state */

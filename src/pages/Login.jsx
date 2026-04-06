@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 
 const ROLES = [
   { id: 'buyer',  label: 'Participant',       emoji: '🛒', desc: 'Browse listings and claim shares.' },
@@ -12,8 +13,10 @@ export default function Login() {
   const [error, setError]   = useState('')
   const [loading, setLoad]  = useState(false)
   const [verified, setVerified] = useState(false)
+  const [registered, setRegistered] = useState(false) // Show email verification prompt
   const { login, register } = useAuth()
   const navigate            = useNavigate()
+  const { toast }           = useToast()
 
   const [signin, setSignin] = useState({ email: '', password: '' })
   const [signup, setSignup] = useState({
@@ -30,7 +33,7 @@ export default function Login() {
     setLoad(false)
     if (res.error) {
       setError(res.error)
-    } else navigate('/profile')
+    } else navigate(res.role === 'admin' ? '/admin' : '/profile')
   }
 
   async function handleSignup(e) {
@@ -46,8 +49,16 @@ export default function Login() {
       city: signup.city, state: signup.state, zipCode: signup.zipCode,
     })
     setLoad(false)
-    if (res.error) setError(res.error)
-    else navigate('/profile')
+    if (res.error) {
+      setError(res.error)
+    } else if (res.verify) {
+      // Email verification required - show confirmation
+      setRegistered(true)
+    } else {
+      // Immediate login (no email verification)
+      toast.success('Account created successfully! Welcome to MasterChef Cuts.')
+      navigate('/profile')
+    }
   }
 
   function fieldSignin(e) { setSignin(f => ({ ...f, [e.target.name]: e.target.value })) }
@@ -64,20 +75,47 @@ export default function Login() {
         </div>
 
         {/* Tabs */}
-        <div className="login-tabs">
-          <button className={`login-tab${tab === 'signin' ? ' active' : ''}`} onClick={() => { setTab('signin'); setError('') }}>
-            Sign In
-          </button>
-          <button className={`login-tab${tab === 'signup' ? ' active' : ''}`} onClick={() => { setTab('signup'); setError('') }}>
-            Create Account
-          </button>
-        </div>
+        {!registered && (
+          <div className="login-tabs">
+            <button className={`login-tab${tab === 'signin' ? ' active' : ''}`} onClick={() => { setTab('signin'); setError('') }}>
+              Sign In
+            </button>
+            <button className={`login-tab${tab === 'signup' ? ' active' : ''}`} onClick={() => { setTab('signup'); setError('') }}>
+              Create Account
+            </button>
+          </div>
+        )}
 
         {/* Error */}
-        {error && <div className="login-error">{error}</div>}
+        {!registered && error && <div className="login-error">{error}</div>}
+
+        {/* ── Registration Confirmation ── */}
+        {registered && (
+          <div className="login-confirmed">
+            <div className="login-confirmed-icon">✉️</div>
+            <h2 className="login-confirmed-title">Check your email!</h2>
+            <p className="login-confirmed-text">
+              We&apos;ve sent a verification link to <strong>{signup.email}</strong>. 
+              Click the link in your email to activate your account.
+            </p>
+            <p className="login-confirmed-subtext">
+              Didn&apos;t receive it? Check your spam folder or{' '}
+              <button type="button" className="login-link" onClick={() => { setRegistered(false); setTab('signup') }}>
+                try again
+              </button>
+            </p>
+            <button 
+              type="button" 
+              className="login-submit" 
+              onClick={() => { setRegistered(false); setTab('signin') }}
+            >
+              Go to Sign In →
+            </button>
+          </div>
+        )}
 
         {/* ── Sign In ── */}
-        {tab === 'signin' && (
+        {!registered && tab === 'signin' && (
           <form className="login-form" onSubmit={handleSignin}>
             <div className="login-field">
               <label>Email</label>
@@ -105,7 +143,7 @@ export default function Login() {
         )}
 
         {/* ── Sign Up ── */}
-        {tab === 'signup' && (
+        {!registered && tab === 'signup' && (
           <form className="login-form" onSubmit={handleSignup}>
 
             <div className="login-field">

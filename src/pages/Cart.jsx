@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { ShoppingCart, Trash2, ArrowLeft, Package } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import CartPaymentModal from '../components/CartPaymentModal'
@@ -12,9 +12,51 @@ const ANIMAL_INFO = {
 }
 
 export default function Cart() {
-  const { items, removeFromCart, updateQty, totalPrice, clearCart } = useCart()
-  const [paying, setPaying]     = useState(false)
-  const [confirmed, setConfirmed] = useState(false)
+  const { items, removeFromCart, removeItems, updateQty, totalPrice, clearCart } = useCart()
+  const location = useLocation()
+  const selectListingId = location.state?.selectListingId
+  
+  const [paying, setPaying]         = useState(false)
+  const [confirmed, setConfirmed]   = useState(false)
+  const [selected, setSelected]     = useState(() => new Set(items.map(i => i.id)))
+  const [paymentType, setPaymentType] = useState('FULL') // FULL or DEPOSIT
+  const [initialFilterApplied, setInitialFilterApplied] = useState(false)
+  const [checkoutInProgress, setCheckoutInProgress] = useState(false) // Prevent double-clicks
+
+  // Apply initial filter for selectListingId from Profile navigation
+  React.useEffect(() => {
+    if (selectListingId && !initialFilterApplied && items.length > 0) {
+      const matchingIds = items.filter(i => i.listingId === selectListingId).map(i => i.id)
+      if (matchingIds.length > 0) {
+        setSelected(new Set(matchingIds))
+        setInitialFilterApplied(true)
+      }
+    }
+  }, [selectListingId, items, initialFilterApplied])
+
+  // Keep selected set in sync when items change (remove deleted items)
+  React.useEffect(() => {
+    setSelected(prev => {
+      const ids = new Set(items.map(i => i.id))
+      return new Set([...prev].filter(id => ids.has(id)))
+    })
+  }, [items])
+
+  function toggleSelect(id) {
+    setSelected(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+  function toggleAll() {
+    if (selected.size === items.length) setSelected(new Set())
+    else setSelected(new Set(items.map(i => i.id)))
+  }
+
+  const selectedItems = items.filter(i => selected.has(i.id))
+  const selectedTotal = selectedItems.reduce((s, i) => s + i.price * i.qty, 0)
+  const chargeAmount = paymentType === 'DEPOSIT' ? Math.ceil(selectedTotal / 2) : selectedTotal
 
   if (confirmed) {
     return (
@@ -59,19 +101,33 @@ export default function Cart() {
             <span className="cart-count">{items.length} {items.length === 1 ? 'cut' : 'cuts'}</span>
           </div>
 
+          <div className="cart-select-all-row">
+            <label className="cart-checkbox-label">
+              <input type="checkbox" checked={selected.size === items.length && items.length > 0} onChange={toggleAll} />
+              <span>Select all</span>
+            </label>
+          </div>
+
           <div className="cart-items">
             {items.map((item) => {
               const animal  = ANIMAL_INFO[item.animal] ?? { label: item.animal, emoji: '\uD83E\uDD69' }
               const isClaimCut = Number.isInteger(Number(item.cutId)) && Number(item.cutId) > 0
               const subtotal = item.price * item.qty
+              const checked = selected.has(item.id)
               return (
-                <div key={item.id} className="cart-item">
+                <div key={item.id} className={`cart-item${checked ? '' : ' cart-item--dim'}`}>
                   <div className="cart-item-accent" style={{ background: item.color }} />
                   <div className="cart-item-body">
                     <div className="cart-item-top">
+                      <label className="cart-item-check">
+                        <input type="checkbox" checked={checked} onChange={() => toggleSelect(item.id)} />
+                      </label>
                       <div className="cart-item-info">
                         <span className="cart-item-animal">{animal.emoji} {animal.label}</span>
                         <h3 className="cart-item-name">{item.name}</h3>
+                        {item.breed && (
+                          <span className="cart-item-listing">{item.breed}{item.sourceFarm ? ` \u00b7 ${item.sourceFarm}` : ''}</span>
+                        )}
                         <span className="cart-item-unit-price">${item.price.toLocaleString()} / cut</span>
                       </div>
                       <button
@@ -123,27 +179,68 @@ export default function Cart() {
               Order Summary
             </h2>
 
-            <div className="cart-summary-lines">
-              {items.map((item) => (
-                <div key={item.id} className="cart-summary-line">
-                  <span className="cart-summary-name">
-                    <span className="cart-summary-dot" style={{ background: item.color }} /> {item.name} &times; {item.qty}
-                  </span>
-                  <span className="cart-summary-val">${(item.price * item.qty).toLocaleString()}</span>
+            {selectedItems.length === 0 ? (
+              <p className="cart-summary-empty">Select items to checkout</p>
+            ) : (
+              <>
+                <div className="cart-summary-lines">
+                  {selectedItems.map((item) => (
+                    <div key={item.id} className="cart-summary-line">
+                      <span className="cart-summary-name">
+                        <span className="cart-summary-dot" style={{ background: item.color }} /> {item.name} &times; {item.qty}
+                      </span>
+                      <span className="cart-summary-val">${(item.price * item.qty).toLocaleString()}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
 
-            <div className="cart-summary-divider" />
+                <div className="cart-summary-divider" />
 
-            <div className="cart-summary-total-row">
-              <span className="cart-summary-total-label">Total</span>
-              <span className="cart-summary-total-val">${totalPrice.toLocaleString()}</span>
-            </div>
+                {/* Payment type toggle */}
+                <div className="cart-pay-type">
+                  <span className="cart-pay-type-label">Payment</span>
+                  <div className="cart-pay-type-btns">
+                    <button
+                      className={`cart-pay-type-btn${paymentType === 'FULL' ? ' active' : ''}`}
+                      onClick={() => setPaymentType('FULL')}
+                    >Pay in Full</button>
+                    <button
+                      className={`cart-pay-type-btn${paymentType === 'DEPOSIT' ? ' active' : ''}`}
+                      onClick={() => setPaymentType('DEPOSIT')}
+                    >50% Deposit</button>
+                  </div>
+                  {paymentType === 'DEPOSIT' && (
+                    <p className="cart-deposit-note">Pay the remaining 50% when the seller ships your order.</p>
+                  )}
+                </div>
 
-            <button className="cart-checkout-btn" onClick={() => setPaying(true)}>
-              Place Order &#8212; ${totalPrice.toLocaleString()}
-            </button>
+                <div className="cart-summary-divider" />
+
+                <div className="cart-summary-total-row">
+                  <span className="cart-summary-total-label">{paymentType === 'DEPOSIT' ? 'Due Now' : 'Total'}</span>
+                  <span className="cart-summary-total-val">${chargeAmount.toLocaleString()}</span>
+                </div>
+
+                {paymentType === 'DEPOSIT' && (
+                  <div className="cart-summary-remaining-row">
+                    <span>Remaining balance</span>
+                    <span>${(selectedTotal - chargeAmount).toLocaleString()}</span>
+                  </div>
+                )}
+
+                <button 
+                  className="cart-checkout-btn" 
+                  onClick={() => { setCheckoutInProgress(true); setPaying(true) }}
+                  disabled={checkoutInProgress}
+                >
+                  {checkoutInProgress 
+                    ? 'Opening checkout…'
+                    : paymentType === 'DEPOSIT'
+                    ? `Pay Deposit \u2014 $${chargeAmount.toLocaleString()}`
+                    : `Place Order \u2014 $${chargeAmount.toLocaleString()}`}
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -151,9 +248,10 @@ export default function Cart() {
 
       {paying && (
         <CartPaymentModal
-          items={items}
-          onSuccess={() => { clearCart(); setPaying(false); setConfirmed(true) }}
-          onClose={() => setPaying(false)}
+          items={selectedItems}
+          paymentType={paymentType}
+          onSuccess={() => { removeItems(selectedItems.map(i => i.id)); setPaying(false); setConfirmed(true); setCheckoutInProgress(false) }}
+          onClose={() => { setPaying(false); setCheckoutInProgress(false) }}
         />
       )}
     </div>

@@ -21,8 +21,13 @@ async function request(method, path, body) {
   if (res.status === 401) {
     localStorage.removeItem('mc_token')
     localStorage.removeItem('mc_user')
+    localStorage.removeItem('mc_cart')
     window.location.href = '/login'
     return null
+  }
+
+  if (res.status === 403) {
+    throw new Error('Access denied — you do not have permission.')
   }
 
   if (!res.ok) {

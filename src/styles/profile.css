@@ -361,58 +361,184 @@
 .profile-claims {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .profile-claim-card {
-  background: rgba(0,0,0,0.13);
-  border: 1px solid rgba(0,0,0,0.22);
-  border-radius: 14px;
-  padding: 16px 18px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  grid-template-rows: auto auto auto;
-  column-gap: 14px;
-  row-gap: 2px;
-  align-items: start;
+  background: rgba(255,255,255,0.12);
+  border: 1.5px solid rgba(60,30,0,0.25);
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.profile-claim-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Header row with animal + badge */
+.profile-claim-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .profile-claim-animal {
-  grid-column: 1 / -1;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(20,6,0,0.45);
-  margin-bottom: 4px;
+  color: #3a1800;
+}
+
+.profile-claim-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.profile-claim-badge.paid {
+  background: rgba(26,122,58,0.18);
+  color: #0d5c2f;
+  border: 1px solid rgba(26,122,58,0.3);
+}
+
+.profile-claim-badge.unpaid {
+  background: rgba(180,100,0,0.18);
+  color: #8b4513;
+  border: 1px solid rgba(180,100,0,0.3);
+}
+
+.profile-claim-badge.unpaid.clickable {
+  cursor: pointer;
+  background: linear-gradient(135deg, #b84a00, #8b3a00);
+  color: #fff;
+  border: 1px solid #6a2800;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 700;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.profile-claim-badge.unpaid.clickable:hover {
+  background: linear-gradient(135deg, #d05500, #a84400);
+  transform: scale(1.05);
+}
+
+/* Cut name */
+.profile-claim-cut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .profile-claim-cut {
-  font-size: 1.05rem;
+  font-size: 1.2rem;
   font-weight: 800;
   color: #1e0800;
-  grid-column: 1;
+  line-height: 1.2;
 }
 
-.profile-claim-farm {
-  font-size: 0.78rem;
-  color: rgba(20,6,0,0.5);
-  grid-column: 1 / -1;
+.profile-claim-view-link {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #6b3500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.profile-claim-view-link:hover {
+  text-decoration: underline;
+  color: #8b4500;
+}
+
+/* Info grid */
+.profile-claim-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 16px;
+  padding: 12px 14px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 10px;
+}
+
+.profile-claim-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.profile-claim-info-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b4020;
+}
+
+.profile-claim-info-value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2a1000;
+}
+
+/* Footer with status + date */
+.profile-claim-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0,0,0,0.1);
 }
 
 .profile-claim-status {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  grid-column: 1 / -1;
-  margin-top: 6px;
 }
 
 .profile-claim-date {
-  font-size: 0.7rem;
-  color: rgba(20,6,0,0.4);
-  grid-column: 1 / -1;
+  font-size: 0.72rem;
+  color: #5a3000;
 }
 
+/* Timer */
+.profile-claim-expiry {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #8b4513;
+  padding: 8px 12px;
+  background: rgba(180,100,0,0.12);
+  border: 1px solid rgba(180,100,0,0.25);
+  border-radius: 8px;
+}
+
+.profile-claim-expiry--urgent {
+  color: #a01515;
+  background: rgba(160,21,21,0.12);
+  border-color: rgba(160,21,21,0.3);
+  animation: pulse-expiry 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-expiry {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
+}
 /* â”€â”€ Farmer listings â”€â”€ */
 .profile-listings {
   display: flex;
@@ -682,6 +808,91 @@
 
 .profile-listing-edit-row { display: grid; grid-template-columns: 1fr; gap: 8px; }
 
+/* ── Buyer orders ── */
+.profile-orders {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profile-order-card {
+  background: rgba(0,0,0,0.13);
+  border: 1px solid rgba(0,0,0,0.22);
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-order-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile-order-date {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #1e0800;
+}
+
+.profile-order-status {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.profile-order-items {
+  margin: 0;
+  padding: 0 0 0 18px;
+  font-size: 0.82rem;
+  color: rgba(20,6,0,0.62);
+  line-height: 1.7;
+}
+
+.profile-order-items li::marker {
+  color: rgba(20,6,0,0.3);
+}
+
+.profile-order-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0,0,0,0.12);
+}
+
+.profile-order-total {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #1e0800;
+}
+
+.profile-order-paid-at {
+  font-size: 0.72rem;
+  color: rgba(20,6,0,0.4);
+}
+
+.profile-pay-balance-btn {
+  margin-top: 8px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: 1px solid #4a0e00;
+  background: linear-gradient(170deg, #8b1a00 0%, #a82800 50%, #781500 100%);
+  color: #fde8c0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.12s;
+  width: fit-content;
+}
+.profile-pay-balance-btn:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
 /* ── Danger zone ── */
 .profile-danger-zone { border-color: rgba(139,0,0,0.35) !important; }
 
@@ -738,7 +949,34 @@
 }
 .profile-delete-confirm-btn:hover:not(:disabled) { filter: brightness(1.1); }
 .profile-delete-confirm-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+/* ── Farmer order action button ── */
+.profile-order-action-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #4a0e00;
+  background: linear-gradient(170deg, #8b1a00 0%, #a82800 50%, #781500 100%);
+  color: #fde8c0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.12s;
+}
+.profile-order-action-btn:hover:not(:disabled) {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+.profile-order-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
 
+.profile-order-waiting {
+  font-size: 0.78rem;
+  font-style: italic;
+  color: rgba(20,6,0,0.5);
+}
 /* â”€â”€ Responsive â”€â”€ */
 @media (max-width: 600px) {
   .profile-header-card { flex-direction: column; }

@@ -17,6 +17,7 @@ import PostListingPage from "./pages/PostListing";
 import ForgotPasswordPage from "./pages/ForgotPassword";
 import ResetPasswordPage from "./pages/ResetPassword";
 import AdminPage from "./pages/Admin";
+import AdminUserDetailPage from "./pages/AdminUserDetail";
 import DemandBoardPage from "./pages/DemandBoard";
 import NotFoundPage from "./pages/NotFound";
 import FarmerProfilePage from "./pages/FarmerProfile";
@@ -196,6 +197,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin/user/:id" element={<AdminUserDetailPage />} />
             <Route path="/demand" element={<DemandBoardPage />} />
             <Route path="/farmer/:id" element={<FarmerProfilePage />} />
             <Route path="/" element={<HomePage />} />

@@ -378,3 +378,141 @@
   border-radius: 20px;
   padding: 3px 10px;
 }
+
+/* ── Admin User Link ── */
+.admin-user-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+.admin-user-link:hover {
+  text-decoration: underline;
+  color: #5a2d0c;
+}
+
+/* ── Admin User Detail ── */
+.aud-back {
+  font-size: 0.85rem;
+  color: rgba(50,20,0,0.7);
+  text-decoration: none;
+}
+.aud-back:hover { text-decoration: underline; }
+
+.aud-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.aud-avatar {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: rgba(58,31,7,0.18);
+  color: rgba(50,20,0,0.8);
+  font-weight: 800;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+}
+
+.aud-name { margin: 0 0 4px; font-size: 1.35rem; font-weight: 700; color: rgba(20,6,0,0.92); }
+
+.aud-role {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  margin-right: 8px;
+}
+.aud-role[data-role="BUYER"]  { background: rgba(52,152,219,0.15); color: #2b7bba; }
+.aud-role[data-role="FARMER"] { background: rgba(39,174,96,0.15);  color: #1a7a3a; }
+.aud-role[data-role="ADMIN"]  { background: rgba(155,89,182,0.15); color: #7c3aed; }
+
+.aud-status {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 12px;
+}
+.aud-status--ok      { background: rgba(39,174,96,0.15); color: #1a7a3a; }
+.aud-status--pending { background: rgba(243,156,18,0.15); color: #b87a00; }
+
+.aud-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.aud-card {
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(58,31,7,0.18);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+
+.aud-card-title {
+  margin: 0 0 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(20,6,0,0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.aud-field {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(58,31,7,0.08);
+  font-size: 0.85rem;
+}
+.aud-field:last-child { border-bottom: none; }
+.aud-field label { font-weight: 600; color: rgba(20,6,0,0.6); }
+.aud-field span  { color: rgba(20,6,0,0.88); }
+
+.aud-section { margin-top: 8px; }
+.aud-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(20,6,0,0.85);
+  margin: 0 0 14px;
+}
+
+.aud-orders {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.aud-order-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.5);
+  border: 1px solid rgba(58,31,7,0.14);
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+.aud-order-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.aud-order-id   { font-size: 0.78rem; font-weight: 600; color: rgba(20,6,0,0.7); font-family: monospace; }
+.aud-order-date { font-size: 0.72rem; color: rgba(20,6,0,0.5); }
+
+.aud-order-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.aud-order-amount { font-weight: 700; font-size: 0.92rem; color: rgba(20,6,0,0.88); }
+.aud-order-type   { font-size: 0.68rem; font-weight: 600; color: #2563eb; background: rgba(37,99,235,0.1); padding: 2px 8px; border-radius: 10px; }
+.aud-order-status { font-size: 0.68rem; font-weight: 700; padding: 3px 10px; border-radius: 10px; }

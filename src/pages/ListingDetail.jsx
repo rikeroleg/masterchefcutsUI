@@ -67,6 +67,9 @@ export default function ListingDetail() {
         color:  '#f5c97a',
         price:  Math.round(listing.pricePerLb * listing.weightLbs / listing.totalCuts),
         qty:    1,
+        listingId: listing.id,
+        breed: listing.breed,
+        sourceFarm: listing.sourceFarm,
       })
       toast.success(`${cut.label} added to cart!`)
     } catch (err) {

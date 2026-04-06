@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { api } from '../api/client'
@@ -6,18 +6,18 @@ import { api } from '../api/client'
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
 
 const STRIPE_APPEARANCE = {
-  theme: 'flat',
+  theme: 'night',
   variables: {
-    colorPrimary: '#b84a00',
-    colorBackground: '#ffffff',
-    colorText: '#1e0800',
-    colorDanger: '#c0392b',
+    colorPrimary: '#f39c12',
+    colorBackground: '#0e0e16',
+    colorText: '#ffffff',
+    colorDanger: '#e74c3c',
     fontFamily: 'inherit',
     borderRadius: '10px',
   },
 }
 
-function CartCheckoutForm({ items, amountCents, isDeposit, onSuccess, onCancel }) {
+function BalanceCheckoutForm({ amountCents, onSuccess, onCancel }) {
   const stripe   = useStripe()
   const elements = useElements()
   const [error,   setError]   = useState('')
@@ -42,7 +42,7 @@ function CartCheckoutForm({ items, amountCents, isDeposit, onSuccess, onCancel }
     }
 
     if (paymentIntent?.status === 'succeeded') {
-      onSuccess(paymentIntent.id)
+      onSuccess()
     } else {
       setError('Payment did not complete. Please try again.')
       setLoading(false)
@@ -53,17 +53,9 @@ function CartCheckoutForm({ items, amountCents, isDeposit, onSuccess, onCancel }
 
   return (
     <form className="pm-form" onSubmit={handleSubmit}>
-      <div className="pm-cart-lines">
-        {items.map(item => (
-          <div key={item.id} className="pm-cart-line">
-            <span className="pm-cart-line-name">{item.name} &times; {item.qty}</span>
-            <span className="pm-cart-line-price">${(item.price * item.qty).toLocaleString()}</span>
-          </div>
-        ))}
-        <div className="pm-cart-total">
-          <span>Total</span>
-          <span>${dollars}</span>
-        </div>
+      <div className="pm-cut-summary">
+        <span className="pm-cut-name">Remaining Balance</span>
+        <span className="pm-cut-amount">${dollars}</span>
       </div>
 
       <PaymentElement />
@@ -75,61 +67,34 @@ function CartCheckoutForm({ items, amountCents, isDeposit, onSuccess, onCancel }
           Cancel
         </button>
         <button type="submit" className="pm-pay-btn" disabled={!stripe || loading}>
-          {loading ? 'Processing…' : isDeposit ? `Pay Deposit $${dollars}` : `Pay $${dollars}`}
+          {loading ? 'Processing\u2026' : `Pay $${dollars}`}
         </button>
       </div>
     </form>
   )
 }
 
-export default function CartPaymentModal({ items, paymentType, onSuccess, onClose }) {
+export default function BalancePaymentModal({ order, onSuccess, onClose }) {
   const [clientSecret, setClientSecret] = useState(null)
   const [amountCents,  setAmountCents]  = useState(0)
   const [error,        setError]        = useState('')
-  const isDeposit = paymentType === 'DEPOSIT'
-  const intentCreatedRef = useRef(false) // Prevent duplicate intent creation
 
   useEffect(() => {
-    // Guard against duplicate calls (React StrictMode, rapid re-renders, etc.)
-    if (intentCreatedRef.current) return
-    
-    const parsedCutIds = items.map(item => Number(item.cutId))
-    const hasInvalidItem = parsedCutIds.some(id => !Number.isInteger(id) || id <= 0)
-    const hasInvalidQty = items.some(item => Number(item.qty) !== 1)
-
-    if (hasInvalidItem || hasInvalidQty) {
-      setError('This checkout currently supports claimed listing cuts only. Remove non-claim items and set each quantity to 1.')
-      return
-    }
-
-    const cutIds = parsedCutIds
-
-    if (new Set(cutIds).size !== cutIds.length) {
-      setError('Cart contains duplicate cuts. Please refresh your cart and try again.')
-      return
-    }
-
-    // Mark as in-progress to prevent duplicate calls
-    intentCreatedRef.current = true
-
-    api.post('/api/payments/cart-intent', { cutIds, paymentType: isDeposit ? 'DEPOSIT' : 'FULL' })
+    api.post(`/api/payments/balance-intent/${order.id}`)
       .then(res => {
         setClientSecret(res.clientSecret)
         setAmountCents(res.amountCents)
       })
-      .catch(err => {
-        setError(err.message || 'Could not initialize payment.')
-        intentCreatedRef.current = false // Allow retry on error
-      })
-  }, [items])
+      .catch(err => setError(err.message || 'Could not initialize balance payment.'))
+  }, [order.id])
 
   return (
     <div className="pm-overlay" onClick={onClose}>
       <div className="pm-modal" onClick={e => e.stopPropagation()}>
         <div className="pm-header">
           <div className="pm-header-info">
-            <h2 className="pm-title">{isDeposit ? 'Pay 50% Deposit' : 'Complete Order'}</h2>
-            <p className="pm-subtitle">{items.length} {items.length === 1 ? 'item' : 'items'}{isDeposit ? ' — deposit payment' : ' — whole animal purchase'}</p>
+            <h2 className="pm-title">Pay Remaining Balance</h2>
+            <p className="pm-subtitle">Complete your order payment</p>
           </div>
           <button className="pm-close-btn" onClick={onClose}>&times;</button>
         </div>
@@ -137,7 +102,7 @@ export default function CartPaymentModal({ items, paymentType, onSuccess, onClos
         {error && <p className="pm-error" style={{ padding: '0 24px 16px' }}>{error}</p>}
 
         {!clientSecret && !error && (
-          <div className="pm-loading">Preparing payment\u2026</div>
+          <div className="pm-loading">Preparing payment&hellip;</div>
         )}
 
         {clientSecret && (
@@ -145,10 +110,8 @@ export default function CartPaymentModal({ items, paymentType, onSuccess, onClos
             stripe={stripePromise}
             options={{ clientSecret, appearance: STRIPE_APPEARANCE }}
           >
-            <CartCheckoutForm
-              items={items}
+            <BalanceCheckoutForm
               amountCents={amountCents}
-              isDeposit={isDeposit}
               onSuccess={onSuccess}
               onCancel={onClose}
             />
