@@ -136,14 +136,13 @@
 }
 
 .hp-hero-p {
-  font-size: 1.1rem;
-  color: rgba(255,255,255,0.92);
-  line-height: 1.75;
-  margin: 0 0 36px;
-  max-width: 580px;
-  margin-left: auto;
-  margin-right: auto;
-  text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+  font-size: 1.12rem;
+  font-weight: 600;
+  color: #030303;
+  line-height: 1.85;
+  margin: 0 auto 36px;
+  max-width: 560px;
+  letter-spacing: 0.015em;
 }
 
 .hp-hero-actions {
