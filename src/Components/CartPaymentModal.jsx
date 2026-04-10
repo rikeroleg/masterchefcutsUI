@@ -17,7 +17,7 @@ const STRIPE_APPEARANCE = {
   },
 }
 
-function CartCheckoutForm({ items, amountCents, isDeposit, onSuccess, onCancel }) {
+function CartCheckoutForm({ items, amountCents, onSuccess, onCancel }) {
   const stripe   = useStripe()
   const elements = useElements()
   const [error,   setError]   = useState('')
@@ -75,18 +75,17 @@ function CartCheckoutForm({ items, amountCents, isDeposit, onSuccess, onCancel }
           Cancel
         </button>
         <button type="submit" className="pm-pay-btn" disabled={!stripe || loading}>
-          {loading ? 'Processing…' : isDeposit ? `Pay Deposit $${dollars}` : `Pay $${dollars}`}
+          {loading ? 'Processing…' : `Pay $${dollars}`}
         </button>
       </div>
     </form>
   )
 }
 
-export default function CartPaymentModal({ items, paymentType, onSuccess, onClose }) {
+export default function CartPaymentModal({ items, onSuccess, onClose }) {
   const [clientSecret, setClientSecret] = useState(null)
   const [amountCents,  setAmountCents]  = useState(0)
   const [error,        setError]        = useState('')
-  const isDeposit = paymentType === 'DEPOSIT'
   const intentCreatedRef = useRef(false) // Prevent duplicate intent creation
 
   useEffect(() => {
@@ -112,7 +111,7 @@ export default function CartPaymentModal({ items, paymentType, onSuccess, onClos
     // Mark as in-progress to prevent duplicate calls
     intentCreatedRef.current = true
 
-    api.post('/api/payments/cart-intent', { cutIds, paymentType: isDeposit ? 'DEPOSIT' : 'FULL' })
+    api.post('/api/payments/cart-intent', { cutIds })
       .then(res => {
         setClientSecret(res.clientSecret)
         setAmountCents(res.amountCents)
@@ -128,8 +127,8 @@ export default function CartPaymentModal({ items, paymentType, onSuccess, onClos
       <div className="pm-modal" onClick={e => e.stopPropagation()}>
         <div className="pm-header">
           <div className="pm-header-info">
-            <h2 className="pm-title">{isDeposit ? 'Pay 50% Deposit' : 'Complete Order'}</h2>
-            <p className="pm-subtitle">{items.length} {items.length === 1 ? 'item' : 'items'}{isDeposit ? ' — deposit payment' : ' — whole animal purchase'}</p>
+            <h2 className="pm-title">Complete Order</h2>
+            <p className="pm-subtitle">{items.length} {items.length === 1 ? 'item' : 'items'}</p>
           </div>
           <button className="pm-close-btn" onClick={onClose}>&times;</button>
         </div>
@@ -148,7 +147,6 @@ export default function CartPaymentModal({ items, paymentType, onSuccess, onClos
             <CartCheckoutForm
               items={items}
               amountCents={amountCents}
-              isDeposit={isDeposit}
               onSuccess={onSuccess}
               onCancel={onClose}
             />

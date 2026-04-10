@@ -14,9 +14,18 @@ export default function Admin() {
   const [users,      setUsers]     = useState([])
   const [listings,   setListings]  = useState([])
   const [disputes,   setDisputes]  = useState([])
+  const [orders,     setOrders]    = useState([])
   const [resolutionText, setResolutionText] = useState({})
+  const [refundingId,    setRefundingId]    = useState(null)
+  const [refundReason,   setRefundReason]   = useState('')
   const [loading,  setLoading]  = useState(false)
   const [error,    setError]    = useState('')
+  const [financials,      setFinancials]      = useState(null)
+  const [financialOrders, setFinancialOrders] = useState([])
+  const [finFrom,         setFinFrom]         = useState('')
+  const [finTo,           setFinTo]           = useState('')
+  const [finStatus,       setFinStatus]       = useState('ALL')
+  const [finLoading,      setFinLoading]      = useState(false)
 
   useEffect(() => {
     if (!user || user.role !== 'admin') { navigate('/'); return }
@@ -39,6 +48,61 @@ export default function Admin() {
 
   async function loadDisputes() {
     try { setDisputes(await api.get('/api/admin/disputes')) } catch {}
+  }
+
+  async function loadOrders() {
+    try { setOrders(await api.get('/api/admin/orders')) } catch {}
+  }
+
+  async function loadFinancials() {
+    setFinLoading(true)
+    try {
+      const params = new URLSearchParams()
+      if (finFrom) params.set('from', finFrom)
+      if (finTo)   params.set('to',   finTo)
+      if (finStatus && finStatus !== 'ALL') params.set('status', finStatus)
+      const [summary, orders] = await Promise.all([
+        api.get(`/api/admin/financials/summary?${params}`),
+        api.get(`/api/admin/financials/orders?${params}`),
+      ])
+      setFinancials(summary)
+      setFinancialOrders(orders)
+    } catch (err) { setError(err.message || 'Failed to load financials') }
+    setFinLoading(false)
+  }
+
+  function exportCSV() {
+    const headers = ['Order ID', 'Date', 'Status', 'Total ($)', 'Platform Fee ($)', 'Farmer Payout ($)', 'Buyer']
+    const rows = financialOrders.map(o => [
+      o.id,
+      o.orderDate ? new Date(o.orderDate).toLocaleDateString() : '',
+      o.status || '',
+      (o.totalAmount || 0).toFixed(2),
+      (o.platformFee || 0).toFixed(2),
+      (o.farmerPayout || 0).toFixed(2),
+      o.buyerName || o.participantId || '',
+    ])
+    const csv = [headers, ...rows].map(r => r.join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `financials-${new Date().toISOString().slice(0, 10)}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  async function issueRefund(orderId) {
+    const reason = refundReason.trim() || 'Admin-initiated refund'
+    setLoading(true)
+    setError('')
+    try {
+      await api.post(`/api/admin/orders/${orderId}/refund`, { reason })
+      setRefundingId(null)
+      setRefundReason('')
+      await loadOrders()
+    } catch (err) { setError(err.message) }
+    setLoading(false)
   }
 
   async function resolveDispute(id) {
@@ -104,8 +168,12 @@ export default function Admin() {
         {error && <p className="admin-error">{error}</p>}
 
         <div className="admin-tabs">
-          {['stats', 'users', 'listings', 'disputes'].map(t => (
-            <button key={t} className={`admin-tab${tab === t ? ' active' : ''}`} onClick={() => setTab(t)}>
+          {['stats', 'users', 'listings', 'orders', 'disputes', 'financials'].map(t => (
+            <button
+              key={t}
+              className={`admin-tab${tab === t ? ' active' : ''}`}
+              onClick={() => { setTab(t); if (t === 'orders') loadOrders(); if (t === 'financials') loadFinancials() }}
+            >
               {t.charAt(0).toUpperCase() + t.slice(1)}
               {t === 'users' && pending.length > 0 && <span className="admin-tab-dot" />}
               {t === 'disputes' && openDisputes.length > 0 && <span className="admin-tab-dot" />}
@@ -200,6 +268,69 @@ export default function Admin() {
           </div>
         )}
 
+        {/* ── Orders ── */}
+        {tab === 'orders' && (
+          <div className="admin-table-wrap">
+            <p className="admin-section-label">All orders ({orders.length})</p>
+            {orders.length === 0 && <p style={{ fontSize: '0.85rem', color: 'rgba(20,6,0,0.5)', margin: 0 }}>No orders yet.</p>}
+            <div className="admin-orders-list">
+              {orders.map(o => {
+                const st = (o.status || '').toUpperCase()
+                const refundable = ['PAID', 'ACCEPTED', 'PROCESSING', 'READY', 'COMPLETED'].includes(st)
+                const isExpanding = refundingId === o.id
+                return (
+                  <div key={o.id} className="admin-order-row">
+                    <div className="admin-order-info">
+                      <span className={`admin-order-status admin-order-status--${st.toLowerCase()}`}>{st.replace('_', ' ')}</span>
+                      <span className="admin-order-amount">${(o.totalAmount || 0).toFixed(2)}</span>
+                      <span className="admin-order-meta">Buyer: {o.participantId}</span>
+                      {o.orderDate && (
+                        <span className="admin-order-meta">{new Date(o.orderDate).toLocaleDateString()}</span>
+                      )}
+                    </div>
+                    {refundable && !isExpanding && (
+                      <button
+                        className="admin-refund-btn"
+                        disabled={loading}
+                        onClick={() => { setRefundingId(o.id); setRefundReason('') }}
+                      >
+                        Refund
+                      </button>
+                    )}
+                    {isExpanding && (
+                      <div className="admin-refund-form">
+                        <textarea
+                          className="admin-resolve-textarea"
+                          placeholder="Reason for refund…"
+                          rows={2}
+                          value={refundReason}
+                          onChange={e => setRefundReason(e.target.value)}
+                        />
+                        <div className="admin-refund-form-actions">
+                          <button
+                            className="admin-approve-btn"
+                            disabled={loading}
+                            onClick={() => issueRefund(o.id)}
+                          >
+                            Confirm Refund
+                          </button>
+                          <button
+                            className="admin-delete-btn"
+                            disabled={loading}
+                            onClick={() => setRefundingId(null)}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
         {/* ── Disputes ── */}
         {tab === 'disputes' && (
           <div className="admin-table-wrap">
@@ -255,6 +386,104 @@ export default function Admin() {
                   </div>
                 ))}
               </>
+            )}
+          </div>
+        )}
+
+        {/* ── Financials ── */}
+        {tab === 'financials' && (
+          <div className="admin-table-wrap">
+            {/* Filter bar */}
+            <div className="admin-fin-filters">
+              <div className="admin-fin-filter-group">
+                <label className="admin-section-label">From</label>
+                <input type="date" className="admin-fin-input" value={finFrom} onChange={e => setFinFrom(e.target.value)} />
+              </div>
+              <div className="admin-fin-filter-group">
+                <label className="admin-section-label">To</label>
+                <input type="date" className="admin-fin-input" value={finTo} onChange={e => setFinTo(e.target.value)} />
+              </div>
+              <div className="admin-fin-filter-group">
+                <label className="admin-section-label">Status</label>
+                <select className="admin-fin-input" value={finStatus} onChange={e => setFinStatus(e.target.value)}>
+                  <option value="ALL">All paid</option>
+                  <option value="PAID">Paid</option>
+                  <option value="ACCEPTED">Accepted</option>
+                  <option value="PROCESSING">Processing</option>
+                  <option value="READY">Ready</option>
+                  <option value="COMPLETED">Completed</option>
+                </select>
+              </div>
+              <button className="admin-approve-btn" onClick={loadFinancials} disabled={finLoading} style={{ alignSelf: 'flex-end' }}>
+                {finLoading ? 'Loading…' : 'Apply'}
+              </button>
+              {financialOrders.length > 0 && (
+                <button className="admin-fin-export-btn" onClick={exportCSV} style={{ alignSelf: 'flex-end' }}>
+                  ↓ Export CSV
+                </button>
+              )}
+            </div>
+
+            {/* Revenue cards */}
+            {financials && (
+              <div className="admin-fin-cards">
+                <div className="admin-fin-card">
+                  <span className="admin-fin-card-value">${financials.totalRevenue.toFixed(2)}</span>
+                  <span className="admin-fin-card-label">Total Revenue</span>
+                </div>
+                <div className="admin-fin-card admin-fin-card--fee">
+                  <span className="admin-fin-card-value">${financials.platformFees.toFixed(2)}</span>
+                  <span className="admin-fin-card-label">Platform Fees (15%)</span>
+                </div>
+                <div className="admin-fin-card admin-fin-card--payout">
+                  <span className="admin-fin-card-value">${financials.farmerPayouts.toFixed(2)}</span>
+                  <span className="admin-fin-card-label">Farmer Payouts (85%)</span>
+                </div>
+                <div className="admin-fin-card">
+                  <span className="admin-fin-card-value">{financials.orderCount}</span>
+                  <span className="admin-fin-card-label">Orders</span>
+                </div>
+              </div>
+            )}
+
+            {/* Orders table */}
+            {financialOrders.length > 0 ? (
+              <div className="admin-fin-table-wrap">
+                <table className="admin-fin-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Order ID</th>
+                      <th>Status</th>
+                      <th>Total</th>
+                      <th>Fee (15%)</th>
+                      <th>Payout (85%)</th>
+                      <th>Buyer</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {financialOrders.map(o => (
+                      <tr key={o.id}>
+                        <td>{o.orderDate ? new Date(o.orderDate).toLocaleDateString() : '—'}</td>
+                        <td className="admin-fin-id">{(o.id || '').slice(0, 8)}</td>
+                        <td><span className={`admin-order-status admin-order-status--${(o.status || '').toLowerCase()}`}>{o.status}</span></td>
+
+                        <td className="admin-fin-num">${(o.totalAmount || 0).toFixed(2)}</td>
+                        <td className="admin-fin-num admin-fin-num--fee">${(o.platformFee || 0).toFixed(2)}</td>
+                        <td className="admin-fin-num admin-fin-num--payout">${(o.farmerPayout || 0).toFixed(2)}</td>
+                        <td className="admin-fin-buyer">{o.buyerName || (o.participantId || '').slice(0, 8)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              !finLoading && financials && (
+                <p style={{ fontSize: '0.85rem', color: 'rgba(20,6,0,0.5)', margin: 0 }}>No orders match the selected filters.</p>
+              )
+            )}
+            {!financials && !finLoading && (
+              <p style={{ fontSize: '0.85rem', color: 'rgba(20,6,0,0.45)', margin: 0 }}>Select filters and click Apply to load financials.</p>
             )}
           </div>
         )}

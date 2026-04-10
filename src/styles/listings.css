@@ -105,12 +105,28 @@
 }
 .listings-zip-clear:hover { color: #fff; }
 
+.listings-radius-select {
+  background: rgba(255,255,255,0.07);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 7px 8px;
+  color: rgba(255,255,255,0.65);
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.listings-radius-select:focus { border-color: rgba(243,156,18,0.45); }
+.listings-radius-select option { background: #2a1a08; }
+
 .listings-zip-label {
   font-size: 0.8rem;
   color: rgba(255,255,255,0.5);
   margin: -20px 0 12px;
 }
 .listings-zip-label strong { color: #f39c12; }
+.listings-radius-label { color: rgba(255,255,255,0.35); font-size: 0.75rem; }
 
 .listings-load-more {
   background: rgba(243,156,18,0.15);
@@ -308,7 +324,7 @@
 
 .lc-farm {
   font-size: 0.78rem;
-  color: rgba(20,6,0,0.55);
+  color: rgba(20,6,0,0.82);
 }
 
 .lc-farm-link {
@@ -332,19 +348,19 @@
   letter-spacing: -0.02em;
 }
 
-.lc-price small { font-size: 0.65rem; font-weight: 400; color: rgba(20,6,0,0.5); }
+.lc-price small { font-size: 0.65rem; font-weight: 400; color: rgba(20,6,0,0.75); }
 
 .lc-weight {
   display: block;
   font-size: 0.72rem;
-  color: rgba(20,6,0,0.5);
+  color: rgba(20,6,0,0.75);
   margin-top: 2px;
 }
 
 /* Description */
 .lc-desc {
   font-size: 0.82rem;
-  color: rgba(20,6,0,0.62);
+  color: rgba(20,6,0,0.88);
   line-height: 1.6;
   margin: 0 22px 0;
   padding-bottom: 14px;
@@ -353,7 +369,7 @@
 /* Processing date badge */
 .lc-processing-date {
   font-size: 0.8rem;
-  color: rgba(20,6,0,0.75);
+  color: rgba(20,6,0,0.92);
   background: rgba(0,0,0,0.12);
   border: 1px solid rgba(0,0,0,0.2);
   border-radius: 8px;
@@ -373,7 +389,7 @@
 
 .lc-posted {
   font-size: 0.72rem;
-  color: rgba(20,6,0,0.45);
+  color: rgba(20,6,0,0.72);
 }
 
 .lc-claim-btn {
@@ -416,7 +432,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(20,6,0,0.5);
+  color: rgba(20,6,0,0.82);
   margin: 0 0 12px;
 }
 
@@ -468,12 +484,12 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(20,6,0,0.5);
+  color: rgba(20,6,0,0.82);
 }
 
 .spb-count {
   font-size: 0.78rem;
-  color: rgba(20,6,0,0.65);
+  color: rgba(20,6,0,0.88);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -486,8 +502,8 @@
   font-weight: 700;
   padding: 2px 8px;
   border-radius: 50px;
-  background: rgba(0,0,0,0.12);
-  color: rgba(20,6,0,0.55);
+  background: rgba(0,0,0,0.14);
+  color: rgba(20,6,0,0.82);
 }
 
 .spb-pct--full {
@@ -533,17 +549,17 @@
 }
 
 .spb-cut--claimed {
-  background: rgba(100,34,0,0.12);
-  border-color: rgba(100,34,0,0.3);
-  color: rgba(20,6,0,0.45);
+  background: rgba(100,34,0,0.16);
+  border-color: rgba(100,34,0,0.4);
+  color: rgba(20,6,0,0.68);
   text-decoration: line-through;
-  text-decoration-color: rgba(100,34,0,0.4);
+  text-decoration-color: rgba(100,34,0,0.55);
 }
 
 .spb-cut--open {
-  background: rgba(0,0,0,0.12);
-  border-color: rgba(0,0,0,0.2);
-  color: rgba(20,6,0,0.78);
+  background: rgba(0,0,0,0.14);
+  border-color: rgba(0,0,0,0.28);
+  color: rgba(20,6,0,0.92);
 }
 
 /* Legend */
@@ -557,7 +573,7 @@
   align-items: center;
   gap: 5px;
   font-size: 0.68rem;
-  color: rgba(20,6,0,0.5);
+  color: rgba(20,6,0,0.78);
 }
 
 .spb-legend-item span {
@@ -581,15 +597,15 @@
 .lc-details-link {
   font-size: 0.75rem;
   font-weight: 600;
-  color: rgba(20,6,0,0.55);
+  color: rgba(20,6,0,0.82);
   text-decoration: none;
   padding: 6px 10px;
   border-radius: 8px;
-  border: 1px solid rgba(0,0,0,0.18);
+  border: 1px solid rgba(0,0,0,0.28);
   transition: all 0.15s;
   white-space: nowrap;
 }
-.lc-details-link:hover { color: #1e0800; border-color: rgba(0,0,0,0.3); }
+.lc-details-link:hover { color: #1e0800; border-color: rgba(0,0,0,0.45); }
 
 /* Waitlist button */
 .lc-waitlist-btn {
@@ -654,3 +670,43 @@
   .lc-header { flex-wrap: wrap; }
   .lc-price-block { margin-left: auto; }
 }
+/* ── FarmerProfile rating badge ── */
+.fp-rating-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.fp-rating-stars  { font-size: 1.1rem; letter-spacing: 2px; }
+.fp-rating-value  { font-weight: 700; font-size: 1rem; color: #fff; }
+.fp-rating-count  { font-size: 0.78rem; color: rgba(255,255,255,0.55); }
+
+/* ── FarmerProfile reviews panel ── */
+.fp-reviews-section {
+  margin-top: 28px;
+}
+.fp-reviews-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #f5c97a;
+  margin: 0 0 14px;
+}
+.fp-reviews {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.fp-review {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.fp-review-header  { display: flex; justify-content: space-between; align-items: center; }
+.fp-review-stars   { font-size: 0.95rem; letter-spacing: 2px; }
+.fp-review-date    { font-size: 0.7rem; color: rgba(255,255,255,0.4); }
+.fp-review-comment { font-size: 0.86rem; color: rgba(255,255,255,0.8); line-height: 1.55; margin: 0; }
+.fp-review-author  { font-size: 0.72rem; color: rgba(255,255,255,0.4); margin: 0; }

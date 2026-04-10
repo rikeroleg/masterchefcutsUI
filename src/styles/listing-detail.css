@@ -307,6 +307,9 @@
 .ld-cut:not(.ld-cut--claimed):hover { border-color: rgba(0,0,0,0.35); }
 .ld-cut--claimed { opacity: 0.5; }
 .ld-cut-label { font-size: 0.9rem; font-weight: 600; color: #1e0800; }
+.ld-cut-meta { display: flex; align-items: center; gap: 6px; margin: 2px 0 4px; }
+.ld-cut-weight { font-size: 0.72rem; color: rgba(20,6,0,0.5); font-weight: 500; }
+.ld-cut-price  { font-size: 0.78rem; color: #6b1800; font-weight: 700; }
 .ld-cut-claim-btn {
   padding: 7px 0;
   border-radius: 8px;
@@ -399,4 +402,56 @@
   .ld-hero-right { text-align: left; }
   .ld-stats { gap: 14px; padding: 14px 16px; }
   .ld-stat-sep { display: none; }
+}
+/* Leave a Review form */
+.ld-review-form-section {
+  background: linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
+  border-radius: 18px;
+  padding: 24px;
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
+}
+.ld-review-form { display: flex; flex-direction: column; gap: 12px; }
+.ld-review-stars-row { display: flex; gap: 6px; }
+.ld-review-star-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: rgba(20,6,0,0.2);
+  cursor: pointer;
+  transition: color 0.1s;
+  padding: 0;
+  line-height: 1;
+}
+.ld-review-star-btn.active,
+.ld-review-star-btn:hover { color: #1e0800; }
+.ld-review-comment-input {
+  background: rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.22);
+  border-radius: 10px;
+  color: #1e0800;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 12px 14px;
+  resize: vertical;
+}
+.ld-review-comment-input::placeholder { color: rgba(20,6,0,0.35); }
+.ld-review-submit-btn {
+  align-self: flex-start;
+  padding: 10px 24px;
+  background: linear-gradient(170deg, #2d6a1e 0%, #3d8c28 50%, #245516 100%);
+  border: 1.5px solid #1a4010;
+  border-radius: 10px;
+  color: #d8f5c8;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+}
+.ld-review-submit-btn:disabled { opacity: 0.5; cursor: default; }
+.ld-review-done {
+  text-align: center;
+  color: rgba(255,255,255,0.8);
+  font-size: 0.9rem;
+  padding: 12px;
 }

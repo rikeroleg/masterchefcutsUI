@@ -5,7 +5,6 @@ import { useToast } from '../context/ToastContext'
 import { useCart } from '../context/CartContext'
 import { api } from '../api/client'
 import DisputeModal from '../Components/DisputeModal'
-import BalancePaymentModal from '../Components/BalancePaymentModal'
 
 const ANIMAL_EMOJI = { BEEF: '🐄', PORK: '🐷', LAMB: '🐑' }
 
@@ -46,6 +45,7 @@ const STATUS_STYLE = {
   FULLY_CLAIMED:  { color: '#8b4513', label: 'Claimed — awaiting processing' },
   PROCESSING:     { color: '#1a5276', label: 'Processing soon' },
   COMPLETE:       { color: '#4a4a4a', label: 'Complete' },
+  CLOSED:         { color: '#7f8c8d', label: 'Closed' },
   claimed:        { color: '#8b4513', label: 'Claimed — awaiting pool' },
   processing:     { color: '#0d5c2f', label: 'Processing soon' },
   complete:       { color: '#1a5276', label: 'Complete — ready for pickup' },
@@ -61,12 +61,31 @@ function Avatar({ name, size = 56 }) {
 }
 
 export default function Profile() {
-  const { user, logout, updateUser } = useAuth()
+  const { user, logout, updateUser, refreshConnectStatus } = useAuth()
   const { toast } = useToast()
   const { addToCart, items: cartItems } = useCart()
   const navigate = useNavigate()
   const isFarmerUser = user?.role === 'farmer'
   const [editing, setEditing]             = useState(false)
+  const [connectLoading, setConnectLoading] = useState(false)
+
+  // Handle Stripe Connect return redirect (?connect=success or ?connect=refresh)
+  useEffect(() => {
+    if (!isFarmerUser) return
+    const params = new URLSearchParams(window.location.search)
+    const connectParam = params.get('connect')
+    if (connectParam === 'success') {
+      // Stripe says onboarding complete — refresh status from backend
+      refreshConnectStatus().then(() => {
+        toast.success('Bank account connected! You can now post listings and receive payouts.')
+      })
+      window.history.replaceState({}, '', window.location.pathname)
+    } else if (connectParam === 'refresh') {
+      toast.info('Onboarding session expired. Please try connecting again.')
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const [myListings, setMyListings]         = useState([])
   const [myClaims, setMyClaims]             = useState([])
   const [claimsError, setClaimsError]       = useState('')
@@ -84,7 +103,7 @@ export default function Profile() {
   const [farmerOrdersLoading, setFarmerOrdersLoading] = useState(false)
   const [updatingOrderId, setUpdatingOrderId]       = useState(null)
   const [confirmingOrderId, setConfirmingOrderId]   = useState(null)
-  const [balanceOrder, setBalanceOrder]             = useState(null)
+  const [confirmReceiptModal, setConfirmReceiptModal] = useState(null)
   const [editListingId, setEditListingId]           = useState(null)
   const [editListingForm, setEditListingForm]       = useState({})
   const [editListingLoading, setEditListingLoading] = useState(false)
@@ -190,10 +209,35 @@ export default function Profile() {
       // Refresh buyer orders
       const updated = await api.get('/api/orders/my')
       setMyOrders(updated)
+      setConfirmReceiptModal(null)
     } catch (err) {
       toast.error(err.message || 'Failed to confirm receipt')
     } finally {
       setConfirmingOrderId(null)
+    }
+  }
+
+  async function handleConnectOnboard() {
+    setConnectLoading(true)
+    try {
+      const data = await api.post('/api/connect/onboard', {})
+      // Redirect to Stripe-hosted onboarding
+      window.location.href = data.url
+    } catch (err) {
+      toast.error(err.message || 'Failed to start onboarding')
+      setConnectLoading(false)
+    }
+  }
+
+  async function handleConnectDashboard() {
+    setConnectLoading(true)
+    try {
+      const data = await api.get('/api/connect/dashboard')
+      window.open(data.url, '_blank', 'noopener')
+    } catch (err) {
+      toast.error(err.message || 'Failed to open Stripe dashboard')
+    } finally {
+      setConnectLoading(false)
     }
   }
 
@@ -218,8 +262,10 @@ export default function Profile() {
     setEditListingLoading(true)
     try {
       await api.patch(`/api/listings/${id}`, {
-        pricePerLb:  parseFloat(editListingForm.pricePerLb),
-        description: editListingForm.description || null,
+        breed:          editListingForm.breed || null,
+        pricePerLb:     editListingForm.pricePerLb ? parseFloat(editListingForm.pricePerLb) : null,
+        description:    editListingForm.description ?? null,
+        processingDate: editListingForm.processingDate || null,
       })
       toast.success('Listing updated.')
       setEditListingId(null)
@@ -235,7 +281,7 @@ export default function Profile() {
   async function handleCloseListing(id) {
     if (closingId !== id) { setClosingId(id); return }
     try {
-      await api.delete(`/api/listings/${id}`)
+      await api.put(`/api/listings/${id}/close`, {})
       toast.info('Listing closed.')
       setClosingId(null)
       setMyListings(prev => prev.filter(l => l.id !== id))
@@ -320,7 +366,7 @@ export default function Profile() {
   function getNextStatus(status) {
     if (!status) return null
     const s = status.toUpperCase()
-    if (s === 'PAID' || s === 'DEPOSIT_PAID' || s === 'SHIPPED') return 'ACCEPTED'
+    if (s === 'PAID') return 'ACCEPTED'
     if (s === 'ACCEPTED') return 'PROCESSING'
     if (s === 'PROCESSING') return 'READY'
     return null // READY and COMPLETED have no next status for farmer
@@ -329,7 +375,7 @@ export default function Profile() {
   function getActionLabel(status) {
     if (!status) return ''
     const s = status.toUpperCase()
-    if (s === 'PAID' || s === 'DEPOSIT_PAID' || s === 'SHIPPED') return 'Accept Order →'
+    if (s === 'PAID') return 'Accept Order →'
     if (s === 'ACCEPTED') return 'Start Processing →'
     if (s === 'PROCESSING') return 'Mark Ready for Pickup →'
     return ''
@@ -340,12 +386,10 @@ export default function Profile() {
     const s = status.toUpperCase()
     const labels = {
       'PAID': 'Paid - Awaiting Acceptance',
-      'DEPOSIT_PAID': 'Deposit Paid',
       'ACCEPTED': 'Accepted',
       'PROCESSING': 'Processing',
       'READY': 'Ready for Pickup',
-      'COMPLETED': 'Completed',
-      'SHIPPED': 'Shipped - Balance Due'
+      'COMPLETED': 'Completed'
     }
     return labels[s] || status
   }
@@ -355,12 +399,10 @@ export default function Profile() {
     const s = status.toUpperCase()
     const colors = {
       'PAID': '#e67e22',
-      'DEPOSIT_PAID': '#e67e22',
       'ACCEPTED': '#3498db',
       'PROCESSING': '#9b59b6',
       'READY': '#27ae60',
-      'COMPLETED': '#7f8c8d',
-      'SHIPPED': '#e67e22'
+      'COMPLETED': '#7f8c8d'
     }
     return colors[s] || '#666'
   }
@@ -405,9 +447,52 @@ export default function Profile() {
           </div>
         </div>
 
+        {/* ── Stripe Connect banner (farmers only) ── */}
+        {isFarmerUser && !user.stripeOnboardingComplete && (
+          <div className="connect-banner connect-banner--pending">
+            <div className="connect-banner-left">
+              <span className="connect-banner-icon">🏦</span>
+              <div>
+                <div className="connect-banner-title">Connect your bank account to receive payouts</div>
+                <div className="connect-banner-sub">
+                  MasterChef Cuts retains a 15% platform fee. You receive 85% of each sale automatically via Stripe.
+                  You must complete this before posting listings.
+                </div>
+              </div>
+            </div>
+            <button
+              className="connect-banner-btn"
+              onClick={handleConnectOnboard}
+              disabled={connectLoading}
+            >
+              {connectLoading ? 'Redirecting…' : 'Connect Bank Account →'}
+            </button>
+          </div>
+        )}
+
+        {isFarmerUser && user.stripeOnboardingComplete && (
+          <div className="connect-banner connect-banner--active">
+            <div className="connect-banner-left">
+              <span className="connect-banner-icon">✅</span>
+              <div>
+                <div className="connect-banner-title">Payouts connected</div>
+                <div className="connect-banner-sub">
+                  You receive 85% of each sale. View your earnings and payout history in your Stripe dashboard.
+                </div>
+              </div>
+            </div>
+            <button
+              className="connect-banner-btn connect-banner-btn--secondary"
+              onClick={handleConnectDashboard}
+              disabled={connectLoading}
+            >
+              {connectLoading ? 'Opening…' : 'View Stripe Dashboard ↗'}
+            </button>
+          </div>
+        )}
+
         {/* ── Edit form ── */}
-        {editing && (
-          <form className="profile-edit-form" onSubmit={handleSave}>
+        {editing && (          <form className="profile-edit-form" onSubmit={handleSave}>
             <div className="profile-edit-title">Edit Profile</div>
             <div className="profile-edit-row">
               <div className="login-field">
@@ -627,9 +712,6 @@ export default function Profile() {
                       </div>
                       <div className="profile-order-amount">
                         ${order.totalAmount?.toFixed(2) || '0.00'}
-                        {order.paymentType === 'DEPOSIT' && order.remainingAmountCents > 0 && (
-                          <span className="profile-order-deposit"> (deposit paid, ${(order.remainingAmountCents / 100).toFixed(2)} balance due)</span>
-                        )}
                       </div>
                       <div className="profile-order-items">
                         {items.map((item, idx) => (
@@ -722,16 +804,31 @@ export default function Profile() {
                       {editListingId === l.id && (
                         <form className="profile-listing-edit-form" onSubmit={e => handleEditListing(e, l.id)}>
                           <div className="profile-listing-edit-row">
-                            <div className="login-field">
-                              <label>Price per lb ($)</label>
-                              <input
-                                type="number" min="0.01" step="0.01"
-                                className="profile-date-input"
-                                style={{ width: '100%' }}
-                                value={editListingForm.pricePerLb || ''}
-                                onChange={e => setEditListingForm(f => ({ ...f, pricePerLb: e.target.value }))}
-                              />
-                            </div>
+                            {l.status === 'ACTIVE' && (
+                              <div className="login-field">
+                                <label>Breed</label>
+                                <input
+                                  type="text"
+                                  className="profile-date-input"
+                                  style={{ width: '100%' }}
+                                  value={editListingForm.breed || ''}
+                                  onChange={e => setEditListingForm(f => ({ ...f, breed: e.target.value }))}
+                                  placeholder="e.g. Angus"
+                                />
+                              </div>
+                            )}
+                            {l.status === 'ACTIVE' && (
+                              <div className="login-field">
+                                <label>Price per lb ($)</label>
+                                <input
+                                  type="number" min="0.01" step="0.01"
+                                  className="profile-date-input"
+                                  style={{ width: '100%' }}
+                                  value={editListingForm.pricePerLb || ''}
+                                  onChange={e => setEditListingForm(f => ({ ...f, pricePerLb: e.target.value }))}
+                                />
+                              </div>
+                            )}
                           </div>
                           <div className="login-field">
                             <label>Description</label>
@@ -741,6 +838,17 @@ export default function Profile() {
                               value={editListingForm.description || ''}
                               onChange={e => setEditListingForm(f => ({ ...f, description: e.target.value }))}
                               placeholder="Update description…"
+                            />
+                          </div>
+                          <div className="login-field">
+                            <label>Processing date {l.processingDate ? '(extend)' : '(set)'}</label>
+                            <input
+                              type="date"
+                              className="profile-date-input"
+                              style={{ width: '100%' }}
+                              value={editListingForm.processingDate || ''}
+                              min={new Date().toISOString().split('T')[0]}
+                              onChange={e => setEditListingForm(f => ({ ...f, processingDate: e.target.value }))}
                             />
                           </div>
                           <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
@@ -758,7 +866,12 @@ export default function Profile() {
                             className="profile-listing-edit-btn"
                             onClick={() => {
                               setEditListingId(l.id)
-                              setEditListingForm({ pricePerLb: l.pricePerLb.toFixed(2), description: l.description || '' })
+                              setEditListingForm({
+                                breed:          l.breed || '',
+                                pricePerLb:     l.pricePerLb.toFixed(2),
+                                description:    l.description || '',
+                                processingDate: l.processingDate || '',
+                              })
                             }}
                           >
                             ✎ Edit
@@ -799,16 +912,12 @@ export default function Profile() {
                   const statusInfo = {
                     PENDING_PAYMENT:  { color: '#e67e22', label: 'Pending', icon: '⏳' },
                     PAYMENT_FAILED:   { color: '#c0392b', label: 'Failed', icon: '✕' },
-                    DEPOSIT_PAID:     { color: '#3498db', label: 'Deposit Paid', icon: '½' },
                     PAID:             { color: '#27ae60', label: 'Paid — Awaiting Acceptance', icon: '✓' },
                     ACCEPTED:         { color: '#3498db', label: 'Accepted by Farmer', icon: '👍' },
                     PROCESSING:       { color: '#9b59b6', label: 'Processing', icon: '🔪' },
                     READY:            { color: '#27ae60', label: 'Ready for Pickup!', icon: '📦' },
                     COMPLETED:        { color: '#7f8c8d', label: 'Completed', icon: '✅' },
-                    SHIPPED:          { color: '#8e44ad', label: 'Shipped — Balance Due', icon: '📦' },
                   }[o.status] || { color: '#95a5a6', label: o.status, icon: '•' }
-                  const canPayBalance = (o.status === 'DEPOSIT_PAID' || o.status === 'SHIPPED')
-                    && o.remainingAmountCents > 0
                   const canConfirmReceipt = o.status === 'READY'
                   return (
                     <div key={o.id} className="profile-order-card">
@@ -837,21 +946,13 @@ export default function Profile() {
                           </span>
                         )}
                       </div>
-                      {canPayBalance && (
-                        <button
-                          className="profile-pay-balance-btn"
-                          onClick={() => setBalanceOrder(o)}
-                        >
-                          Pay Remaining ${(o.remainingAmountCents / 100).toFixed(2)} →
-                        </button>
-                      )}
                       {canConfirmReceipt && (
                         <button
-                          className="profile-order-action-btn"
-                          onClick={() => handleConfirmReceipt(o.id)}
+                          className="profile-order-action-btn profile-confirm-pickup-btn"
+                          onClick={() => setConfirmReceiptModal(o.id)}
                           disabled={confirmingOrderId === o.id}
                         >
-                          {confirmingOrderId === o.id ? 'Confirming...' : 'Confirm Receipt ✓'}
+                          {confirmingOrderId === o.id ? 'Confirming…' : '📦 Confirm Pickup'}
                         </button>
                       )}
                     </div>
@@ -859,6 +960,36 @@ export default function Profile() {
                 })}
               </div>
             )}
+          </div>
+        )}
+
+        {/* ── Confirm Receipt Modal ── */}
+        {confirmReceiptModal && (
+          <div className="profile-modal-overlay" onClick={() => !confirmingOrderId && setConfirmReceiptModal(null)}>
+            <div className="profile-modal" onClick={e => e.stopPropagation()}>
+              <div className="profile-modal-icon">📦</div>
+              <h3 className="profile-modal-title">Confirm you&apos;ve received your order?</h3>
+              <p className="profile-modal-body">
+                By confirming, you acknowledge that you have picked up or received your order.
+                This action cannot be undone.
+              </p>
+              <div className="profile-modal-actions">
+                <button
+                  className="profile-modal-cancel"
+                  onClick={() => setConfirmReceiptModal(null)}
+                  disabled={!!confirmingOrderId}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="profile-modal-confirm"
+                  onClick={() => handleConfirmReceipt(confirmReceiptModal)}
+                  disabled={!!confirmingOrderId}
+                >
+                  {confirmingOrderId ? 'Confirming…' : 'Yes, I received it ✓'}
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
@@ -958,16 +1089,6 @@ export default function Profile() {
       </div>
       {disputeClaim && (
         <DisputeModal claim={disputeClaim} onClose={() => setDisputeClaim(null)} />
-      )}
-      {balanceOrder && (
-        <BalancePaymentModal
-          order={balanceOrder}
-          onSuccess={() => {
-            setBalanceOrder(null)
-            api.get('/api/orders/my').then(setMyOrders).catch(() => {})
-          }}
-          onClose={() => setBalanceOrder(null)}
-        />
       )}
     </div>
   )

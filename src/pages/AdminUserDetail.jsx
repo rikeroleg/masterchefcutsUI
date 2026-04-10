@@ -8,8 +8,6 @@ const STATUS_STYLE = {
   PAID:             { bg: '#e6f9ee', color: '#1a7a3a' },
   PENDING_PAYMENT:  { bg: '#fff4e0', color: '#b87a00' },
   PAYMENT_FAILED:   { bg: '#fde8e8', color: '#c0392b' },
-  DEPOSIT_PAID:     { bg: '#e0ecff', color: '#2563eb' },
-  SHIPPED:          { bg: '#f0e6ff', color: '#7c3aed' },
 }
 
 export default function AdminUserDetail() {
@@ -103,7 +101,6 @@ export default function AdminUserDetail() {
                     </div>
                     <div className="aud-order-right">
                       <span className="aud-order-amount">${((o.amountCents || 0) / 100).toFixed(2)}</span>
-                      {o.paymentType === 'DEPOSIT' && <span className="aud-order-type">Deposit</span>}
                       <span className="aud-order-status" style={{ background: st.bg, color: st.color }}>{o.status}</span>
                     </div>
                   </div>

@@ -41,6 +41,10 @@ export default function ListingDetail() {
   const [claiming,  setClaiming]  = useState(null)
   const [error,     setError]     = useState('')
   const [loading,   setLoading]   = useState(true)
+  const [alreadyReviewed, setAlreadyReviewed] = useState(false)
+  const [reviewForm, setReviewForm] = useState({ rating: 0, comment: '' })
+  const [reviewSubmitting, setReviewSubmitting] = useState(false)
+  const [reviewDone, setReviewDone] = useState(false)
 
   useEffect(() => {
     Promise.all([
@@ -52,6 +56,13 @@ export default function ListingDetail() {
     }).catch(err => setError(err.message))
       .finally(() => setLoading(false))
   }, [id])
+
+  useEffect(() => {
+    if (!user || user.role === 'farmer') return
+    api.get(`/api/reviews/has-reviewed?listingId=${id}`)
+      .then(had => setAlreadyReviewed(had))
+      .catch(() => {})
+  }, [id, user])
 
   async function handleCutClick(cut) {
     if (!user) { navigate('/login'); return }
@@ -65,7 +76,9 @@ export default function ListingDetail() {
         cutId:  cut.id,
         name:   cut.label,
         color:  '#f5c97a',
-        price:  Math.round(listing.pricePerLb * listing.weightLbs / listing.totalCuts),
+        price:  cut.weightLbs
+          ? Math.round(cut.weightLbs * listing.pricePerLb)
+          : Math.round(listing.pricePerLb * listing.weightLbs / listing.totalCuts),
         qty:    1,
         listingId: listing.id,
         breed: listing.breed,
@@ -76,6 +89,22 @@ export default function ListingDetail() {
       toast.error(err.message || 'Failed to claim cut.')
     } finally {
       setClaiming(null)
+    }
+  }
+
+  async function handleSubmitReview(e) {
+    e.preventDefault()
+    if (!reviewForm.rating) return
+    setReviewSubmitting(true)
+    try {
+      const saved = await api.post('/api/reviews', { listingId: Number(id), rating: reviewForm.rating, comment: reviewForm.comment })
+      setReviews(prev => [saved, ...prev])
+      setReviewDone(true)
+      toast.success('Review submitted!')
+    } catch (err) {
+      toast.error(err.message || 'Failed to submit review.')
+    } finally {
+      setReviewSubmitting(false)
     }
   }
 
@@ -172,6 +201,12 @@ export default function ListingDetail() {
             {listing.cuts.map(c => (
               <div key={c.id} className={`ld-cut${c.claimed ? ' ld-cut--claimed' : ''}`}>
                 <div className="ld-cut-label">{c.label}</div>
+                {c.weightLbs && (
+                  <div className="ld-cut-meta">
+                    <span className="ld-cut-weight">{c.weightLbs} lbs</span>
+                    <span className="ld-cut-price">${Math.round(c.weightLbs * listing.pricePerLb)}</span>
+                  </div>
+                )}
                 {c.claimed ? (
                   <span className="ld-cut-status ld-cut-status--claimed">✓ Claimed</span>
                 ) : listing.status === 'ACTIVE' && user?.role !== 'farmer' ? (
@@ -209,6 +244,42 @@ export default function ListingDetail() {
               ))}
             </div>
           </div>
+        )}
+
+        {/* Leave a Review */}
+        {user && user.role !== 'farmer' && listing.status !== 'ACTIVE' && !alreadyReviewed && !reviewDone && (
+          <div className="ld-review-form-section">
+            <h2 className="ld-section-title">Leave a Review</h2>
+            <form className="ld-review-form" onSubmit={handleSubmitReview}>
+              <div className="ld-review-stars-row">
+                {[1,2,3,4,5].map(n => (
+                  <button
+                    key={n}
+                    type="button"
+                    className={`ld-review-star-btn${reviewForm.rating >= n ? ' active' : ''}`}
+                    onClick={() => setReviewForm(f => ({ ...f, rating: n }))}
+                  >★</button>
+                ))}
+              </div>
+              <textarea
+                className="ld-review-comment-input"
+                placeholder="Share your experience (optional)…"
+                rows={3}
+                value={reviewForm.comment}
+                onChange={e => setReviewForm(f => ({ ...f, comment: e.target.value }))}
+              />
+              <button
+                type="submit"
+                className="ld-review-submit-btn"
+                disabled={!reviewForm.rating || reviewSubmitting}
+              >
+                {reviewSubmitting ? 'Submitting…' : 'Submit Review'}
+              </button>
+            </form>
+          </div>
+        )}
+        {(reviewDone || (alreadyReviewed && user?.role !== 'farmer')) && (
+          <div className="ld-review-done">✅ You&apos;ve reviewed this listing. Thank you!</div>
         )}
 
       </div>

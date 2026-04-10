@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import React, { useState, useEffect, useRef } from 'react'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -12,7 +12,15 @@ const ANIMAL_META = {
   PORK: { emoji: '🐷', label: 'Pork' },
   LAMB: { emoji: '🐑', label: 'Lamb' },
 }
-
+/** Simple debounce hook — returns value after delay ms of stability. */
+function useDebounce(value, delay) {
+  const [debounced, setDebounced] = useState(value)
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay)
+    return () => clearTimeout(id)
+  }, [value, delay])
+  return debounced
+}
 function postedAgo(dateStr) {
   if (!dateStr) return ''
   const days = Math.floor((Date.now() - new Date(dateStr)) / (1000 * 60 * 60 * 24))
@@ -22,7 +30,7 @@ function postedAgo(dateStr) {
 function ShareProgressBar({ cuts }) {
   const total   = cuts.length
   const claimed = cuts.filter(c => c.claimed).length
-  const pct     = Math.round((claimed / total) * 100)
+  const pct     = total > 0 ? Math.round((claimed / total) * 100) : 0
 
   return (
     <div className="spb">
@@ -209,41 +217,73 @@ function ListingCard({ listing, onClaimed }) {
 }
 
 export default function Listings() {
-  const { user }                = useAuth()
-  const { toast }               = useToast()
-  const [filter, setFilter]         = useState('All')
-  const [zip, setZip]               = useState(user?.zipCode || '')
-  const [zipInput, setZipInput]     = useState(user?.zipCode || '')
-  const [listings, setListings]     = useState([])
-  const [loading, setLoading]       = useState(true)
-  const [error, setError]           = useState('')
-  const [page, setPage]             = useState(0)
-  const [hasMore, setHasMore]       = useState(true)
-  const [priceMin, setPriceMin]     = useState('')
-  const [priceMax, setPriceMax]     = useState('')
-  const [breedFilter, setBreedFilter] = useState('')
-  const [sortBy, setSortBy]         = useState('newest')
+  const { user }                    = useAuth()
+  const { toast }                   = useToast()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // ── Filters from URL params (source of truth) ──────────────────────────
+  const animal   = searchParams.get('animal')   || 'All'
+  const zip      = searchParams.get('zip')      || ''
+  const maxPrice = searchParams.get('maxPrice') || ''
+  const radius   = searchParams.get('radius')   || '25'
+  const breedFilter = searchParams.get('breed') || ''
+  const sortBy   = searchParams.get('sort')     || 'newest'
+
+  // ── Local input state (raw; debounced → URL params) ─────────────────────
+  const [zipInput,      setZipInput]      = useState(zip)
+  const [maxPriceInput, setMaxPriceInput] = useState(maxPrice)
+  const [breedInput,    setBreedInput]    = useState(breedFilter)
+
+  const debouncedZip      = useDebounce(zipInput,      450)
+  const debouncedMaxPrice = useDebounce(maxPriceInput, 550)
+  const debouncedBreed    = useDebounce(breedInput,    450)
+
+  // ── Data state ───────────────────────────────────────────────────────────
+  const [listings,    setListings]    = useState([])
+  const [loading,     setLoading]     = useState(true)
+  const [error,       setError]       = useState('')
+  const [page,        setPage]        = useState(0)
+  const [hasMore,     setHasMore]     = useState(true)
   const [moreFilters, setMoreFilters] = useState(false)
 
-  useEffect(() => { fetchListings(true) }, [filter, zip])
+  // Track last-fetched server params to detect resets vs appends
+  const lastServerParams = useRef({ animal, zip, maxPrice })
 
-  async function fetchListings(reset = true) {
-    const nextPage = reset ? 0 : page + 1
+  // ── Push debounced inputs → URL params ───────────────────────────────────
+  function updateParam(key, value) {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      if (value) next.set(key, value); else next.delete(key)
+      return next
+    }, { replace: true })
+  }
+
+  useEffect(() => { updateParam('zip',      debouncedZip)      }, [debouncedZip])
+  useEffect(() => { updateParam('maxPrice', debouncedMaxPrice) }, [debouncedMaxPrice])
+  useEffect(() => { updateParam('breed',    debouncedBreed)    }, [debouncedBreed])
+
+  // ── Fetch whenever server-side filter params change ──────────────────────
+  useEffect(() => {
+    lastServerParams.current = { animal, zip, maxPrice }
+    setPage(0)
+    fetchListings(animal, zip, maxPrice, 0, true)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [animal, zip, maxPrice])
+
+  async function fetchListings(animalVal, zipVal, maxPriceVal, pageNum, reset) {
     setLoading(true)
     setError('')
     try {
       const params = new URLSearchParams()
-      if (filter !== 'All') params.set('animal', filter.toUpperCase())
-      if (zip)              params.set('zip', zip)
-      params.set('page', String(nextPage))
+      if (animalVal && animalVal !== 'All') params.set('animal', animalVal.toUpperCase())
+      if (zipVal)      params.set('zip',      zipVal)
+      if (maxPriceVal) params.set('maxPrice', maxPriceVal)
+      params.set('page', String(pageNum))
       params.set('size', '12')
-      const data  = await api.get(`/api/listings?${params.toString()}`)
-      if (reset) {
-        setListings(data)
-      } else {
-        setListings(prev => [...prev, ...data])
-      }
-      setPage(nextPage)
+      const data = await api.get(`/api/listings?${params.toString()}`)
+      if (reset) setListings(data)
+      else       setListings(prev => [...prev, ...data])
+      setPage(pageNum)
       setHasMore(data.length === 12)
     } catch (err) {
       setError(err.message)
@@ -253,15 +293,47 @@ export default function Listings() {
     }
   }
 
-  function applyZip(e) {
-    e.preventDefault()
-    setZip(zipInput.trim())
+  function handleLoadMore() {
+    const nextPage = page + 1
+    fetchListings(animal, zip, maxPrice, nextPage, false)
   }
 
+  function setAnimal(value) {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      if (value && value !== 'All') next.set('animal', value); else next.delete('animal')
+      return next
+    }, { replace: true })
+  }
+
+  function setSortBy(value) {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      if (value && value !== 'newest') next.set('sort', value); else next.delete('sort')
+      return next
+    }, { replace: true })
+  }
+
+  function setRadius(value) {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      if (value && value !== '25') next.set('radius', value); else next.delete('radius')
+      return next
+    }, { replace: true })
+  }
+
+  function clearAllFilters() {
+    setZipInput('')
+    setMaxPriceInput('')
+    setBreedInput('')
+    setSearchParams({}, { replace: true })
+  }
+
+  const hasActiveFilters = animal !== 'All' || zip || maxPrice || breedFilter || sortBy !== 'newest'
+
+  // Client-side breed filter + sort (server handles animal/zip/maxPrice)
   const visible = listings
     .filter(l => {
-      if (priceMin && l.pricePerLb < parseFloat(priceMin)) return false
-      if (priceMax && l.pricePerLb > parseFloat(priceMax)) return false
       if (breedFilter && !(l.breed || '').toLowerCase().includes(breedFilter.toLowerCase())) return false
       return true
     })
@@ -281,8 +353,10 @@ export default function Listings() {
             <h1 className="listings-title">Browse Listings</h1>
             <p className="listings-sub">Claim a primal cut from a whole animal near you.</p>
           </div>
+
           <div className="listings-controls">
-            <form className="listings-zip-form" onSubmit={applyZip}>
+            {/* ZIP + radius row */}
+            <div className="listings-zip-form">
               <input
                 className="listings-zip-input"
                 value={zipInput}
@@ -290,19 +364,29 @@ export default function Listings() {
                 placeholder="ZIP code"
                 maxLength={10}
               />
-              <button type="submit" className="listings-zip-btn">Go</button>
+              <select
+                className="listings-radius-select"
+                value={radius}
+                onChange={e => setRadius(e.target.value)}
+                title="Search radius (exact ZIP for now)"
+              >
+                <option value="25">25 mi</option>
+                <option value="50">50 mi</option>
+                <option value="100">100 mi</option>
+              </select>
               {zip && (
-                <button type="button" className="listings-zip-clear" onClick={() => { setZip(''); setZipInput('') }}>
-                  ✕
-                </button>
+                <button type="button" className="listings-zip-clear"
+                  onClick={() => { setZipInput(''); updateParam('zip', '') }}>✕</button>
               )}
-            </form>
+            </div>
+
+            {/* Animal filter pills */}
             <div className="listings-filters">
               {ANIMAL_FILTERS.map(f => (
                 <button
                   key={f}
-                  className={`listings-filter-btn${filter === f ? ' active' : ''}`}
-                  onClick={() => setFilter(f)}
+                  className={`listings-filter-btn${animal === f ? ' active' : ''}`}
+                  onClick={() => setAnimal(f)}
                 >
                   {f === 'Beef' ? '🐄 ' : f === 'Pork' ? '🐷 ' : f === 'Lamb' ? '🐑 ' : ''}{f}
                 </button>
@@ -311,57 +395,58 @@ export default function Listings() {
                 className={`listings-filter-btn${moreFilters ? ' active' : ''}`}
                 onClick={() => setMoreFilters(p => !p)}
               >
-                ⋯ Filters{(priceMin || priceMax || breedFilter || sortBy !== 'newest') ? ' •' : ''}
+                ⋯ Filters{(maxPrice || breedFilter || sortBy !== 'newest') ? ' •' : ''}
               </button>
             </div>
           </div>
+
+          {/* Advanced filter panel */}
           {moreFilters && (
             <div className="listings-more-filters">
               <div className="listings-filter-group">
-                <label className="listings-filter-label">Min price/lb ($)</label>
-                <input className="listings-filter-input" type="number" min="0" step="0.01"
-                  placeholder="0.00" value={priceMin}
-                  onChange={e => setPriceMin(e.target.value)} />
-              </div>
-              <div className="listings-filter-group">
                 <label className="listings-filter-label">Max price/lb ($)</label>
                 <input className="listings-filter-input" type="number" min="0" step="0.01"
-                  placeholder="Any" value={priceMax}
-                  onChange={e => setPriceMax(e.target.value)} />
+                  placeholder="Any" value={maxPriceInput}
+                  onChange={e => setMaxPriceInput(e.target.value)} />
               </div>
               <div className="listings-filter-group">
                 <label className="listings-filter-label">Breed</label>
                 <input className="listings-filter-input" type="text"
-                  placeholder="e.g. Angus" value={breedFilter}
-                  onChange={e => setBreedFilter(e.target.value)} />
+                  placeholder="e.g. Angus" value={breedInput}
+                  onChange={e => setBreedInput(e.target.value)} />
               </div>
               <div className="listings-filter-group">
                 <label className="listings-filter-label">Sort by</label>
                 <select className="listings-sort-select" value={sortBy} onChange={e => setSortBy(e.target.value)}>
                   <option value="newest">Newest first</option>
-                  <option value="price-asc">Price: low to high</option>
-                  <option value="price-desc">Price: high to low</option>
+                  <option value="price-asc">Price: low → high</option>
+                  <option value="price-desc">Price: high → low</option>
                 </select>
               </div>
-              {(priceMin || priceMax || breedFilter || sortBy !== 'newest') && (
-                <button className="listings-filter-clear"
-                  onClick={() => { setPriceMin(''); setPriceMax(''); setBreedFilter(''); setSortBy('newest') }}>
-                  Clear filters
+              {hasActiveFilters && (
+                <button className="listings-filter-clear" onClick={clearAllFilters}>
+                  Clear all filters
                 </button>
               )}
             </div>
           )}
         </div>
-        {zip && <p className="listings-zip-label">📍 Showing listings near <strong>{zip}</strong></p>}
 
-        {loading && <p className="listings-loading">Loading listings…</p>}
+        {zip && (
+          <p className="listings-zip-label">
+            📍 Showing listings near <strong>{zip}</strong>
+            <span className="listings-radius-label"> · {radius} mi radius</span>
+          </p>
+        )}
+
+        {loading && listings.length === 0 && <p className="listings-loading">Loading listings…</p>}
         {error   && <p className="listings-error">{error}</p>}
 
         <div className="listings-grid">
           {!loading && visible.map(l => (
             <ListingCard key={l.id} listing={l} onClaimed={(updated) => {
               if (updated?.id) setListings(prev => prev.map(x => x.id === updated.id ? updated : x))
-              else fetchListings(true)
+              else fetchListings(animal, zip, maxPrice, 0, true)
             }} />
           ))}
           {!loading && !error && visible.length === 0 && (
@@ -371,7 +456,7 @@ export default function Listings() {
 
         {hasMore && !loading && !error && visible.length > 0 && (
           <div style={{ textAlign: 'center', marginTop: '28px' }}>
-            <button className="listings-load-more" onClick={() => fetchListings(false)}>
+            <button className="listings-load-more" onClick={handleLoadMore}>
               Load More Listings
             </button>
           </div>

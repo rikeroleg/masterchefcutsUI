@@ -516,3 +516,199 @@
 .aud-order-amount { font-weight: 700; font-size: 0.92rem; color: rgba(20,6,0,0.88); }
 .aud-order-type   { font-size: 0.68rem; font-weight: 600; color: #2563eb; background: rgba(37,99,235,0.1); padding: 2px 8px; border-radius: 10px; }
 .aud-order-status { font-size: 0.68rem; font-weight: 700; padding: 3px 10px; border-radius: 10px; }
+
+/* ── Admin Orders Tab ── */
+.admin-orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-order-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-order-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.admin-order-amount {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: rgba(20,6,0,0.88);
+}
+
+.admin-order-meta {
+  font-size: 0.75rem;
+  color: rgba(20,6,0,0.5);
+}
+
+/* Order status badges */
+.admin-order-status {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(0,0,0,0.12);
+  white-space: nowrap;
+}
+.admin-order-status--pending_payment { background: rgba(0,0,0,0.08); color: rgba(20,6,0,0.5); }
+.admin-order-status--paid            { background: rgba(39,174,96,0.18); color: #145a32; border-color: rgba(39,174,96,0.3); }
+.admin-order-status--accepted        { background: rgba(39,174,96,0.12); color: #1a5c2a; }
+.admin-order-status--processing      { background: rgba(243,156,18,0.18); color: #7d5a00; border-color: rgba(243,156,18,0.3); }
+.admin-order-status--ready           { background: rgba(46,204,113,0.2); color: #145a32; }
+.admin-order-status--completed       { background: rgba(39,174,96,0.25); color: #0d3d22; border-color: rgba(39,174,96,0.4); }
+.admin-order-status--payment_failed  { background: rgba(231,76,60,0.15); color: #7b241c; border-color: rgba(231,76,60,0.3); }
+.admin-order-status--refunded        { background: rgba(155,89,182,0.18); color: #4a235a; border-color: rgba(155,89,182,0.35); }
+.admin-order-status--disputed        { background: rgba(231,76,60,0.2); color: #6e1010; border-color: rgba(231,76,60,0.4); }
+
+/* Refund button */
+.admin-refund-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(155,89,182,0.4);
+  background: rgba(155,89,182,0.1);
+  color: #5a1e8a;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.admin-refund-btn:hover:not(:disabled) { background: rgba(155,89,182,0.22); }
+.admin-refund-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Inline refund form */
+.admin-refund-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.admin-refund-form-actions {
+  display: flex;
+  gap: 8px;
+}
+/* ── Financials tab ── */
+.admin-fin-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+.admin-fin-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.admin-fin-input {
+  background: rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.25);
+  border-radius: 8px;
+  color: #1e0800;
+  font-family: inherit;
+  font-size: 0.85rem;
+  padding: 7px 10px;
+  outline: none;
+}
+.admin-fin-export-btn {
+  padding: 8px 18px;
+  background: rgba(0,0,0,0.15);
+  border: 1.5px solid rgba(0,0,0,0.3);
+  border-radius: 8px;
+  color: #1e0800;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+}
+.admin-fin-export-btn:hover { background: rgba(0,0,0,0.22); }
+
+.admin-fin-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+.admin-fin-card {
+  background: rgba(0,0,0,0.13);
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 14px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.admin-fin-card--fee    { border-color: rgba(120,21,0,0.35); }
+.admin-fin-card--payout { border-color: rgba(15,70,15,0.35); }
+.admin-fin-card-value {
+  font-size: 1.55rem;
+  font-weight: 900;
+  color: #1e0800;
+  line-height: 1;
+}
+.admin-fin-card-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(20,6,0,0.5);
+}
+.admin-fin-card--fee    .admin-fin-card-value { color: #7c1a1a; }
+.admin-fin-card--payout .admin-fin-card-value { color: #1a5218; }
+
+.admin-fin-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+}
+.admin-fin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.admin-fin-table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(20,6,0,0.45);
+  border-bottom: 1px solid rgba(0,0,0,0.18);
+  white-space: nowrap;
+}
+.admin-fin-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  color: #1e0800;
+  vertical-align: middle;
+}
+.admin-fin-table tr:last-child td { border-bottom: none; }
+.admin-fin-id, .admin-fin-buyer { font-family: monospace; font-size: 0.75rem; color: rgba(20,6,0,0.55); }
+.admin-fin-num          { text-align: right; font-weight: 600; }
+.admin-fin-num--fee     { color: #7c1a1a; }
+.admin-fin-num--payout  { color: #1a5218; }
+
+/* Order status chips (reused in financials table) */
+.admin-order-status { font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 50px; background: rgba(0,0,0,0.1); }
+.admin-order-status--paid        { background: rgba(39,174,96,0.18);  color: #1a6636; }
+.admin-order-status--completed   { background: rgba(127,140,141,0.2); color: #4a4a4a; }
+.admin-order-status--accepted    { background: rgba(52,152,219,0.18); color: #1a5276; }
+.admin-order-status--processing  { background: rgba(155,89,182,0.18); color: #5b2c79; }
+.admin-order-status--ready       { background: rgba(39,174,96,0.18);  color: #1a6636; }

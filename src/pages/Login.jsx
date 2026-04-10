@@ -18,6 +18,9 @@ export default function Login() {
   const navigate            = useNavigate()
   const { toast }           = useToast()
 
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const [showTerms, setShowTerms]         = useState(false)
+
   const [signin, setSignin] = useState({ email: '', password: '' })
   const [signup, setSignup] = useState({
     name: '', email: '', password: '', confirm: '',
@@ -39,6 +42,7 @@ export default function Login() {
   async function handleSignup(e) {
     e.preventDefault()
     setError('')
+    if (!termsAccepted) { setError('You must accept the Terms & Conditions to create an account.'); return }
     if (signup.password !== signup.confirm) { setError('Passwords do not match.'); return }
     if (signup.password.length < 6) { setError('Password must be at least 6 characters.'); return }
     setLoad(true)
@@ -65,6 +69,7 @@ export default function Login() {
   function fieldSignup(e) { setSignup(f => ({ ...f, [e.target.name]: e.target.value })) }
 
   return (
+    <>
     <div className="login-page">
       <div className="login-card">
 
@@ -230,6 +235,20 @@ export default function Login() {
               </div>
             </div>
 
+            <label className="login-terms-row">
+              <input
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={e => setTermsAccepted(e.target.checked)}
+              />
+              <span>
+                I have read and agree to the{' '}
+                <button type="button" className="login-link" onClick={() => setShowTerms(true)}>
+                  Terms &amp; Conditions
+                </button>
+              </span>
+            </label>
+
             <button type="submit" className="login-submit" disabled={loading}>
               {loading ? 'Creating account…' : 'Create Account →'}
             </button>
@@ -245,5 +264,86 @@ export default function Login() {
 
       </div>
     </div>
+
+    {/* ── Terms & Conditions Modal ── */}
+    {showTerms && (
+      <div className="tc-overlay" onClick={() => setShowTerms(false)}>
+        <div className="tc-modal" onClick={e => e.stopPropagation()}>
+          <div className="tc-header">
+            <h2>Terms &amp; Conditions</h2>
+            <button type="button" className="tc-close" onClick={() => setShowTerms(false)}>✕</button>
+          </div>
+          <div className="tc-body">
+            <p className="tc-date">Last updated: April 5, 2026</p>
+
+            <h3>1. Acceptance of Terms</h3>
+            <p>By creating an account or using MasterChef Cuts, you agree to be bound by these Terms &amp; Conditions. If you do not agree, you may not use the platform.</p>
+
+            <h3>2. Eligibility</h3>
+            <p>You must be at least 18 years old and legally capable of entering into binding contracts to use MasterChef Cuts.</p>
+
+            <h3>3. Account Responsibilities</h3>
+            <p>You are responsible for maintaining the confidentiality of your login credentials and for all activity under your account. Notify us immediately of any unauthorized use.</p>
+
+            <h3>4. Buyer (Participant) Terms</h3>
+            <ul>
+              <li>Buyers may browse listings, claim individual cuts, and pay for those cuts through our secure checkout.</li>
+              <li>All sales are final once an order is placed and payment is captured. Refunds are at the discretion of the Farmer and MasterChef Cuts staff.</li>
+              <li>Buyers are responsible for coordinating pickup or delivery with the Farmer.</li>
+            </ul>
+
+            <h3>5. Farmer / Butcher Terms</h3>
+            <ul>
+              <li>Farmers and Butchers must accurately describe animals, weights, breeds, and available cuts.</li>
+              <li>All listings must comply with applicable local, state, and federal food-safety regulations. MasterChef Cuts is not liable for regulatory non-compliance by the Farmer/Butcher.</li>
+              <li>Farmers are responsible for fulfillment, communication, and timely delivery or pickup coordination.</li>
+              <li>MasterChef Cuts charges a <strong>15% platform fee</strong> on the sale price, deducted from the payout to the Farmer. This fee covers payment processing, platform maintenance, and customer support.</li>
+            </ul>
+
+            <h3>6. Payments</h3>
+            <ul>
+              <li>All payments are processed through Stripe. MasterChef Cuts does not store full card numbers.</li>
+              <li>Payouts to Farmers are subject to Stripe&apos;s standard processing timelines and the deduction of the 15% platform fee.</li>
+              <li>Any applicable taxes are the responsibility of the Farmer.</li>
+            </ul>
+
+            <h3>7. Pickup &amp; Delivery</h3>
+            <p>Fulfillment logistics (pickup location, delivery, processing dates) are coordinated between Buyer and Farmer through the platform. MasterChef Cuts is not responsible for missed pickups, spoilage, or disputes arising from fulfillment.</p>
+
+            <h3>8. Prohibited Conduct</h3>
+            <p>Users may not post fraudulent listings, manipulate pricing, harass other users, or attempt to circumvent the platform&apos;s payment system. Violation may result in immediate account termination.</p>
+
+            <h3>9. Limitation of Liability</h3>
+            <p>MasterChef Cuts provides a marketplace platform and is not a party to transactions between Buyers and Farmers. To the fullest extent permitted by law, MasterChef Cuts shall not be liable for indirect, incidental, or consequential damages arising from use of the platform.</p>
+
+            <h3>10. Privacy</h3>
+            <p>Your personal information (name, email, shipping address) is used solely to facilitate transactions and account management. We do not sell your data to third parties. See our Privacy Policy for full details.</p>
+
+            <h3>11. Changes to Terms</h3>
+            <p>We reserve the right to update these Terms at any time. Continued use of the platform after changes constitutes acceptance of the revised Terms.</p>
+
+            <h3>12. Contact</h3>
+            <p>Questions? Contact us at <strong>support@masterchefcuts.com</strong>.</p>
+          </div>
+          <div className="tc-footer">
+            <button
+              type="button"
+              className="login-submit"
+              onClick={() => { setTermsAccepted(true); setShowTerms(false) }}
+            >
+              I Accept
+            </button>
+            <button
+              type="button"
+              className="tc-decline"
+              onClick={() => { setTermsAccepted(false); setShowTerms(false) }}
+            >
+              Decline
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+  </>
   )
 }

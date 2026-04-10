@@ -21,9 +21,11 @@ export default function FarmerProfile() {
   const [listings, setListings] = useState([])
   const [farmer, setFarmer] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [reviews, setReviews] = useState([])
 
   useEffect(() => {
     fetchListings()
+    api.get(`/api/reviews/farmer/${encodeURIComponent(id)}`).then(setReviews).catch(() => {})
   }, [id])
 
   async function fetchListings() {
@@ -62,11 +64,26 @@ export default function FarmerProfile() {
                 {farmer.zipCode ? ` · ZIP ${farmer.zipCode}` : ''}
               </p>
             )}
+            {reviews.length > 0 && (() => {
+              const avg = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
+              return (
+                <div className="fp-rating-badge">
+                  <span className="fp-rating-stars">
+                    {[1,2,3,4,5].map(i => (
+                      <span key={i} style={{ color: i <= Math.round(avg) ? '#f39c12' : 'rgba(255,255,255,0.2)' }}>★</span>
+                    ))}
+                  </span>
+                  <span className="fp-rating-value">{avg.toFixed(1)}</span>
+                  <span className="fp-rating-count">({reviews.length} review{reviews.length !== 1 ? 's' : ''})</span>
+                </div>
+              )
+            })()}
           </div>
         </div>
 
         {loading && <p className="listings-loading">Loading listings…</p>}
 
+        {/* Listings grid */}
         <div className="listings-grid">
           {!loading && listings.map(l => (
             <FarmerListingCard key={l.id} listing={l} onClaimed={fetchListings} user={user} navigate={navigate} toast={toast} />
@@ -75,6 +92,29 @@ export default function FarmerProfile() {
             <p className="listings-empty">This farmer has no active listings right now.</p>
           )}
         </div>
+
+        {/* Reviews panel */}
+        {reviews.length > 0 && (
+          <div className="fp-reviews-section">
+            <h2 className="fp-reviews-title">Participant Reviews</h2>
+            <div className="fp-reviews">
+              {reviews.slice(0, 10).map(r => (
+                <div key={r.id} className="fp-review">
+                  <div className="fp-review-header">
+                    <span className="fp-review-stars">
+                      {[1,2,3,4,5].map(i => (
+                        <span key={i} style={{ color: i <= r.rating ? '#f39c12' : 'rgba(20,6,0,0.2)' }}>★</span>
+                      ))}
+                    </span>
+                    <span className="fp-review-date">{new Date(r.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  {r.comment && <p className="fp-review-comment">{r.comment}</p>}
+                  <p className="fp-review-author">— {r.buyerName}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

@@ -20,6 +20,8 @@ function mapUser(data) {
     state:     data.state     || '',
     zipCode:   data.zipCode   || '',
     notificationPreference: data.notificationPreference || 'ALL',
+    stripeAccountId:          data.stripeAccountId          || null,
+    stripeOnboardingComplete: data.stripeOnboardingComplete ?? false,
   }
 }
 
@@ -97,8 +99,21 @@ export function AuthProvider({ children }) {
     }
   }
 
+  async function refreshConnectStatus() {
+    try {
+      const data = await api.get('/api/connect/status')
+      setUser(u => ({
+        ...u,
+        stripeAccountId:          data.stripeAccountId          || null,
+        stripeOnboardingComplete: data.stripeOnboardingComplete ?? false,
+      }))
+    } catch {
+      // silently ignore
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, updateUser }}>
+    <AuthContext.Provider value={{ user, login, logout, register, updateUser, refreshConnectStatus }}>
       {children}
     </AuthContext.Provider>
   )

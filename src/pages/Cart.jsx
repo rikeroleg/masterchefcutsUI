@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ShoppingCart, Trash2, ArrowLeft, Package } from 'lucide-react'
 import { useCart } from '../context/CartContext'
+import { useAuth } from '../context/AuthContext'
 import CartPaymentModal from '../components/CartPaymentModal'
 import '../styles/cart.css'
 
@@ -13,13 +14,13 @@ const ANIMAL_INFO = {
 
 export default function Cart() {
   const { items, removeFromCart, removeItems, updateQty, totalPrice, clearCart } = useCart()
+  const { user } = useAuth()
   const location = useLocation()
   const selectListingId = location.state?.selectListingId
   
   const [paying, setPaying]         = useState(false)
   const [confirmed, setConfirmed]   = useState(false)
   const [selected, setSelected]     = useState(() => new Set(items.map(i => i.id)))
-  const [paymentType, setPaymentType] = useState('FULL') // FULL or DEPOSIT
   const [initialFilterApplied, setInitialFilterApplied] = useState(false)
   const [checkoutInProgress, setCheckoutInProgress] = useState(false) // Prevent double-clicks
 
@@ -56,7 +57,6 @@ export default function Cart() {
 
   const selectedItems = items.filter(i => selected.has(i.id))
   const selectedTotal = selectedItems.reduce((s, i) => s + i.price * i.qty, 0)
-  const chargeAmount = paymentType === 'DEPOSIT' ? Math.ceil(selectedTotal / 2) : selectedTotal
 
   if (confirmed) {
     return (
@@ -196,37 +196,38 @@ export default function Cart() {
 
                 <div className="cart-summary-divider" />
 
-                {/* Payment type toggle */}
-                <div className="cart-pay-type">
-                  <span className="cart-pay-type-label">Payment</span>
-                  <div className="cart-pay-type-btns">
-                    <button
-                      className={`cart-pay-type-btn${paymentType === 'FULL' ? ' active' : ''}`}
-                      onClick={() => setPaymentType('FULL')}
-                    >Pay in Full</button>
-                    <button
-                      className={`cart-pay-type-btn${paymentType === 'DEPOSIT' ? ' active' : ''}`}
-                      onClick={() => setPaymentType('DEPOSIT')}
-                    >50% Deposit</button>
-                  </div>
-                  {paymentType === 'DEPOSIT' && (
-                    <p className="cart-deposit-note">Pay the remaining 50% when the seller ships your order.</p>
-                  )}
-                </div>
-
-                <div className="cart-summary-divider" />
-
                 <div className="cart-summary-total-row">
-                  <span className="cart-summary-total-label">{paymentType === 'DEPOSIT' ? 'Due Now' : 'Total'}</span>
-                  <span className="cart-summary-total-val">${chargeAmount.toLocaleString()}</span>
+                  <span className="cart-summary-total-label">Total</span>
+                  <span className="cart-summary-total-val">${selectedTotal.toLocaleString()}</span>
                 </div>
 
-                {paymentType === 'DEPOSIT' && (
-                  <div className="cart-summary-remaining-row">
-                    <span>Remaining balance</span>
-                    <span>${(selectedTotal - chargeAmount).toLocaleString()}</span>
-                  </div>
-                )}
+                {/* Delivery address snapshot */}
+                {(() => {
+                  const street = user?.street
+                    ? (user.apt ? `${user.street}, ${user.apt}` : user.street)
+                    : null
+                  const cityState = [user?.city, user?.state].filter(Boolean).join(', ') || null
+                  const zip = user?.zipCode || null
+                  const parts = [street, cityState, zip].filter(Boolean)
+                  return (
+                    <div className="cart-delivery-address">
+                      <div className="cart-delivery-label">
+                        📍 Delivering to
+                        <Link to="/profile" className="cart-delivery-edit">Edit →</Link>
+                      </div>
+                      {parts.length > 0 ? (
+                        <div className="cart-delivery-value">
+                          {parts.map((p, i) => <span key={i}>{p}</span>)}
+                        </div>
+                      ) : (
+                        <p className="cart-delivery-missing">
+                          No address on file —{' '}
+                          <Link to="/profile" className="cart-delivery-edit">add one in your profile</Link>
+                        </p>
+                      )}
+                    </div>
+                  )
+                })()}
 
                 <button 
                   className="cart-checkout-btn" 
@@ -235,9 +236,7 @@ export default function Cart() {
                 >
                   {checkoutInProgress 
                     ? 'Opening checkout…'
-                    : paymentType === 'DEPOSIT'
-                    ? `Pay Deposit \u2014 $${chargeAmount.toLocaleString()}`
-                    : `Place Order \u2014 $${chargeAmount.toLocaleString()}`}
+                    : `Place Order \u2014 $${selectedTotal.toLocaleString()}`}
                 </button>
               </>
             )}
@@ -249,7 +248,6 @@ export default function Cart() {
       {paying && (
         <CartPaymentModal
           items={selectedItems}
-          paymentType={paymentType}
           onSuccess={() => { removeItems(selectedItems.map(i => i.id)); setPaying(false); setConfirmed(true); setCheckoutInProgress(false) }}
           onClose={() => { setPaying(false); setCheckoutInProgress(false) }}
         />

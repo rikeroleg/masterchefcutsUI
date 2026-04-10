@@ -303,3 +303,123 @@
   .login-row  { grid-template-columns: 1fr; }
   .login-role-row { grid-template-columns: 1fr; }
 }
+
+/* ── Terms & Conditions checkbox row ── */
+.login-terms-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: rgba(20,6,0,0.7);
+  cursor: pointer;
+  line-height: 1.4;
+}
+.login-terms-row input[type="checkbox"] {
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: #7a2200;
+  cursor: pointer;
+}
+
+/* ── Terms & Conditions Modal ── */
+.tc-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+}
+.tc-modal {
+  background: #fff;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 620px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.tc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #f0e8e0;
+}
+.tc-header h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2d1001;
+  margin: 0;
+}
+.tc-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: rgba(20,6,0,0.45);
+  padding: 4px 8px;
+  border-radius: 6px;
+  line-height: 1;
+}
+.tc-close:hover { background: #f5ece6; color: #7a2200; }
+.tc-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+  font-size: 0.875rem;
+  color: rgba(20,6,0,0.75);
+  line-height: 1.6;
+}
+.tc-body h3 {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #2d1001;
+  margin: 18px 0 6px;
+}
+.tc-body h3:first-of-type { margin-top: 8px; }
+.tc-body p { margin: 0 0 8px; }
+.tc-body ul {
+  margin: 0 0 10px 0;
+  padding-left: 18px;
+}
+.tc-body ul li {
+  margin-bottom: 5px;
+  line-height: 1.5;
+}
+.tc-date {
+  font-size: 0.78rem;
+  color: rgba(20,6,0,0.4);
+  margin-bottom: 16px !important;
+}
+.tc-footer {
+  display: flex;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid #f0e8e0;
+}
+.tc-footer .login-submit { flex: 1; }
+.tc-decline {
+  background: none;
+  border: 1.5px solid #d0c0b5;
+  border-radius: 10px;
+  padding: 0 20px;
+  font-size: 0.92rem;
+  font-family: inherit;
+  color: rgba(20,6,0,0.55);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.tc-decline:hover { border-color: #7a2200; color: #7a2200; }
+
+@media (max-width: 500px) {
+  .tc-modal { max-height: 95vh; border-radius: 10px; }
+  .tc-footer { flex-direction: column-reverse; }
+  .tc-decline { padding: 12px; text-align: center; }
+}

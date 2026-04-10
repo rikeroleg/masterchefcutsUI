@@ -604,6 +604,20 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
 
 .hp-price-in::placeholder { color: rgba(20,6,0,0.35); }
 
+.hp-weight-in {
+  background: transparent;
+  border: none;
+  border-left: 1px solid rgba(0,0,0,0.15);
+  color: #1e0800;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: inherit;
+  width: 72px;
+  padding-left: 8px;
+  outline: none;
+}
+.hp-weight-in::placeholder { color: rgba(20,6,0,0.35); }
+
 /* Submit */
 .hp-btn-submit {
   padding: 14px;

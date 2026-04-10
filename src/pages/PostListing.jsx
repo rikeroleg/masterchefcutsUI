@@ -48,7 +48,7 @@ export default function PostListing() {
     animalType: 'beef', breed: '', hangingWeight: '', pricePerLb: '',
     sourceFarm: '', description: '',
     zipCode: user?.zipCode || '',
-    shares: {}, prices: {},
+    shares: {}, prices: {}, weights: {},
   })
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading]     = useState(false)
@@ -73,12 +73,16 @@ export default function PostListing() {
     setForm(f => {
       const next = { ...f.shares, [id]: !f.shares[id] }
       const nextPrices = { ...f.prices }
-      if (!next[id]) delete nextPrices[id]
-      return { ...f, shares: next, prices: nextPrices }
+      const nextWeights = { ...f.weights }
+      if (!next[id]) { delete nextPrices[id]; delete nextWeights[id] }
+      return { ...f, shares: next, prices: nextPrices, weights: nextWeights }
     })
   }
   function handlePrice(id, val) {
     setForm(f => ({ ...f, prices: { ...f.prices, [id]: val } }))
+  }
+  function handleWeight(id, val) {
+    setForm(f => ({ ...f, weights: { ...f.weights, [id]: val } }))
   }
   async function handleSubmit(e) {
     e.preventDefault()
@@ -95,7 +99,10 @@ export default function PostListing() {
         sourceFarm:  form.sourceFarm  || null,
         description: form.description || null,
         zipCode:     form.zipCode,
-        cutLabels:   selectedCuts.map(id => PRIMAL_CUTS[form.animalType].find(c => c.id === id)?.label).filter(Boolean),
+        cuts: selectedCuts.map(id => ({
+          label:     PRIMAL_CUTS[form.animalType].find(c => c.id === id)?.label,
+          weightLbs: form.weights[id] ? parseFloat(form.weights[id]) : null,
+        })).filter(c => c.label),
       })
       if (photoFile && created?.id) {
         try {
@@ -150,13 +157,26 @@ export default function PostListing() {
           <p className="post-sub">List a whole animal for participants in your area to pool together.</p>
         </div>
 
-        {submitted ? (
+        {/* Block unboarded farmers */}
+        {!user?.stripeOnboardingComplete && (
+          <div className="post-connect-gate">
+            <div className="post-connect-gate-icon">🏦</div>
+            <h2 className="post-connect-gate-title">Connect your bank account first</h2>
+            <p className="post-connect-gate-text">
+              You need to connect a bank account via Stripe before posting listings.
+              This ensures you receive your 85% payout automatically when buyers pay.
+            </p>
+            <Link to="/profile" className="hp-btn-primary">Go to Profile to Connect →</Link>
+          </div>
+        )}
+
+        {user?.stripeOnboardingComplete && submitted ? (
           <div className="post-success">
             <div className="post-success-check">✓</div>
             <h2>Listing submitted!</h2>
             <p>Your listing has been posted. Participants near <strong>{form.sourceFarm}</strong> will be able to find and claim cuts.</p>
             <div className="post-success-actions">
-              <button className="hp-btn-primary" onClick={() => { setSubmitted(false); setForm(f => ({ ...f, animalType: 'beef', breed: '', hangingWeight: '', pricePerLb: '', sourceFarm: '', description: '', shares: {}, prices: {} })) }}>
+              <button className="hp-btn-primary" onClick={() => { setSubmitted(false); setForm(f => ({ ...f, animalType: 'beef', breed: '', hangingWeight: '', pricePerLb: '', sourceFarm: '', description: '', shares: {}, prices: {}, weights: {} })) }}>
                 Post another listing
               </button>
               <Link to="/profile" className="hp-btn-ghost">View my listings →</Link>
@@ -174,7 +194,7 @@ export default function PostListing() {
                 {ANIMAL_TYPES.map(a => (
                   <button type="button" key={a.id}
                     className={`hp-animal-btn${form.animalType === a.id ? ' active' : ''}`}
-                    onClick={() => setForm(f => ({ ...f, animalType: a.id, shares: {}, prices: {} }))}>
+                    onClick={() => setForm(f => ({ ...f, animalType: a.id, shares: {}, prices: {}, weights: {} }))}>
                     {a.emoji} {a.label}
                   </button>
                 ))}
@@ -268,6 +288,10 @@ export default function PostListing() {
                           value={form.prices[s.id] || ''}
                           onChange={e => handlePrice(s.id, e.target.value)}
                           placeholder="0" required />
+                        <input className="hp-weight-in" type="number" min="0.1" step="0.1"
+                          value={form.weights[s.id] || ''}
+                          onChange={e => handleWeight(s.id, e.target.value)}
+                          placeholder="lbs (opt)" title="Weight in lbs for this cut (optional)" />
                       </span>
                     )}
                   </label>
