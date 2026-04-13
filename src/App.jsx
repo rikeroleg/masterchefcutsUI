@@ -1,8 +1,8 @@
 import { OrbitControls, Center, Bounds } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, Routes, Route } from "react-router-dom";
-import { Beef, ShoppingCart, Home, Info, LayoutList, UserCircle2 } from "lucide-react";
+import { Beef, ShoppingCart, Home, Info, LayoutList, ClipboardList, MessageSquare, PlusCircle, UserCircle2, Menu, X } from "lucide-react";
 import { Cow }  from "./Components/3DModel/cow/Cow";
 import { Pig }  from "./Components/3DModel/pig/Pig";
 import { Lamb } from "./Components/3DModel/lamb/Lamb";
@@ -21,6 +21,12 @@ import AdminUserDetailPage from "./pages/AdminUserDetail";
 import DemandBoardPage from "./pages/DemandBoard";
 import NotFoundPage from "./pages/NotFound";
 import FarmerProfilePage from "./pages/FarmerProfile";
+import TermsPage from "./pages/Terms";
+import PrivacyPage from "./pages/Privacy";
+import OrderReceiptPage from "./pages/OrderReceipt";
+import MessagesPage from "./pages/Messages";
+import ReferralPage from "./pages/Referral";
+import Footer from "./Components/Footer";
 import NotificationBell from "./components/NotificationBell";
 import AnimalRequestModal from "./Components/AnimalRequestModal";
 import { useAuth } from "./context/AuthContext";
@@ -38,13 +44,16 @@ function App() {
   const location = useLocation();
   const [activeAnimal, setActiveAnimal] = useState('beef');
   const [showRequestModal, setShowRequestModal] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { totalItems } = useCart();
   const { user } = useAuth();
   const isShop = location.pathname === '/shop';
 
+  useEffect(() => { setMenuOpen(false) }, [location.pathname]);
+
   return (
     <>
-    <div style={{ width: '100vw', height: isShop ? '100vh' : 'auto', minHeight: '100vh', overflow: isShop ? 'hidden' : 'visible', background: 'transparent', position: 'relative' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100vw', height: isShop ? '100vh' : 'auto', overflow: isShop ? 'hidden' : 'visible', background: 'transparent', position: 'relative' }}>
 
       {/* 3D Canvas — fixed background, only mounted on shop route */}
       {isShop && (
@@ -73,7 +82,7 @@ function App() {
       <div style={{
         position: isShop ? 'absolute' : 'relative',
         inset: isShop ? 0 : 'auto',
-        minHeight: isShop ? '100%' : '100vh',
+        flex: 1,
         display: 'flex',
         flexDirection: 'column',
         pointerEvents: 'none',
@@ -92,7 +101,7 @@ function App() {
               </div>
             </Link>
 
-            <nav className="ui-nav">
+            <nav className={`ui-nav${menuOpen ? ' ui-nav--open' : ''}`}>
               <Link to="/" className={`ui-nav-link${location.pathname === '/' ? ' active' : ''}`}>
                 <Home size={18} />
                 <span>Home</span>
@@ -111,7 +120,7 @@ function App() {
                 <span>Listings</span>
               </Link>
               <Link to="/demand" className={`ui-nav-link${location.pathname === '/demand' ? ' active' : ''}`}>
-                <LayoutList size={18} />
+                <ClipboardList size={18} />
                 <span>Demand</span>
               </Link>
               <Link to="/about" className={`ui-nav-link${location.pathname === '/about' ? ' active' : ''}`}>
@@ -119,6 +128,18 @@ function App() {
                 <span>About</span>
               </Link>
               {user && <NotificationBell />}
+              {user && (
+                <Link to="/messages" className={`ui-nav-link${location.pathname === '/messages' ? ' active' : ''}`}>
+                  <MessageSquare size={18} />
+                  <span>Messages</span>
+                </Link>
+              )}
+              {user?.role === 'farmer' && (
+                <Link to="/post" className={`ui-nav-link${location.pathname === '/post' ? ' active' : ''}`}>
+                  <PlusCircle size={18} />
+                  <span>Post</span>
+                </Link>
+              )}
               {user?.role === 'admin' && (
                 <Link to="/admin" className={`ui-nav-link${location.pathname === '/admin' ? ' active' : ''}`}>
                   <span>Admin</span>
@@ -138,6 +159,9 @@ function App() {
                 </Link>
               )}
             </nav>
+            <button className="ui-hamburger" onClick={() => setMenuOpen(o => !o)} aria-label="Toggle menu">
+              {menuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
           </div>
         </header>
 
@@ -200,10 +224,18 @@ function App() {
             <Route path="/admin/user/:id" element={<AdminUserDetailPage />} />
             <Route path="/demand" element={<DemandBoardPage />} />
             <Route path="/farmer/:id" element={<FarmerProfilePage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/order/:id" element={<OrderReceiptPage />} />
+            <Route path="/messages" element={<MessagesPage />} />
+            <Route path="/refer" element={<ReferralPage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>
+
+        {/* Footer — hidden on 3D shop route */}
+        {!isShop && <Footer />}
 
       </div>
     </div>

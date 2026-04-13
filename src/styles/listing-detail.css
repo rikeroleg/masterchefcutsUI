@@ -1,9 +1,10 @@
 ﻿/* listing-detail.css */
 
+/* Listing detail page shell */
 .ld-page {
   pointer-events: auto;
   color: #fff;
-  min-height: 100vh;
+  min-height: 100%;
   position: relative;
   padding: 40px 0 80px;
 }
@@ -36,6 +37,7 @@
   margin: 0 auto;
 }
 
+/* Loading and error state messages */
 .ld-loading, .ld-error {
   text-align: center;
   padding: 80px 24px;
@@ -101,6 +103,15 @@
   z-index: -1;
 }
 
+/* Row containing back link and share button */
+.ld-back-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+/* Back navigation link */
 .ld-back {
   color: rgba(255,255,255,0.45);
   text-decoration: none;
@@ -110,6 +121,25 @@
 }
 .ld-back:hover { color: #fff; }
 
+/* Share listing button */
+.ld-share-btn {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.4);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.ld-share-btn:hover {
+  background: rgba(231,76,60,0.25);
+  color: #fff;
+  border-color: #e74c3c;
+}
+
+/* Listing photo/image display */
 .ld-photo {
   border-radius: 18px;
   overflow: hidden;
@@ -162,9 +192,13 @@
   color: #1e0800;
 }
 
+/* Two-column layout inside hero — left and right columns */
 .ld-hero-left { display: flex; align-items: flex-start; gap: 18px; }
+/* Large animal emoji display */
 .ld-emoji { font-size: 2.8rem; line-height: 1; }
+/* Listing title heading */
 .ld-title { font-size: 1.6rem; font-weight: 900; color: #1e0800; margin: 0 0 6px; letter-spacing: -0.02em; }
+/* Farm name text */
 .ld-farm  { font-size: 0.88rem; color: rgba(20,6,0,0.65); margin: 0 0 4px; }
 .ld-farm-link {
   color: inherit;
@@ -173,12 +207,17 @@
   transition: border-color 0.15s;
 }
 .ld-farm-link:hover { border-bottom-color: rgba(20,6,0,0.45); }
+/* Location text */
 .ld-location { font-size: 0.78rem; color: rgba(20,6,0,0.5); margin: 0; }
 
+/* Right column of hero — price, weight, status */
 .ld-hero-right { text-align: right; }
+/* Price display */
 .ld-price { font-size: 1.8rem; font-weight: 900; color: #6b2200; }
 .ld-price small { font-size: 0.9rem; font-weight: 400; color: rgba(20,6,0,0.5); }
+/* Weight display */
 .ld-weight { font-size: 0.82rem; color: rgba(20,6,0,0.6); margin: 4px 0; }
+/* Status badge — Active/Sold */
 .ld-status { font-size: 0.8rem; font-weight: 600; margin-top: 6px; }
 
 /* Stats */
@@ -196,9 +235,11 @@
   overflow: hidden;
   filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
 }
+/* Individual stat item — value + label */
 .ld-stat { display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .ld-stat strong { font-size: 1.1rem; font-weight: 800; color: #1e0800; }
 .ld-stat span { font-size: 0.72rem; color: rgba(20,6,0,0.55); text-transform: uppercase; letter-spacing: 0.06em; }
+/* Vertical divider between stats */
 .ld-stat-sep { width: 1px; height: 30px; background: rgba(0,0,0,0.18); }
 .ld-stars-label { font-size: 0.75rem; color: rgba(20,6,0,0.55); margin-left: 4px; }
 
@@ -220,6 +261,7 @@
   color: rgba(20,6,0,0.6);
   margin-bottom: 10px;
 }
+/* Progress bar background track */
 .ld-progress-track {
   display: flex;
   height: 10px;
@@ -227,6 +269,7 @@
   overflow: hidden;
   gap: 2px;
 }
+/* Individual progress segment fill */
 .ld-seg { background: rgba(0,0,0,0.15); border-radius: 2px; }
 .ld-seg--claimed { background: linear-gradient(90deg, #c0392b, #e74c3c); }
 
@@ -289,11 +332,13 @@
   border: 1px solid rgba(231,76,60,0.35);
   border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;
 }
+/* Cuts selection grid */
 .ld-cuts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 10px;
 }
+/* Individual cut card/button */
 .ld-cut {
   background: rgba(0,0,0,0.12);
   border: 1.5px solid rgba(0,0,0,0.2);
@@ -310,6 +355,7 @@
 .ld-cut-meta { display: flex; align-items: center; gap: 6px; margin: 2px 0 4px; }
 .ld-cut-weight { font-size: 0.72rem; color: rgba(20,6,0,0.5); font-weight: 500; }
 .ld-cut-price  { font-size: 0.78rem; color: #6b1800; font-weight: 700; }
+/* Claim button on cut card */
 .ld-cut-claim-btn {
   padding: 7px 0;
   border-radius: 8px;
@@ -323,6 +369,7 @@
   transition: filter 0.15s;
 }
 .ld-cut-claim-btn:hover { filter: brightness(1.15); }
+/* Cut availability status text */
 .ld-cut-status { font-size: 0.75rem; font-weight: 600; }
 .ld-cut-status--claimed { color: #2d6a1e; }
 .ld-cut-status--closed  { color: rgba(20,6,0,0.4); }
@@ -340,7 +387,9 @@
   overflow: hidden;
   filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
 }
+/* Reviews list container */
 .ld-reviews { display: flex; flex-direction: column; gap: 12px; }
+/* Individual review card */
 .ld-review {
   background: rgba(0,0,0,0.12);
   border: 1px solid rgba(0,0,0,0.2);
@@ -397,6 +446,7 @@
 .ld-confirm-sub  { color: rgba(20,6,0,0.5) !important; font-size: 0.78rem !important; }
 .ld-confirm-actions { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
 
+/* Mobile responsive breakpoint */
 @media (max-width: 600px) {
   .ld-hero { flex-direction: column; }
   .ld-hero-right { text-align: left; }
@@ -413,6 +463,7 @@
 }
 .ld-review-form { display: flex; flex-direction: column; gap: 12px; }
 .ld-review-stars-row { display: flex; gap: 6px; }
+/* Star rating button */
 .ld-review-star-btn {
   background: none;
   border: none;
@@ -436,6 +487,7 @@
   resize: vertical;
 }
 .ld-review-comment-input::placeholder { color: rgba(20,6,0,0.35); }
+/* Submit review button */
 .ld-review-submit-btn {
   align-self: flex-start;
   padding: 10px 24px;
@@ -455,3 +507,202 @@
   font-size: 0.9rem;
   padding: 12px;
 }
+
+/* ── Comments ── */
+.ld-comments-section {
+  background:
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
+  border-radius: 18px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
+}
+
+.ld-comments-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: -1;
+}
+
+.ld-comments-count {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: rgba(20,6,0,0.45);
+  margin-left: 4px;
+}
+
+/* Compose form */
+.ld-comment-form {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.ld-comment-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
+  border: 2px solid rgba(20,6,0,0.18);
+}
+
+.ld-comment-avatar--sm {
+  width: 32px;
+  height: 32px;
+  font-size: 0.66rem;
+}
+
+.ld-comment-compose {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ld-comment-input {
+  width: 100%;
+  background: rgba(0,0,0,0.12);
+  border: 1.5px solid rgba(0,0,0,0.2);
+  border-radius: 10px;
+  color: #1e0800;
+  font-family: inherit;
+  font-size: 0.88rem;
+  padding: 10px 12px;
+  resize: vertical;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+.ld-comment-input:focus {
+  outline: none;
+  border-color: rgba(0,0,0,0.38);
+}
+.ld-comment-input::placeholder { color: rgba(20,6,0,0.35); }
+
+.ld-comment-compose-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ld-comment-chars {
+  font-size: 0.72rem;
+  color: rgba(20,6,0,0.35);
+}
+
+.ld-comment-submit {
+  padding: 7px 20px;
+  background: linear-gradient(170deg, #8b1a00 0%, #a82800 50%, #781500 100%);
+  border: 1.5px solid #4a0e00;
+  border-radius: 8px;
+  color: #fde8c0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.ld-comment-submit:hover:not(:disabled) { filter: brightness(1.15); }
+.ld-comment-submit:disabled { opacity: 0.45; cursor: default; }
+
+/* Sign-in prompt */
+.ld-comment-login-prompt {
+  font-size: 0.85rem;
+  color: rgba(20,6,0,0.55);
+  margin: 0 0 18px;
+}
+.ld-comment-login-link {
+  color: #6b1800;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* Comments list */
+.ld-comments-empty {
+  font-size: 0.82rem;
+  color: rgba(20,6,0,0.4);
+  text-align: center;
+  padding: 14px 0 4px;
+}
+
+.ld-comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ld-comment {
+  display: flex;
+  gap: 10px;
+  background: rgba(0,0,0,0.1);
+  border: 1px solid rgba(0,0,0,0.16);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.ld-comment-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ld-comment-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ld-comment-author {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #1e0800;
+}
+
+.ld-comment-date {
+  font-size: 0.72rem;
+  color: rgba(20,6,0,0.4);
+  margin-left: auto;
+}
+
+.ld-comment-delete {
+  background: none;
+  border: none;
+  color: rgba(20,6,0,0.3);
+  font-size: 0.78rem;
+  cursor: pointer;
+  padding: 0 2px;
+  transition: color 0.15s;
+  margin-left: 4px;
+  line-height: 1;
+}
+.ld-comment-delete:hover { color: #c0392b; }
+.ld-comment-delete:disabled { opacity: 0.4; cursor: default; }
+
+.ld-comment-text {
+  font-size: 0.88rem;
+  color: rgba(20,6,0,0.8);
+  line-height: 1.6;
+  margin: 0;
+  word-break: break-word;
+}
+

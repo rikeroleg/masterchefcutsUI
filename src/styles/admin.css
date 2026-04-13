@@ -1,6 +1,6 @@
 ﻿/* admin.css */
 
-.admin-page { min-height: 100vh; padding: 40px 0 80px; }
+.admin-page { min-height: 100%; padding: 40px 0 80px; }
 
 .admin-inner {
   max-width: 900px;

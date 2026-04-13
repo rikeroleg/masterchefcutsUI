@@ -1,5 +1,6 @@
 /* header.css — top nav, brand, nav links, bottom hint, cart badge */
 
+/* Top navigation bar — amber wood gradient + SVG texture overlay */
 .ui-header {
   background:
     /* nail holes — left and right ends */
@@ -35,7 +36,7 @@
   z-index: 200;
 }
 
-/* SVG feTurbulence wood texture overlay */
+/* Wood grain texture pseudo-element — via feTurbulence SVG */
 .ui-header::before {
   content: '';
   position: absolute;
@@ -49,6 +50,7 @@
   z-index: 0;
 }
 
+/* Inner flex container — 64px height, centered content */
 .ui-header-inner { position: relative; z-index: 1; }
 
 .ui-header-inner {
@@ -60,6 +62,7 @@
   justify-content: space-between;
 }
 
+/* Brand logo + text link wrapper */
 .ui-brand {
   display: flex;
   align-items: center;
@@ -68,6 +71,7 @@
   color: inherit;
 }
 
+/* Red circle logo icon */
 .ui-brand-icon {
   width: 44px;
   height: 44px;
@@ -80,6 +84,7 @@
   flex-shrink: 0;
 }
 
+/* "MasterChef" brand name text */
 .ui-brand-title {
   display: block;
   font-size: 1.65rem;
@@ -90,6 +95,7 @@
   text-shadow: 0 1px 0 rgba(255,210,120,0.5);
 }
 
+/* "Cuts" subtitle text */
 .ui-brand-sub {
   display: block;
   font-size: 0.7rem;
@@ -98,12 +104,14 @@
   text-transform: uppercase;
 }
 
+/* Desktop navigation links row */
 .ui-nav {
   display: flex;
   align-items: center;
   gap: 0.25rem;
 }
 
+/* Individual nav link — wood-styled borders */
 .ui-nav-link {
   display: flex;
   align-items: center;
@@ -131,6 +139,7 @@
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.25);
 }
 
+/* Login button variant of nav link */
 .ui-nav-link--login {
   border: 1px solid rgba(120,30,0,0.4);
   color: #7a1f00;
@@ -142,6 +151,7 @@
   color: #5a1500;
 }
 
+/* User avatar circle — red, shows initials */
 .ui-avatar-chip {
   width: 26px;
   height: 26px;
@@ -158,6 +168,7 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.45);
 }
 
+/* Absolute-positioned centered help text below header */
 .ui-bottom-hint {
   position: absolute;
   bottom: 22px;
@@ -173,6 +184,7 @@
   pointer-events: none;
 }
 
+/* Red pill counter — shows cart item count */
 .cart-badge {
   display: inline-flex;
   align-items: center;
@@ -188,4 +200,69 @@
   line-height: 1;
   margin-left: 5px;
   vertical-align: middle;
+}
+
+/* Mobile hamburger menu button — hidden on desktop */
+.ui-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: #1e0800;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.ui-hamburger:hover {
+  background: rgba(0,0,0,0.12);
+}
+
+/* Mobile layout — nav becomes dropdown overlay, brand shrinks */
+@media (max-width: 768px) {
+  .ui-hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ui-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background:
+      linear-gradient(168deg,
+        #9a5c1a 0%, #c07828 12%, #d4922e 25%,
+        #e6aa3a 40%, #f0ba42 50%, #e4a833 60%,
+        #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    padding: 8px 0;
+    z-index: 300;
+    gap: 0;
+  }
+
+  .ui-nav--open {
+    display: flex;
+  }
+
+  .ui-nav-link {
+    padding: 12px 24px;
+    border-top: none;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    font-size: 0.95rem;
+  }
+
+  .ui-nav-link:last-child {
+    border-bottom: none;
+  }
+
+  .ui-brand-title {
+    font-size: 1.25rem;
+  }
+
+  .ui-brand-sub {
+    display: none;
+  }
 }

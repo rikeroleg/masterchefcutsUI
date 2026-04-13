@@ -1,14 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react'
 import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { cartBridge } from '../context/CartContext'
+import { useFavorites } from '../utils/index'
+
+const ListingsMap = lazy(() => import('../Components/ListingsMap'))
 
 const ANIMAL_FILTERS = ['All', 'Beef', 'Pork', 'Lamb']
 
 const ANIMAL_META = {
-  BEEF: { emoji: '�', label: 'Beef' },
+  BEEF: { emoji: '🐄', label: 'Beef' },
   PORK: { emoji: '🐷', label: 'Pork' },
   LAMB: { emoji: '🐑', label: 'Lamb' },
 }
@@ -80,6 +83,7 @@ function ListingCard({ listing, onClaimed }) {
   const [claimError, setClaimError]     = useState('')
   const [onWaitlist, setOnWaitlist]     = useState(false)
   const [waitlistLoading, setWLLoading] = useState(false)
+  const { isFav, toggle: toggleFav }    = useFavorites()
 
   const meta      = ANIMAL_META[listing.animalType] || { emoji: '🐄', label: listing.animalType }
   const available = listing.cuts.filter(c => !c.claimed).length
@@ -149,6 +153,14 @@ function ListingCard({ listing, onClaimed }) {
           </div>
         </div>
         <div className="lc-price-block">
+          <button
+            className="fav-btn"
+            onClick={() => toggleFav({ id: String(listing.farmerId), name: listing.farmerName, shopName: listing.farmerShopName })}
+            title={isFav(String(listing.farmerId)) ? 'Remove from favorites' : 'Save this farmer'}
+            aria-label={isFav(String(listing.farmerId)) ? 'Unsave farmer' : 'Save farmer'}
+          >
+            {isFav(String(listing.farmerId)) ? '♥' : '♡'}
+          </button>
           <span className="lc-price">${listing.pricePerLb.toFixed(2)}<small>/lb</small></span>
           <span className="lc-weight">{listing.weightLbs} lbs</span>
         </div>
@@ -238,6 +250,8 @@ export default function Listings() {
   const debouncedMaxPrice = useDebounce(maxPriceInput, 550)
   const debouncedBreed    = useDebounce(breedInput,    450)
 
+  useEffect(() => { document.title = 'Browse Listings — MasterChef Cuts' }, [])
+
   // ── Data state ───────────────────────────────────────────────────────────
   const [listings,    setListings]    = useState([])
   const [loading,     setLoading]     = useState(true)
@@ -245,6 +259,7 @@ export default function Listings() {
   const [page,        setPage]        = useState(0)
   const [hasMore,     setHasMore]     = useState(true)
   const [moreFilters, setMoreFilters] = useState(false)
+  const [viewMode, setViewMode] = useState('grid')
 
   // Track last-fetched server params to detect resets vs appends
   const lastServerParams = useRef({ animal, zip, maxPrice })
@@ -266,11 +281,11 @@ export default function Listings() {
   useEffect(() => {
     lastServerParams.current = { animal, zip, maxPrice }
     setPage(0)
-    fetchListings(animal, zip, maxPrice, 0, true)
+    fetchListings(animal, zip, maxPrice, sortBy, breedFilter, radius, 0, true)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [animal, zip, maxPrice])
+  }, [animal, zip, maxPrice, sortBy, breedFilter, radius])
 
-  async function fetchListings(animalVal, zipVal, maxPriceVal, pageNum, reset) {
+  async function fetchListings(animalVal, zipVal, maxPriceVal, sortVal, breedVal, radiusVal, pageNum, reset) {
     setLoading(true)
     setError('')
     try {
@@ -278,6 +293,9 @@ export default function Listings() {
       if (animalVal && animalVal !== 'All') params.set('animal', animalVal.toUpperCase())
       if (zipVal)      params.set('zip',      zipVal)
       if (maxPriceVal) params.set('maxPrice', maxPriceVal)
+      if (breedVal)    params.set('breed',    breedVal)
+      if (radiusVal && radiusVal !== '25') params.set('radius', radiusVal)
+      if (sortVal && sortVal !== 'newest') params.set('sort',   sortVal)
       params.set('page', String(pageNum))
       params.set('size', '12')
       const data = await api.get(`/api/listings?${params.toString()}`)
@@ -295,7 +313,7 @@ export default function Listings() {
 
   function handleLoadMore() {
     const nextPage = page + 1
-    fetchListings(animal, zip, maxPrice, nextPage, false)
+    fetchListings(animal, zip, maxPrice, sortBy, breedFilter, radius, nextPage, false)
   }
 
   function setAnimal(value) {
@@ -352,6 +370,16 @@ export default function Listings() {
             <p className="hp-label">Available now</p>
             <h1 className="listings-title">Browse Listings</h1>
             <p className="listings-sub">Claim a primal cut from a whole animal near you.</p>
+          </div>
+          <div className="listings-view-toggle">
+            <button
+              className={`listings-view-btn${viewMode === 'grid' ? ' active' : ''}`}
+              onClick={() => setViewMode('grid')}
+            >☰ Grid</button>
+            <button
+              className={`listings-view-btn${viewMode === 'map' ? ' active' : ''}`}
+              onClick={() => setViewMode('map')}
+            >🗺 Map</button>
           </div>
 
           <div className="listings-controls">
@@ -442,17 +470,35 @@ export default function Listings() {
         {loading && listings.length === 0 && <p className="listings-loading">Loading listings…</p>}
         {error   && <p className="listings-error">{error}</p>}
 
-        <div className="listings-grid">
-          {!loading && visible.map(l => (
-            <ListingCard key={l.id} listing={l} onClaimed={(updated) => {
-              if (updated?.id) setListings(prev => prev.map(x => x.id === updated.id ? updated : x))
-              else fetchListings(animal, zip, maxPrice, 0, true)
-            }} />
-          ))}
-          {!loading && !error && visible.length === 0 && (
-            <p className="listings-empty">No listings found. Check back soon.</p>
-          )}
-        </div>
+        {viewMode === 'map' ? (
+          <div className="listings-map-wrap">
+            <Suspense fallback={<p className="listings-map-status">Loading map…</p>}>
+              <ListingsMap listings={visible} />
+            </Suspense>
+          </div>
+        ) : (
+          <div className="listings-grid">
+            {!loading && visible.map(l => (
+              <ListingCard key={l.id} listing={l} onClaimed={(updated) => {
+                if (updated?.id) setListings(prev => prev.map(x => x.id === updated.id ? updated : x))
+                else fetchListings(animal, zip, maxPrice, sortBy, breedFilter, radius, 0, true)
+              }} />
+            ))}
+            {!loading && !error && visible.length === 0 && (
+              <div className="listings-empty">
+                <p>No listings found matching your filters.</p>
+                {hasActiveFilters && (
+                  <button className="listings-filter-clear" onClick={clearAllFilters}>
+                    Clear all filters
+                  </button>
+                )}
+                <Link to="/listings" className="listings-browse-all" onClick={clearAllFilters}>
+                  Browse all listings →
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
 
         {hasMore && !loading && !error && visible.length > 0 && (
           <div style={{ textAlign: 'center', marginTop: '28px' }}>

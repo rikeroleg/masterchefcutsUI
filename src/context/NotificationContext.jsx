@@ -24,9 +24,62 @@ export function NotificationProvider({ children }) {
       setTotalCount(0)
       return 
     }
+
+    // Initial fetch
     fetchPage(0, true)
-    const t = setInterval(() => fetchPage(0, true), 30_000)
-    return () => clearInterval(t)
+
+    const BASE_URL = import.meta.env.VITE_API_URL ?? ''
+    const token    = localStorage.getItem('mc_token')
+    let es = null
+    let pollInterval = null
+
+    function startPolling() {
+      if (pollInterval) return
+      pollInterval = setInterval(() => fetchPage(0, true), 30_000)
+    }
+
+    // Try SSE; fall back to polling if unsupported or backend returns non-event-stream
+    if (token && typeof EventSource !== 'undefined') {
+      try {
+        es = new EventSource(`${BASE_URL}/api/notifications/stream?token=${encodeURIComponent(token)}`)
+
+        es.onmessage = (e) => {
+          try {
+            const payload = JSON.parse(e.data)
+            // Backend may send a full paged payload or a single notification object
+            if (payload.content !== undefined) {
+              setNotifications(payload.content || [])
+              setUnreadCount(payload.unreadCount ?? 0)
+              setTotalCount(payload.totalElements ?? 0)
+              setHasMore(payload.hasNext ?? false)
+            } else if (payload.id) {
+              // Single new notification pushed
+              setNotifications(prev => [payload, ...prev.filter(n => n.id !== payload.id)])
+              if (!payload.read) setUnreadCount(prev => prev + 1)
+              setTotalCount(prev => prev + 1)
+            }
+          } catch { /* ignore malformed events */ }
+        }
+
+        es.onerror = () => {
+          // SSE failed — close it and fall back to polling
+          es.close()
+          es = null
+          startPolling()
+        }
+      } catch {
+        // EventSource constructor threw (shouldn't happen in modern browsers)
+        startPolling()
+      }
+    } else {
+      startPolling()
+    }
+
+    return () => {
+      if (es) es.close()
+      if (pollInterval) clearInterval(pollInterval)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   const fetchPage = useCallback(async (pageNum, reset = false) => {

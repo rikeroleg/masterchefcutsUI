@@ -1,0 +1,17 @@
+{
+  "name": "MasterChef Cuts",
+  "short_name": "MCC",
+  "description": "Farm-fresh meat marketplace — claim primal cuts from whole animals near you.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#1a1a1a",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

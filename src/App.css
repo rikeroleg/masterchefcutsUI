@@ -18,3 +18,8 @@
 @import './styles/toast.css';
 @import './styles/dispute-modal.css';
 @import './styles/payment-modal.css';
+@import './styles/spinner.css';
+@import './styles/footer.css';
+@import './styles/receipt.css';
+@import './styles/messages.css';
+@import './styles/referral.css';

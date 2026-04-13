@@ -3,7 +3,7 @@
 .db-page {
   pointer-events: auto;
   color: #fff;
-  min-height: 100vh;
+  min-height: 100%;
   position: relative;
 }
 

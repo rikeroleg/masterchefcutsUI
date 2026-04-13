@@ -1,13 +1,13 @@
 ﻿/* auth.css â€” shared styles for Login, ForgotPassword, ResetPassword */
-
-.auth-page {
-  min-height: 100vh;
+/* Auth page — centered flex wrapper for auth screens */.auth-page {
+  min-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 40px 16px;
 }
 
+/* Auth card — amber wood-textured form container */
 .auth-card {
   background:
     linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
@@ -38,15 +38,21 @@
   z-index: -1;
 }
 
+/* Auth header — card top section with title + subtitle */
 .auth-header { display: flex; flex-direction: column; gap: 6px; }
+/* Auth title — form heading */
 .auth-title  { font-size: 1.6rem; font-weight: 900; color: #1e0800; margin: 0; letter-spacing: -0.03em; }
+/* Auth subtitle — form subtitle text */
 .auth-sub    { font-size: 0.88rem; color: rgba(20, 6, 0, 0.62); margin: 0; }
 
+/* Auth form — vertical form layout */
 .auth-form   { display: flex; flex-direction: column; gap: 16px; }
 
+/* Auth field — individual field wrapper (label + input) */
 .auth-field  { display: flex; flex-direction: column; gap: 6px; }
 .auth-field label { font-size: 0.82rem; font-weight: 600; color: rgba(20, 6, 0, 0.72); }
 
+/* Auth input — styled text input on dark semi-transparent background */
 .auth-input {
   background: rgba(0,0,0,0.14);
   border: 1.5px solid rgba(0,0,0,0.28);
@@ -61,6 +67,7 @@
 .auth-input:focus { border-color: rgba(120,40,0,0.7); }
 .auth-input::placeholder { color: rgba(20, 6, 0, 0.35); }
 
+/* Auth submit — red gradient submit button */
 .auth-submit-btn {
   padding: 13px;
   border-radius: 12px;
@@ -77,6 +84,7 @@
 .auth-submit-btn:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
 .auth-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
+/* Auth error — red error message box */
 .auth-error {
   font-size: 0.82rem;
   color: #7a1a00;
@@ -87,6 +95,7 @@
   margin: 0;
 }
 
+/* Auth success — green success message box */
 .auth-success {
   background: rgba(0,0,0,0.12);
   border: 1px solid rgba(0,0,0,0.2);
@@ -100,6 +109,7 @@
   color: rgba(20, 6, 0, 0.8);
 }
 
+/* Auth link — inline text link */
 .auth-link {
   color: #7a3a00;
   text-decoration: none;
@@ -108,6 +118,7 @@
 }
 .auth-link:hover { color: #1e0800; }
 
+/* Auth footer link — bottom-of-card navigation link */
 .auth-footer-link {
   text-align: center;
   font-size: 0.82rem;
@@ -115,6 +126,7 @@
   margin: 0;
 }
 
+/* Mobile — responsive adjustments */
 @media (max-width: 480px) {
   .auth-card { padding: 28px 20px; }
 }

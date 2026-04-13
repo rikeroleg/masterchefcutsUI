@@ -4,7 +4,29 @@ import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { cartBridge } from '../context/CartContext'
+import Spinner from '../Components/Spinner'
 import '../styles/listing-detail.css'
+
+function ShareButton({ title }) {
+  const { toast } = useToast()
+
+  function handleShare() {
+    const url = window.location.href
+    if (navigator.share) {
+      navigator.share({ title, url }).catch(() => {})
+    } else {
+      navigator.clipboard.writeText(url)
+        .then(() => toast.success('Link copied to clipboard!'))
+        .catch(() => toast.error('Could not copy link.'))
+    }
+  }
+
+  return (
+    <button className="ld-share-btn" onClick={handleShare} title="Share this listing">
+      ↗ Share
+    </button>
+  )
+}
 
 const ANIMAL_META = {
   BEEF: { emoji: '🐄', label: 'Beef' },
@@ -46,13 +68,29 @@ export default function ListingDetail() {
   const [reviewSubmitting, setReviewSubmitting] = useState(false)
   const [reviewDone, setReviewDone] = useState(false)
 
+  const [comments,         setComments]         = useState([])
+  const [commentText,      setCommentText]      = useState('')
+  const [commentSubmitting,setCommentSubmitting] = useState(false)
+  const [deletingComment,  setDeletingComment]  = useState(null)
+
+  useEffect(() => { document.title = 'Listing \u2014 MasterChef Cuts' }, [])
+
+  useEffect(() => {
+    if (listing) {
+      const animalLabel = ANIMAL_META[listing.animalType]?.label || ''
+      document.title = `${listing.breed} ${animalLabel} \u2014 MasterChef Cuts`
+    }
+  }, [listing])
+
   useEffect(() => {
     Promise.all([
       api.get(`/api/listings/${id}`),
       api.get(`/api/listings/${id}/reviews`).catch(() => []),
-    ]).then(([l, r]) => {
+      api.get(`/api/listings/${id}/comments`).catch(() => []),
+    ]).then(([l, r, c]) => {
       setListing(l)
       setReviews(r)
+      setComments(c)
     }).catch(err => setError(err.message))
       .finally(() => setLoading(false))
   }, [id])
@@ -61,7 +99,7 @@ export default function ListingDetail() {
     if (!user || user.role === 'farmer') return
     api.get(`/api/reviews/has-reviewed?listingId=${id}`)
       .then(had => setAlreadyReviewed(had))
-      .catch(() => {})
+      .catch(() => {}) // non-critical: review status
   }, [id, user])
 
   async function handleCutClick(cut) {
@@ -108,7 +146,35 @@ export default function ListingDetail() {
     }
   }
 
-  if (loading) return <div className="ld-loading">Loading listing…</div>
+  async function handleSubmitComment(e) {
+    e.preventDefault()
+    if (!commentText.trim()) return
+    setCommentSubmitting(true)
+    try {
+      const saved = await api.post(`/api/listings/${id}/comments`, { body: commentText.trim() })
+      setComments(prev => [saved, ...prev])
+      setCommentText('')
+      toast.success('Comment posted!')
+    } catch (err) {
+      toast.error(err.message || 'Failed to post comment.')
+    } finally {
+      setCommentSubmitting(false)
+    }
+  }
+
+  async function handleDeleteComment(cid) {
+    setDeletingComment(cid)
+    try {
+      await api.delete(`/api/listings/${id}/comments/${cid}`)
+      setComments(prev => prev.filter(c => c.id !== cid))
+    } catch (err) {
+      toast.error(err.message || 'Failed to delete comment.')
+    } finally {
+      setDeletingComment(null)
+    }
+  }
+
+  if (loading) return <Spinner />
   if (error)   return <div className="ld-error">{error} <Link to="/listings">← Back</Link></div>
   if (!listing) return null
 
@@ -123,7 +189,10 @@ export default function ListingDetail() {
     <div className="ld-page">
       <div className="ld-inner">
 
-        <Link to="/listings" className="ld-back">← Back to Listings</Link>
+        <div className="ld-back-row">
+          <Link to="/listings" className="ld-back">← Back to Listings</Link>
+          <ShareButton title={`${listing.breed} ${meta.label} — MasterChef Cuts`} />
+        </div>
 
         {/* Hero card */}
         {listing.imageUrl && (
@@ -281,6 +350,76 @@ export default function ListingDetail() {
         {(reviewDone || (alreadyReviewed && user?.role !== 'farmer')) && (
           <div className="ld-review-done">✅ You&apos;ve reviewed this listing. Thank you!</div>
         )}
+
+        {/* Comments section */}
+        <div className="ld-comments-section">
+          <h2 className="ld-section-title">Comments {comments.length > 0 && <span className="ld-comments-count">({comments.length})</span>}</h2>
+
+          {/* Compose */}
+          {user ? (
+            <form className="ld-comment-form" onSubmit={handleSubmitComment}>
+              <div className="ld-comment-avatar">
+                {user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+              </div>
+              <div className="ld-comment-compose">
+                <textarea
+                  className="ld-comment-input"
+                  placeholder="Leave a comment…"
+                  rows={2}
+                  value={commentText}
+                  onChange={e => setCommentText(e.target.value)}
+                  maxLength={1000}
+                />
+                <div className="ld-comment-compose-footer">
+                  <span className="ld-comment-chars">{commentText.length}/1000</span>
+                  <button
+                    type="submit"
+                    className="ld-comment-submit"
+                    disabled={!commentText.trim() || commentSubmitting}
+                  >
+                    {commentSubmitting ? 'Posting…' : 'Post Comment'}
+                  </button>
+                </div>
+              </div>
+            </form>
+          ) : (
+            <p className="ld-comment-login-prompt">
+              <Link to="/login" className="ld-comment-login-link">Sign in</Link> to leave a comment.
+            </p>
+          )}
+
+          {/* Comment list */}
+          {comments.length === 0 ? (
+            <p className="ld-comments-empty">No comments yet. Be the first!</p>
+          ) : (
+            <div className="ld-comments-list">
+              {comments.map(c => (
+                <div key={c.id} className="ld-comment">
+                  <div className="ld-comment-avatar ld-comment-avatar--sm">
+                    {(c.authorName || 'A').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                  </div>
+                  <div className="ld-comment-body">
+                    <div className="ld-comment-header">
+                      <span className="ld-comment-author">{c.authorName || 'Anonymous'}</span>
+                      <span className="ld-comment-date">{new Date(c.createdAt).toLocaleDateString()}</span>
+                      {user && (user.id === c.authorId || user.role === 'admin') && (
+                        <button
+                          className="ld-comment-delete"
+                          onClick={() => handleDeleteComment(c.id)}
+                          disabled={deletingComment === c.id}
+                          title="Delete comment"
+                        >
+                          {deletingComment === c.id ? '…' : '✕'}
+                        </button>
+                      )}
+                    </div>
+                    <p className="ld-comment-text">{c.body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
       </div>
 

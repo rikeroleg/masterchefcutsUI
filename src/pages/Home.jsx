@@ -90,13 +90,12 @@ export default function Home() {
       {/* ════ HOW IT WORKS ════ */}
       <section className="hp-how">
         <div className="hp-section-inner">
-          <p className="hp-label">How it works</p>
+          <span className="about-eyebrow">How it works</span>
           <h2 className="hp-h2">Three steps to better meat.</h2>
           <div className="hp-steps">
             {STEPS.map((s, i) => (
               <div key={s.title} className="hp-step">
-                <div className="hp-step-icon">{s.icon}</div>
-                <div className="hp-step-num">0{i + 1}</div>
+                <span className="hp-step-num">0{i + 1}</span>
                 <h3 className="hp-step-title">{s.title}</h3>
                 <p className="hp-step-body">{s.body}</p>
               </div>

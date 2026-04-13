@@ -4,9 +4,102 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { useCart } from '../context/CartContext'
 import { api } from '../api/client'
+import { useFavorites } from '../utils/index'
 import DisputeModal from '../Components/DisputeModal'
 
 const ANIMAL_EMOJI = { BEEF: '🐄', PORK: '🐷', LAMB: '🐑' }
+
+function FarmerAnalytics({ listings, orders }) {
+  const paidStatuses = new Set(['PAID','ACCEPTED','PROCESSING','READY','COMPLETED'])
+  const paidOrders   = orders.filter(o => paidStatuses.has(o.status?.toUpperCase()))
+  const totalRevenue = paidOrders.reduce((s, o) => {
+    const amt = o.amountCents != null ? o.amountCents / 100 : (o.totalAmount || 0)
+    return s + amt
+  }, 0)
+  const avgFill = listings.length > 0
+    ? Math.round(listings.reduce((s, l) => s + (l.totalCuts > 0 ? l.claimedCuts / l.totalCuts : 0), 0) / listings.length * 100)
+    : 0
+
+  const animalCounts = listings.reduce((acc, l) => { acc[l.animalType] = (acc[l.animalType] || 0) + 1; return acc }, {})
+  const maxAnimal    = Math.max(...Object.values(animalCounts), 1)
+
+  const cutCounts = {}
+  orders.forEach(o => {
+    let items = []
+    try { items = JSON.parse(o.items) } catch { /* skip */ }
+    items.forEach(it => { const k = it.cutLabel || it.label || 'Unknown'; cutCounts[k] = (cutCounts[k] || 0) + 1 })
+  })
+  const topCuts = Object.entries(cutCounts).sort((a, b) => b[1] - a[1]).slice(0, 5)
+
+  return (
+    <div className="farmer-analytics">
+      {/* KPI row */}
+      <div className="fa-kpis">
+        <div className="fa-kpi">
+          <span className="fa-kpi-value">${totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+          <span className="fa-kpi-label">Gross Revenue</span>
+        </div>
+        <div className="fa-kpi">
+          <span className="fa-kpi-value">{avgFill}%</span>
+          <span className="fa-kpi-label">Avg Fill Rate</span>
+        </div>
+        <div className="fa-kpi">
+          <span className="fa-kpi-value">{listings.length}</span>
+          <span className="fa-kpi-label">Listings Posted</span>
+        </div>
+        <div className="fa-kpi">
+          <span className="fa-kpi-value">{orders.length}</span>
+          <span className="fa-kpi-label">Total Orders</span>
+        </div>
+      </div>
+
+      <div className="fa-grid">
+        {/* Animal type breakdown */}
+        <div className="fa-card">
+          <div className="fa-card-title">By Animal Type</div>
+          {Object.entries(animalCounts).map(([type, count]) => (
+            <div key={type} className="fa-bar-row">
+              <span className="fa-bar-label">{ANIMAL_EMOJI[type] || '🥩'} {type.charAt(0) + type.slice(1).toLowerCase()}</span>
+              <div className="fa-bar-track"><div className="fa-bar-fill" style={{ width: `${Math.round((count / maxAnimal) * 100)}%` }} /></div>
+              <span className="fa-bar-val">{count}</span>
+            </div>
+          ))}
+          {Object.keys(animalCounts).length === 0 && <p className="fa-empty">No listings yet</p>}
+        </div>
+
+        {/* Top cuts */}
+        <div className="fa-card">
+          <div className="fa-card-title">Top Cuts Ordered</div>
+          {topCuts.map(([label, count]) => (
+            <div key={label} className="fa-bar-row">
+              <span className="fa-bar-label">{label}</span>
+              <div className="fa-bar-track"><div className="fa-bar-fill" style={{ width: `${Math.round((count / topCuts[0][1]) * 100)}%` }} /></div>
+              <span className="fa-bar-val">{count}</span>
+            </div>
+          ))}
+          {topCuts.length === 0 && <p className="fa-empty">No orders yet</p>}
+        </div>
+      </div>
+
+      {/* Per-listing fill rates */}
+      {listings.length > 0 && (
+        <div className="fa-card fa-card--wide">
+          <div className="fa-card-title">Fill Rate per Listing</div>
+          {listings.map(l => {
+            const pct = l.totalCuts > 0 ? Math.round((l.claimedCuts / l.totalCuts) * 100) : 0
+            return (
+              <div key={l.id} className="fa-bar-row">
+                <span className="fa-bar-label">{ANIMAL_EMOJI[l.animalType] || '🥩'} {l.breed}</span>
+                <div className="fa-bar-track"><div className="fa-bar-fill" style={{ width: `${pct}%` }} /></div>
+                <span className="fa-bar-val">{pct}%</span>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
 
 function parseExpiry(v) {
   if (Array.isArray(v)) {
@@ -69,6 +162,8 @@ export default function Profile() {
   const [editing, setEditing]             = useState(false)
   const [connectLoading, setConnectLoading] = useState(false)
 
+  const { favorites, toggle: toggleFav } = useFavorites()
+
   // Handle Stripe Connect return redirect (?connect=success or ?connect=refresh)
   useEffect(() => {
     if (!isFarmerUser) return
@@ -89,6 +184,7 @@ export default function Profile() {
   const [myListings, setMyListings]         = useState([])
   const [myClaims, setMyClaims]             = useState([])
   const [claimsError, setClaimsError]       = useState('')
+  const [listingFillMap, setListingFillMap] = useState({}) // { [listingId]: { claimed, total } }
   const [dateInputs, setDateInputs]         = useState({})
   const [dateLoading, setDateLoading]       = useState(null)
   const [dateError, setDateError]           = useState('')
@@ -104,6 +200,7 @@ export default function Profile() {
   const [updatingOrderId, setUpdatingOrderId]       = useState(null)
   const [confirmingOrderId, setConfirmingOrderId]   = useState(null)
   const [confirmReceiptModal, setConfirmReceiptModal] = useState(null)
+  const [analyticsOpen, setAnalyticsOpen]           = useState(false)
   const [editListingId, setEditListingId]           = useState(null)
   const [editListingForm, setEditListingForm]       = useState({})
   const [editListingLoading, setEditListingLoading] = useState(false)
@@ -115,23 +212,42 @@ export default function Profile() {
   const [notifPref, setNotifPref]       = useState(user?.notificationPreference || 'ALL')
   const [notifPrefLoading, setNotifPrefLoading] = useState(false)
 
+  useEffect(() => { document.title = 'Profile — MasterChef Cuts' }, [])
+
   useEffect(() => {
     if (!user) return
     if (isFarmerUser) {
-      api.get('/api/listings/my').then(setMyListings).catch(() => {})
+      api.get('/api/listings/my').then(setMyListings).catch(() => toast.error('Could not load your listings.'))
       // Load farmer orders
       setFarmerOrdersLoading(true)
-      api.get('/api/orders/farmer').then(setFarmerOrders).catch(() => {}).finally(() => setFarmerOrdersLoading(false))
+      api.get('/api/orders/farmer').then(setFarmerOrders).catch(() => toast.error('Could not load farmer orders.')).finally(() => setFarmerOrdersLoading(false))
     } else {
       setClaimsError('')
       api.get('/api/claims/my')
-        .then(setMyClaims)
+        .then(claims => {
+          setMyClaims(claims)
+          // Fetch fill counts for unique active-listing IDs
+          const activeIds = [...new Set(
+            claims.filter(c => c.listingStatus === 'ACTIVE').map(c => c.listingId)
+          )]
+          Promise.all(activeIds.map(lid => api.get(`/api/listings/${lid}`).catch(() => null)))
+            .then(results => {
+              const map = {}
+              results.forEach(l => {
+                if (!l) return
+                const total   = l.totalCuts || (l.cuts?.length ?? 0)
+                const claimed = l.cuts ? l.cuts.filter(cu => cu.claimed).length : 0
+                map[l.id] = { claimed, total }
+              })
+              setListingFillMap(map)
+            })
+        })
         .catch(err => {
           setMyClaims([])
           setClaimsError(err.message || 'Failed to load your claims.')
         })
       setOrdersLoading(true)
-      api.get('/api/orders/my').then(setMyOrders).catch(() => {}).finally(() => setOrdersLoading(false))
+      api.get('/api/orders/my').then(setMyOrders).catch(() => toast.error('Could not load your orders.')).finally(() => setOrdersLoading(false))
     }
   }, [user, isFarmerUser])
   const [form, setForm] = useState({
@@ -565,6 +681,30 @@ export default function Profile() {
           )}
         </div>
 
+        {/* ── Buyer: Saved Farmers ── */}
+        {!isFarmerUser && favorites.length > 0 && (
+          <div className="profile-section">
+            <div className="profile-section-header">
+              <h2 className="profile-section-title">♥ Saved Farmers</h2>
+              <Link to="/listings" className="profile-section-link">Browse listings →</Link>
+            </div>
+            <div className="profile-fav-farmers">
+              {favorites.map(f => (
+                <Link key={f.id} to={`/farmer/${f.id}`} className="profile-fav-card">
+                  <span className="profile-fav-icon">&#127806;</span>
+                  <div>
+                    <div className="profile-fav-name">{f.shopName || f.name}</div>
+                    {f.shopName && f.name !== f.shopName && (
+                      <div className="profile-fav-sub">{f.name}</div>
+                    )}
+                  </div>
+                  <span className="profile-fav-arrow">→</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* ── Buyer: My Claims ── */}
         {!isFarmer && (
           <div className="profile-section">
@@ -636,6 +776,20 @@ export default function Profile() {
                       <div className="profile-claim-date">Claimed {c.claimedAt ? new Date(c.claimedAt).toLocaleDateString() : ''}</div>
                     </div>
 
+                    {/* Fill progress for active listings */}
+                    {c.listingStatus === 'ACTIVE' && listingFillMap[c.listingId] && (() => {
+                      const { claimed, total } = listingFillMap[c.listingId]
+                      const pct = total > 0 ? Math.round((claimed / total) * 100) : 0
+                      return (
+                        <div className="profile-claim-fill">
+                          <div className="profile-claim-fill-bar">
+                            <div className="profile-claim-fill-inner" style={{ width: `${pct}%` }} />
+                          </div>
+                          <span className="profile-claim-fill-label">{claimed}/{total} cuts filled ({pct}%)</span>
+                        </div>
+                      )
+                    })()}
+
                     {/* Timer for unpaid claims */}
                     {!c.paid && c.expiresAt && (
                       <ClaimCountdown expiresAt={c.expiresAt} />
@@ -680,6 +834,20 @@ export default function Profile() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* ── Farmer: Analytics ── */}
+        {isFarmer && (
+          <div className="profile-section">
+            <div
+              className="profile-section-header profile-section-header--clickable"
+              onClick={() => setAnalyticsOpen(o => !o)}
+            >
+              <h2 className="profile-section-title">📊 Analytics</h2>
+              <span className="profile-section-link">{analyticsOpen ? 'Collapse ↑' : 'Expand ↓'}</span>
+            </div>
+            {analyticsOpen && <FarmerAnalytics listings={myListings} orders={farmerOrders} />}
           </div>
         )}
 
@@ -922,9 +1090,9 @@ export default function Profile() {
                   return (
                     <div key={o.id} className="profile-order-card">
                       <div className="profile-order-header">
-                        <span className="profile-order-date">
+                        <Link to={`/order/${o.id}`} className="profile-order-date" style={{ textDecoration: 'none', color: 'inherit' }}>
                           {o.orderDate ? new Date(o.orderDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
-                        </span>
+                        </Link>
                         <span className="profile-order-status" style={{ color: statusInfo.color }}>
                           {statusInfo.icon} {statusInfo.label}
                         </span>
@@ -1018,6 +1186,37 @@ export default function Profile() {
             Important: pool full, processing set, order complete.
           </p>
         </div>
+
+        {/* ── Invite Friends (Referral) ── */}
+        {!isFarmer && (
+          <div className="profile-section">
+            <div className="profile-section-header">
+              <h2 className="profile-section-title">🔗 Invite Friends</h2>
+              <Link to="/refer" className="profile-section-link">Full referral page →</Link>
+            </div>
+            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem', marginBottom: '14px' }}>
+              Share MasterChef Cuts with friends. Your referral link:
+            </p>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <input
+                readOnly
+                className="profile-date-input"
+                style={{ flex: 1, fontFamily: 'monospace', fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)' }}
+                value={`${window.location.origin}/refer?ref=${user?.id ?? ''}`}
+              />
+              <button
+                className="profile-date-btn"
+                onClick={() => {
+                  navigator.clipboard.writeText(`${window.location.origin}/refer?ref=${user?.id ?? ''}`)
+                    .then(() => toast.success('Referral link copied!'))
+                    .catch(() => toast.error('Could not copy link.'))
+                }}
+              >
+                Copy
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* ── Security ── */}
         <div className="profile-section profile-pw-section">

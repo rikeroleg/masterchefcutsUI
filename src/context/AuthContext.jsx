@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
 import { cartClearBridge } from './CartContext'
 
@@ -25,13 +26,53 @@ function mapUser(data) {
   }
 }
 
+function isTokenExpired(token) {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    // exp is in seconds; Date.now() is in ms
+    return payload.exp * 1000 < Date.now()
+  } catch {
+    return true // treat unparseable tokens as expired
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     try {
+      const token = localStorage.getItem('mc_token')
       const saved = localStorage.getItem('mc_user')
-      return saved ? JSON.parse(saved) : null
+      if (!token || !saved) return null
+      if (isTokenExpired(token)) {
+        // Silent clear on init — no session-expired event, just a fresh logged-out state
+        localStorage.removeItem('mc_token')
+        localStorage.removeItem('mc_user')
+        localStorage.removeItem('mc_cart')
+        return null
+      }
+      return JSON.parse(saved)
     } catch { return null }
   })
+  const [sessionExpiredMsg, setSessionExpiredMsg] = useState(null)
+  const navigate = useNavigate()
+  const handledExpiryRef = useRef(false)
+  const clearSessionMsg = useCallback(() => {
+    setSessionExpiredMsg(null)
+    handledExpiryRef.current = false
+  }, [])
+
+  // Listen for 401s from the API client and handle session expiry gracefully
+  useEffect(() => {
+    function handleExpired() {
+      if (handledExpiryRef.current) return
+      handledExpiryRef.current = true
+      setUser(null)
+      cartClearBridge.clearCart()
+      setSessionExpiredMsg('Your session expired — please sign in again.')
+      navigate('/login')
+    }
+    window.addEventListener('session-expired', handleExpired)
+    return () => window.removeEventListener('session-expired', handleExpired)
+  }, [navigate])
 
   useEffect(() => {
     if (user) localStorage.setItem('mc_user', JSON.stringify(user))
@@ -64,6 +105,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem('mc_token', data.token)
       const mapped = mapUser(data)
       setUser(mapped)
+      clearSessionMsg()
       return { ok: true, role: mapped.role }
     } catch (err) {
       return { error: err.message }
@@ -74,6 +116,7 @@ export function AuthProvider({ children }) {
     setUser(null)
     localStorage.removeItem('mc_cart')
     cartClearBridge.clearCart()
+    clearSessionMsg()
   }
 
   async function updateUser(fields) {
@@ -113,7 +156,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, updateUser, refreshConnectStatus }}>
+    <AuthContext.Provider value={{ user, login, logout, register, updateUser, refreshConnectStatus, sessionExpiredMsg, clearSessionMsg }}>
       {children}
     </AuthContext.Provider>
   )

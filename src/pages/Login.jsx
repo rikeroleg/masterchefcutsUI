@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -14,9 +14,11 @@ export default function Login() {
   const [loading, setLoad]  = useState(false)
   const [verified, setVerified] = useState(false)
   const [registered, setRegistered] = useState(false) // Show email verification prompt
-  const { login, register } = useAuth()
+  const { login, register, sessionExpiredMsg, clearSessionMsg } = useAuth()
   const navigate            = useNavigate()
   const { toast }           = useToast()
+
+  useEffect(() => () => clearSessionMsg(), [clearSessionMsg])
 
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [showTerms, setShowTerms]         = useState(false)
@@ -46,20 +48,24 @@ export default function Login() {
     if (signup.password !== signup.confirm) { setError('Passwords do not match.'); return }
     if (signup.password.length < 6) { setError('Password must be at least 6 characters.'); return }
     setLoad(true)
+    const refCode = localStorage.getItem('mcc_ref')
     const res = await register({
       name: signup.name, email: signup.email, password: signup.password,
       role: signup.role, shopName: signup.shopName,
       street: signup.street, apt: signup.apt,
       city: signup.city, state: signup.state, zipCode: signup.zipCode,
+      ...(refCode ? { referralCode: refCode } : {}),
     })
     setLoad(false)
     if (res.error) {
       setError(res.error)
     } else if (res.verify) {
       // Email verification required - show confirmation
+      localStorage.removeItem('mcc_ref')
       setRegistered(true)
     } else {
       // Immediate login (no email verification)
+      localStorage.removeItem('mcc_ref')
       toast.success('Account created successfully! Welcome to MasterChef Cuts.')
       navigate('/profile')
     }
@@ -90,6 +96,9 @@ export default function Login() {
             </button>
           </div>
         )}
+
+        {/* Session expired banner */}
+        {sessionExpiredMsg && <div className="login-error" style={{ background: 'rgba(180,120,0,0.18)', borderColor: '#c9922a' }}>{sessionExpiredMsg}</div>}
 
         {/* Error */}
         {!registered && error && <div className="login-error">{error}</div>}
@@ -187,40 +196,54 @@ export default function Login() {
                 placeholder="you@example.com" required />
             </div>
 
-            <div className="login-section-label">Shipping Address</div>
-
-            <div className="login-field">
-              <label>Street address *</label>
-              <input name="street" value={signup.street} onChange={fieldSignup}
-                placeholder="123 Main St" required />
-            </div>
-
-            <div className="login-row">
-              <div className="login-field">
-                <label>Apt / Suite <span className="login-opt">(optional)</span></label>
-                <input name="apt" value={signup.apt} onChange={fieldSignup}
-                  placeholder="Apt 4B" />
-              </div>
+            {/* Buyer: ZIP only — full address collected at checkout */}
+            {signup.role === 'buyer' && (
               <div className="login-field">
                 <label>ZIP Code *</label>
                 <input name="zipCode" value={signup.zipCode} onChange={fieldSignup}
                   placeholder="17601" maxLength={10} required />
-                <span className="login-hint">Used to match you with local listings</span>
+                <span className="login-hint">Used to match you with local listings — full address collected at checkout</span>
               </div>
-            </div>
+            )}
 
-            <div className="login-row">
-              <div className="login-field">
-                <label>City *</label>
-                <input name="city" value={signup.city} onChange={fieldSignup}
-                  placeholder="Lancaster" required />
-              </div>
-              <div className="login-field">
-                <label>State *</label>
-                <input name="state" value={signup.state} onChange={fieldSignup}
-                  placeholder="PA" maxLength={2} required />
-              </div>
-            </div>
+            {/* Farmer: full business address required */}
+            {signup.role === 'farmer' && (
+              <>
+                <div className="login-section-label">Business Address</div>
+
+                <div className="login-field">
+                  <label>Street address *</label>
+                  <input name="street" value={signup.street} onChange={fieldSignup}
+                    placeholder="123 Main St" required />
+                </div>
+
+                <div className="login-row">
+                  <div className="login-field">
+                    <label>Apt / Suite <span className="login-opt">(optional)</span></label>
+                    <input name="apt" value={signup.apt} onChange={fieldSignup}
+                      placeholder="Suite 4B" />
+                  </div>
+                  <div className="login-field">
+                    <label>ZIP Code *</label>
+                    <input name="zipCode" value={signup.zipCode} onChange={fieldSignup}
+                      placeholder="17601" maxLength={10} required />
+                  </div>
+                </div>
+
+                <div className="login-row">
+                  <div className="login-field">
+                    <label>City *</label>
+                    <input name="city" value={signup.city} onChange={fieldSignup}
+                      placeholder="Lancaster" required />
+                  </div>
+                  <div className="login-field">
+                    <label>State *</label>
+                    <input name="state" value={signup.state} onChange={fieldSignup}
+                      placeholder="PA" maxLength={2} required />
+                  </div>
+                </div>
+              </>
+            )}
 
             <div className="login-row">
               <div className="login-field">

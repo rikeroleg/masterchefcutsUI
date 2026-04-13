@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081/participant'
+const BASE_URL = import.meta.env.VITE_API_URL ?? ''
 
 function getToken() {
   return localStorage.getItem('mc_token')
@@ -6,7 +6,8 @@ function getToken() {
 
 async function request(method, path, body) {
   const token = getToken()
-  const headers = { 'Content-Type': 'application/json' }
+  const headers = {}
+  if (body !== undefined) headers['Content-Type'] = 'application/json'
   if (token) headers['Authorization'] = `Bearer ${token}`
 
   const res = await fetch(`${BASE_URL}${path}`, {
@@ -16,14 +17,27 @@ async function request(method, path, body) {
   })
 
   const text = await res.text()
-  const data = text ? JSON.parse(text) : null
+  let data = null
+  if (text) {
+    try {
+      data = JSON.parse(text)
+    } catch {
+      data = { message: text }
+    }
+  }
 
   if (res.status === 401) {
+    if (path.startsWith('/api/auth/')) {
+      throw new Error(data?.error || data?.message || 'Invalid credentials')
+    }
+    if (!token) {
+      throw new Error(data?.error || data?.message || 'Unauthorized')
+    }
     localStorage.removeItem('mc_token')
     localStorage.removeItem('mc_user')
     localStorage.removeItem('mc_cart')
-    window.location.href = '/login'
-    return null
+    window.dispatchEvent(new CustomEvent('session-expired'))
+    throw new Error('Session expired — please sign in again.')
   }
 
   if (res.status === 403) {

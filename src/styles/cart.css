@@ -1,7 +1,7 @@
 ﻿/* cart.css â€” cart page, items, summary, empty state */
 
 .cart-page {
-  min-height: calc(100vh - 72px);
+  min-height: 100%;
   padding: 48px 24px 80px;
   pointer-events: auto;
   box-sizing: border-box;
@@ -539,7 +539,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 72px);
+  min-height: 60vh;
   gap: 16px;
   pointer-events: auto;
   text-align: center;

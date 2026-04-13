@@ -2,7 +2,7 @@
 
 .profile-page {
   pointer-events: auto;
-  min-height: 100vh;
+  min-height: 100%;
   color: #fff;
   position: relative;
 }
@@ -334,12 +334,59 @@
 
 .profile-section-link {
   font-size: 0.78rem;
-  color: #7a3a00;
+  color: #e74c3c;
   text-decoration: none;
   font-weight: 600;
 }
 
 .profile-section-link:hover { text-decoration: underline; }
+
+/* ── Saved Farmers grid ── */
+.profile-fav-farmers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ── Saved farmer card ── */
+.profile-fav-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: inherit;
+  min-width: 200px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.profile-fav-card:hover {
+  background: rgba(231,76,60,0.1);
+  border-color: rgba(231,76,60,0.25);
+}
+
+.profile-fav-icon { font-size: 1.4rem; }
+
+.profile-fav-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.profile-fav-sub {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.45);
+  margin-top: 2px;
+}
+
+.profile-fav-arrow {
+  margin-left: auto;
+  color: rgba(255,255,255,0.25);
+  font-size: 0.9rem;
+}
 
 /* â”€â”€ Empty state â”€â”€ */
 .profile-empty {
@@ -540,6 +587,33 @@
   50% { opacity: 0.65; }
 }
 /* â”€â”€ Farmer listings â”€â”€ */
+
+/* ── Listing fill progress bar on claim cards ── */
+.profile-claim-fill {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.profile-claim-fill-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 99px;
+  background: rgba(20,6,0,0.12);
+  overflow: hidden;
+}
+.profile-claim-fill-inner {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #c8840a, #e74c3c);
+  transition: width 0.4s ease;
+}
+.profile-claim-fill-label {
+  font-size: 0.7rem;
+  color: rgba(20,6,0,0.6);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 .profile-listings {
   display: flex;
   flex-direction: column;
@@ -1153,4 +1227,139 @@
 @media (max-width: 600px) {
   .connect-banner { flex-direction: column; align-items: flex-start; }
   .connect-banner-btn { width: 100%; text-align: center; }
+}
+
+/* =============================================
+   FARMER ANALYTICS  (C11)
+   Collapsible analytics panel in farmer profile
+============================================= */
+.farmer-analytics {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* KPI summary row */
+.fa-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.fa-kpi {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fa-kpi-value {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #f5c97a;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.fa-kpi-label {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Two-column grid for breakdown cards */
+.fa-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Individual breakdown card */
+.fa-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fa-card--wide {
+  grid-column: 1 / -1;
+}
+
+.fa-card-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 4px;
+}
+
+/* Bar chart row */
+.fa-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fa-bar-label {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.8);
+  min-width: 120px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
+.fa-bar-track {
+  flex: 1;
+  height: 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.fa-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #c8840a, #e74c3c);
+  border-radius: 100px;
+  transition: width 0.4s ease;
+  min-width: 4px;
+}
+
+.fa-bar-val {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.6);
+  min-width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.fa-empty {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.35);
+  margin: 0;
+}
+
+/* Clickable section header for analytics toggle */
+.profile-section-header--clickable {
+  cursor: pointer;
+  user-select: none;
+}
+.profile-section-header--clickable:hover .profile-section-link { text-decoration: underline; }
+
+@media (max-width: 600px) {
+  .fa-kpis { grid-template-columns: 1fr 1fr; }
+  .fa-grid  { grid-template-columns: 1fr; }
+  .fa-bar-label { max-width: 100px; min-width: 80px; }
 }

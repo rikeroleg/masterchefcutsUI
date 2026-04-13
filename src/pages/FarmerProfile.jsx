@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
+import { useFavorites } from '../utils/index'
 import PaymentModal from '../components/PaymentModal'
 import '../styles/listings.css'
 
@@ -22,6 +23,7 @@ export default function FarmerProfile() {
   const [farmer, setFarmer] = useState(null)
   const [loading, setLoading] = useState(true)
   const [reviews, setReviews] = useState([])
+  const { isFav, toggle: toggleFav } = useFavorites()
 
   useEffect(() => {
     fetchListings()
@@ -55,9 +57,29 @@ export default function FarmerProfile() {
         <div className="listings-header">
           <div>
             <Link to="/listings" className="post-back" style={{ display: 'inline-block', marginBottom: 12 }}>← All Listings</Link>
-            <h1 className="listings-title">
-              {farmer ? (farmer.shopName || farmer.name) : 'Farmer Storefront'}
-            </h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <h1 className="listings-title">
+                {farmer ? (farmer.shopName || farmer.name) : 'Farmer Storefront'}
+              </h1>
+              {farmer && (
+                <button
+                  className="fav-btn"
+                  onClick={() => toggleFav({ id, name: farmer.name, shopName: farmer.shopName })}
+                  title={isFav(id) ? 'Remove from favorites' : 'Save this farmer'}
+                  aria-label={isFav(id) ? 'Unsave farmer' : 'Save farmer'}
+                >
+                  {isFav(id) ? '♥' : '♡'}
+                </button>
+              )}
+              {user && user.role !== 'farmer' && farmer && (
+                <Link
+                  to={`/messages?with=${encodeURIComponent(id)}&name=${encodeURIComponent(farmer.shopName || farmer.name || '')}`}
+                  className="fp-msg-btn"
+                >
+                  💬 Message Farmer
+                </Link>
+              )}
+            </div>
             {farmer && (
               <p className="listings-sub">
                 🌾 {farmer.name}{farmer.shopName ? ` · ${farmer.shopName}` : ''}

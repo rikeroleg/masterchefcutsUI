@@ -1,0 +1,24 @@
+/* spinner.css — centered loading spinner component */
+
+/* Spinner container — flex centering wrapper with vertical padding */
+.spinner-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 0;
+}
+
+/* Spinning circle — red top-border arc on transparent ring */
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(255,255,255,0.15);
+  border-top-color: #e74c3c;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* 360° rotation keyframes for spinner */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

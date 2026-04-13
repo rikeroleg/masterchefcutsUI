@@ -1,6 +1,7 @@
 ﻿/* home.css â€” MasterChef Cuts marketplace home page */
 
 /* â”€â”€ Page shell â”€â”€ */
+/* Page wrapper with fixed farm background blur overlay */
 .home-page {
   pointer-events: auto;
   color: #fff;
@@ -19,6 +20,7 @@
   transform: scale(1.05);
 }
 
+/* Centered content container — max-width 1040px */
 .hp-section-inner {
   max-width: 1040px;
   margin: 0 auto;
@@ -26,20 +28,25 @@
 }
 
 /* â”€â”€ Shared typography â”€â”€ */
+/* Frosted glass pill badge — used for section labels */
 .hp-label {
   display: inline-block;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #e74c3c;
-  margin: 0 0 12px;
-  padding: 5px 14px;
-  border: 1px solid rgba(231,76,60,0.35);
+  color: #fff;
+  margin: 0 0 18px;
+  padding: 6px 16px;
+  border: 1px solid rgba(255,255,255,0.3);
   border-radius: 50px;
-  background: rgba(231,76,60,0.08);
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(6px);
+  text-shadow: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
 }
 
+/* Large section heading — text shadow for contrast */
 .hp-h2 {
   font-size: clamp(1.8rem, 3.5vw, 2.8rem);
   font-weight: 900;
@@ -51,6 +58,7 @@
 }
 
 /* â”€â”€ Shared buttons â”€â”€ */
+/* Red gradient call-to-action button — pill shape */
 .hp-btn-primary {
   display: inline-flex;
   align-items: center;
@@ -72,6 +80,7 @@
 .hp-btn-primary:hover { filter: brightness(1.12); transform: translateY(-2px); }
 .hp-btn-primary:active { transform: translateY(0); }
 
+/* Transparent outlined ghost button */
 .hp-btn-ghost {
   display: inline-flex;
   align-items: center;
@@ -93,9 +102,7 @@
 }
 .hp-btn-ghost:hover { background: rgba(0,0,0,0.65); border-color: rgba(255,255,255,0.7); }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   HERO
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* Hero banner section — 92vh tall */
 .hp-hero {
   min-height: 92vh;
   display: flex;
@@ -103,26 +110,31 @@
   padding: 100px 24px 80px;
 }
 
+/* Hero text + CTA centered wrapper */
 .hp-hero-content {
   max-width: 720px;
   margin: 0 auto;
   text-align: center;
 }
 
+/* Hero frosted glass pill badge — "Farm to Table" */
 .hp-badge {
   display: inline-block;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #e74c3c;
+  color: #fff;
   margin-bottom: 18px;
   padding: 5px 14px;
-  border: 1px solid rgba(231,76,60,0.35);
+  border: 1px solid rgba(255,255,255,0.3);
   border-radius: 50px;
-  background: rgba(231,76,60,0.08);
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
 }
 
+/* Hero main headline — responsive clamp sizing */
 .hp-hero-h1 {
   font-size: clamp(2.8rem, 7vw, 5rem);
   font-weight: 900;
@@ -133,12 +145,14 @@
   text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 4px 20px rgba(0,0,0,0.85), 0 8px 40px rgba(0,0,0,0.7);
 }
 
+/* Red accent text within hero headline */
 .hp-hero-red {
   color: #e74c3c;
   display: block;
   text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 4px 20px rgba(0,0,0,0.85), 0 8px 40px rgba(0,0,0,0.7);
 }
 
+/* Hero subtitle paragraph */
 .hp-hero-p {
   font-size: 1.15rem;
   color: rgba(255,255,255,0.95);
@@ -148,6 +162,7 @@
   text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 2px 12px rgba(0,0,0,0.9), 0 4px 24px rgba(0,0,0,0.8);
 }
 
+/* Hero CTA buttons row */
 .hp-hero-actions {
   display: flex;
   gap: 14px;
@@ -156,6 +171,7 @@
   margin-bottom: 48px;
 }
 
+/* Dark frosted glass stats bar below hero */
 .hp-hero-stats {
   display: inline-flex;
   align-items: center;
@@ -163,25 +179,23 @@
   gap: 0;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(168deg, #9a5c1a 0%, #c07828 20%, #e6aa3a 50%, #cc8828 80%, #8a4a12 100%);
-  border: 2px solid #3a1f07;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 16px;
   padding: 18px 32px;
-  color: #1e0800;
+  color: #fff;
 }
 .hp-hero-stats::after {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
-  background-size: 600px 400px;
-  background-repeat: repeat;
-  mix-blend-mode: overlay;
-  opacity: 0.35;
+  background: none;
   pointer-events: none;
   border-radius: inherit;
 }
 
+/* Individual stat column — value + label */
 .hp-hero-stat {
   display: flex;
   flex-direction: column;
@@ -193,105 +207,130 @@
 .hp-hero-stat strong {
   font-size: 1.5rem;
   font-weight: 900;
-  color: #1e0800;
+  color: #fff;
   letter-spacing: -0.02em;
 }
 
 .hp-hero-stat span {
   font-size: 0.72rem;
-  color: rgba(20,6,0,0.62);
+  color: rgba(255,255,255,0.55);
   text-transform: uppercase;
   letter-spacing: 0.07em;
 }
 
+/* Vertical divider between stats */
 .hp-hero-stat-sep {
   width: 1px;
   height: 36px;
-  background: rgba(0,0,0,0.2);
+  background: rgba(255,255,255,0.2);
   flex-shrink: 0;
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    HOW IT WORKS
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* "How It Works" section — warm amber gradient matching About page */
 .hp-how {
-  padding: 96px 0;
+  padding: 80px 0;
   background:
-    linear-gradient(168deg, #8a4a12 0%, #9a5c1a 20%, #b06a1e 50%, #9a5c1a 80%, #7a3c0e 100%);
+    linear-gradient(168deg, #7a3c0e 0%, #8a4a12 25%, #9a5c1a 50%, #8a4a12 75%, #7a3c0e 100%);
   border-top: 3px solid #3a1f07;
   border-bottom: 3px solid #3a1f07;
   color: #1e0800;
 }
 
+/* Section heading override for warm background */
+.hp-how .hp-h2 {
+  color: #1e0800;
+  text-shadow: none;
+}
+
+/* Step cards grid */
 .hp-steps {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-top: 40px;
 }
 
+/* Individual step card — amber gradient with wood texture */
 .hp-step {
-  padding: 36px 32px;
-  border-right: 1px solid rgba(0,0,0,0.15);
+  background:
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
+  border-radius: 14px;
+  padding: 28px 24px;
+  color: #1e0800;
   position: relative;
+  overflow: hidden;
+  filter: drop-shadow(2px 4px 0px rgba(35,12,0,0.7));
+}
+.hp-step::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: -1;
 }
 
-.hp-step:last-child { border-right: none; }
-
-.hp-step-icon {
-  font-size: 2rem;
-  margin-bottom: 16px;
-  display: block;
-}
-
+/* Large faded step number badge */
 .hp-step-num {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: #e74c3c;
-  margin-bottom: 10px;
-  text-transform: uppercase;
+  display: block;
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: rgba(80,30,0,0.35);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: 14px;
 }
 
+/* Step heading text */
 .hp-step-title {
-  font-size: 1.15rem;
-  font-weight: 800;
+  font-size: 1rem;
+  font-weight: 700;
   color: #1e0800;
   margin: 0 0 10px;
-  letter-spacing: -0.01em;
 }
 
+/* Step description paragraph */
 .hp-step-body {
-  font-size: 0.88rem;
-  color: rgba(20,6,0,0.7);
-  line-height: 1.65;
+  font-size: 0.85rem;
+  color: rgba(20,6,0,0.68);
+  line-height: 1.7;
   margin: 0;
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    JOIN / ROLE CARDS
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* Join/role selection section */
 .hp-join {
-  padding: 96px 0;
+  padding: 120px 0 80px;
 }
 
+/* 2-column grid for buyer/farmer cards */
 .hp-role-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  max-width: 760px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
 
+/* Red wood-textured expandable role card */
 .hp-role-card {
   background:
-    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
-  border: 2px solid #3a1f07;
+    linear-gradient(168deg, #7a1500 0%, #9a2010 12%, #b83020 25%, #d04030 40%, #cc3838 50%, #b42828 60%, #901e10 74%, #701008 88%, #5a0a00 100%);
+  border: 2px solid #3a0000;
   border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
   transition: filter 0.2s;
-  color: #1e0800;
+  color: #fff;
   position: relative;
-  filter: drop-shadow(3px 6px 0px rgba(35,12,0,0.7));
+  filter: drop-shadow(3px 6px 0px rgba(80,0,0,0.7));
 }
 
 .hp-role-card::before {
@@ -308,19 +347,20 @@
 }
 
 .hp-role-card:hover:not(.hp-role-card--open) {
-  filter: drop-shadow(3px 6px 0px rgba(35,12,0,0.9)) brightness(1.05);
+  filter: drop-shadow(3px 6px 0px rgba(80,0,0,0.9)) brightness(1.08);
 }
 
 .hp-role-card--buyer.hp-role-card--open {
-  border-color: #2a0e00;
+  border-color: #600000;
   cursor: default;
 }
 
 .hp-role-card--farmer.hp-role-card--open {
-  border-color: #2a0e00;
+  border-color: #600000;
   cursor: default;
 }
 
+/* Card header — emoji, name, tagline */
 .hp-role-card-header {
   display: flex;
   align-items: center;
@@ -328,6 +368,7 @@
   padding: 22px 28px;
 }
 
+/* Role icon in frosted box */
 .hp-role-emoji {
   font-size: 2.2rem;
   flex-shrink: 0;
@@ -340,34 +381,39 @@
   border-radius: 14px;
 }
 
+/* Role name text — "I'm a Buyer" */
 .hp-role-name {
   font-size: 1.05rem;
   font-weight: 800;
-  color: #1e0800;
+  color: #fff;
   margin-bottom: 3px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 
+/* Short role description */
 .hp-role-tagline {
   font-size: 0.82rem;
-  color: rgba(20,6,0,0.62);
+  color: rgba(255,255,255,0.65);
 }
 
+/* Expand/collapse chevron arrow */
 .hp-role-arrow {
   margin-left: auto;
   font-size: 1.1rem;
-  color: rgba(20,6,0,0.45);
+  color: rgba(255,255,255,0.45);
   flex-shrink: 0;
   transition: color 0.15s;
 }
 
-.hp-role-card--open .hp-role-arrow { color: rgba(20,6,0,0.75); }
+.hp-role-card--open .hp-role-arrow { color: rgba(255,255,255,0.85); }
 
+/* Expandable card body content */
 .hp-role-body {
   padding: 4px 28px 28px;
-  border-top: 1px solid rgba(0,0,0,0.18);
+  border-top: 1px solid rgba(255,255,255,0.15);
 }
 
-/* Mini steps for buyer */
+/* Buyer how-to numbered steps list */
 .hp-mini-steps {
   display: flex;
   flex-direction: column;
@@ -376,22 +422,24 @@
   padding-top: 20px;
 }
 
+/* Individual buyer step row */
 .hp-mini-step {
   display: flex;
   align-items: flex-start;
   gap: 12px;
   font-size: 0.88rem;
-  color: rgba(20,6,0,0.75);
+  color: rgba(255,255,255,0.75);
   line-height: 1.5;
 }
 
+/* Step number circle badge */
 .hp-mini-n {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: rgba(100,30,0,0.18);
-  border: 1px solid rgba(100,30,0,0.35);
-  color: #6b1a00;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
   font-size: 0.7rem;
   font-weight: 700;
   display: flex;
@@ -403,6 +451,7 @@
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    LISTING FORM  (hp-form)
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* Farmer listing form container */
 .hp-form {
   padding-top: 20px;
   display: flex;
@@ -410,12 +459,14 @@
   gap: 16px;
 }
 
+/* 2-column form field row */
 .hp-form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
 
+/* Individual form field — label + input */
 .hp-form-field {
   display: flex;
   flex-direction: column;
@@ -427,30 +478,32 @@
   font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: rgba(20,6,0,0.68);
+  color: rgba(255,255,255,0.6);
 }
 
 .hp-opt {
   font-weight: 400;
   text-transform: none;
-  color: rgba(20,6,0,0.45);
+  color: rgba(255,255,255,0.4);
   letter-spacing: 0;
 }
 
+/* Form section divider label */
 .hp-form-section-label {
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #6b2c00;
+  color: rgba(255,255,255,0.55);
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(107,44,0,0.25);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
   margin-bottom: 4px;
 }
 
+/* Helper hint text below fields */
 .hp-field-hint {
   font-size: 0.72rem;
-  color: rgba(20,6,0,0.5);
+  color: rgba(255,255,255,0.45);
   margin-top: -2px;
 }
 
@@ -460,7 +513,7 @@
   border: 1px solid rgba(0,0,0,0.25);
   border-radius: 10px;
   padding: 11px 14px;
-  color: #1e0800;
+  color: #fff;
   font-size: 0.9rem;
   font-family: inherit;
   outline: none;
@@ -472,26 +525,27 @@
 
 .hp-form-field input:focus,
 .hp-form-field textarea:focus {
-  border-color: rgba(100,40,0,0.6);
+  border-color: rgba(255,255,255,0.4);
   background: rgba(0,0,0,0.18);
 }
 
 .hp-form-field input::placeholder,
 .hp-form-field textarea::placeholder {
-  color: rgba(20,6,0,0.35);
+  color: rgba(255,255,255,0.3);
 }
 
 input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
   filter: invert(0.5);
 }
 
-/* Animal type */
+/* Animal type toggle buttons row */
 .hp-animal-row {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
 
+/* Individual animal type pill button */
 .hp-animal-btn {
   display: flex;
   align-items: center;
@@ -500,7 +554,7 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
   background: rgba(0,0,0,0.12);
   border: 1px solid rgba(0,0,0,0.22);
   border-radius: 50px;
-  color: rgba(20,6,0,0.65);
+  color: rgba(255,255,255,0.6);
   font-size: 0.85rem;
   font-weight: 600;
   font-family: inherit;
@@ -508,16 +562,17 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
   transition: all 0.15s;
 }
 
-.hp-animal-btn:hover { background: rgba(0,0,0,0.18); color: #1e0800; }
-.hp-animal-btn.active { border-color: #4a0e00; background: rgba(80,20,0,0.2); color: #1e0800; }
+.hp-animal-btn:hover { background: rgba(0,0,0,0.18); color: #fff; }
+.hp-animal-btn.active { border-color: rgba(231,76,60,0.5); background: rgba(231,76,60,0.15); color: #fff; }
 
-/* Shares */
+/* Share options list — whole/half/quarter */
 .hp-shares {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
+/* Share checkbox row — with price/weight inputs */
 .hp-share {
   display: flex;
   align-items: center;
@@ -536,6 +591,7 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
   background: rgba(80,30,0,0.15);
 }
 
+/* Custom checkbox indicator */
 .hp-share-check {
   width: 20px;
   height: 20px;
@@ -546,19 +602,20 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
   justify-content: center;
   font-size: 0.7rem;
   font-weight: 700;
-  color: #6b2c00;
+  color: rgba(255,255,255,0.55);
   flex-shrink: 0;
   background: rgba(80,30,0,0.1);
 }
 
 .hp-share-sym {
   font-size: 1rem;
-  color: #6b2c00;
+  color: rgba(255,255,255,0.55);
   flex-shrink: 0;
   width: 18px;
   text-align: center;
 }
 
+/* Share name + subtitle column */
 .hp-share-info {
   display: flex;
   flex-direction: column;
@@ -569,14 +626,15 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
 .hp-share-name {
   font-size: 0.9rem;
   font-weight: 600;
-  color: rgba(20,6,0,0.85);
+  color: rgba(255,255,255,0.85);
 }
 
 .hp-share-sub {
   font-size: 0.72rem;
-  color: rgba(20,6,0,0.5);
+  color: rgba(255,255,255,0.45);
 }
 
+/* Price + weight input combo box */
 .hp-share-price-wrap {
   display: flex;
   align-items: center;
@@ -589,14 +647,15 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
 }
 
 .hp-dollar {
-  color: rgba(20,6,0,0.5);
+  color: rgba(255,255,255,0.45);
   font-size: 0.85rem;
 }
 
+/* Price dollar input field */
 .hp-price-in {
   background: transparent;
   border: none;
-  color: #1e0800;
+  color: #fff;
   font-size: 0.92rem;
   font-weight: 700;
   font-family: inherit;
@@ -604,13 +663,14 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
   outline: none;
 }
 
-.hp-price-in::placeholder { color: rgba(20,6,0,0.35); }
+.hp-price-in::placeholder { color: rgba(255,255,255,0.3); }
 
+/* Weight lbs input field */
 .hp-weight-in {
   background: transparent;
   border: none;
   border-left: 1px solid rgba(0,0,0,0.15);
-  color: #1e0800;
+  color: #fff;
   font-size: 0.82rem;
   font-weight: 600;
   font-family: inherit;
@@ -618,9 +678,9 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
   padding-left: 8px;
   outline: none;
 }
-.hp-weight-in::placeholder { color: rgba(20,6,0,0.35); }
+.hp-weight-in::placeholder { color: rgba(255,255,255,0.3); }
 
-/* Submit */
+/* Form submit button — dark red gradient */
 .hp-btn-submit {
   padding: 14px;
   background: linear-gradient(170deg, #8b1a00 0%, #a82800 50%, #781500 100%);
@@ -639,7 +699,7 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
 .hp-btn-submit:hover { filter: brightness(1.12); transform: translateY(-1px); }
 .hp-btn-submit:active { transform: translateY(0); }
 
-/* Success */
+/* Post-submission success message */
 .hp-success {
   display: flex;
   flex-direction: column;
@@ -649,6 +709,7 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
   text-align: center;
 }
 
+/* Green checkmark circle icon */
 .hp-success-check {
   width: 56px;
   height: 56px;
@@ -665,34 +726,37 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
 .hp-success h3 {
   font-size: 1.3rem;
   font-weight: 800;
-  color: #1e0800;
+  color: #fff;
   margin: 0;
 }
 
 .hp-success p {
   font-size: 0.88rem;
-  color: rgba(20,6,0,0.65);
+  color: rgba(255,255,255,0.6);
   margin: 0;
   max-width: 360px;
   line-height: 1.6;
 }
 
 /* â”€â”€ Mini listing preview cards (buyer card) â”€â”€ */
+/* "Available Near You" preview section label */
 .hp-role-preview-label {
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(20,6,0,0.62);
+  color: rgba(255,255,255,0.55);
   margin: 0 0 10px;
 }
 
+/* Mini listing preview cards stack */
 .hp-mini-listings {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
+/* Individual mini listing card */
 .hp-mini-listing {
   background: rgba(0,0,0,0.15);
   border: 1px solid rgba(0,0,0,0.22);
@@ -703,6 +767,7 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
   gap: 8px;
 }
 
+/* Card header row — emoji + info + price */
 .hp-mini-listing-top {
   display: flex;
   align-items: center;
@@ -722,7 +787,7 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
 .hp-mini-listing-title {
   font-size: 0.88rem;
   font-weight: 600;
-  color: #1e0800;
+  color: #fff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -730,7 +795,7 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
 
 .hp-mini-listing-farm {
   font-size: 0.72rem;
-  color: rgba(20,6,0,0.6);
+  color: rgba(255,255,255,0.55);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -739,16 +804,17 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
 .hp-mini-listing-price {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #6b2c00;
+  color: #e74c3c;
   flex-shrink: 0;
 }
 
 .hp-mini-listing-price small {
   font-size: 0.7rem;
   font-weight: 400;
-  color: rgba(20,6,0,0.5);
+  color: rgba(255,255,255,0.45);
 }
 
+/* Progress bar track */
 .hp-mini-listing-bar {
   height: 4px;
   background: rgba(255,255,255,0.1);
@@ -756,6 +822,7 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
   overflow: hidden;
 }
 
+/* Progress bar fill — red-to-orange gradient */
 .hp-mini-listing-fill {
   height: 100%;
   background: linear-gradient(90deg, #e74c3c, #f39c12);
@@ -763,53 +830,73 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
   transition: width 0.4s ease;
 }
 
+/* Card footer — status + link */
 .hp-mini-listing-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 0.72rem;
-  color: rgba(20,6,0,0.55);
+  color: rgba(255,255,255,0.5);
 }
 
 .hp-mini-listing-link {
-  color: #7a3a00;
+  color: #e74c3c;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.75rem;
   transition: color 0.15s;
 }
-.hp-mini-listing-link:hover { color: #1e0800; }
+.hp-mini-listing-link:hover { color: #fff; }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    BOTTOM CTA
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* Bottom call-to-action section — dark background */
 .hp-cta {
-  padding: 96px 0;
-  background:
-    linear-gradient(168deg, #8a4a12 0%, #9a5c1a 20%, #b06a1e 50%, #9a5c1a 80%, #7a3c0e 100%);
+  padding: 80px 0;
+  background: linear-gradient(168deg, #6b2200 0%, #8b3200 50%, #5a1a00 100%);
   border-top: 3px solid #3a1f07;
-  color: #1e0800;
+  text-align: center;
+  color: #fde8c0;
+  position: relative;
+  overflow: hidden;
+}
+.hp-cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
 }
 
+/* CTA centered text wrapper */
 .hp-cta-inner {
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
+/* CTA heading */
 .hp-cta-h2 {
   font-size: clamp(1.8rem, 3.5vw, 2.8rem);
   font-weight: 900;
   letter-spacing: -0.03em;
   margin: 0 0 12px;
-  color: #1e0800;
+  color: #fde8c0;
 }
 
+/* CTA description paragraph */
 .hp-cta-p {
   font-size: 1rem;
-  color: rgba(20,6,0,0.68);
+  color: rgba(253,232,192,0.7);
   margin: 0 0 32px;
   line-height: 1.6;
 }
 
+/* CTA buttons row */
 .hp-cta-btns {
   display: flex;
   gap: 14px;
@@ -820,8 +907,6 @@ input[type="date"].hp-form-field::-webkit-calendar-picker-indicator {
 /* â”€â”€ Responsive â”€â”€ */
 @media (max-width: 700px) {
   .hp-steps { grid-template-columns: 1fr; }
-  .hp-step { border-right: none; border-bottom: 1px solid rgba(0,0,0,0.15); }
-  .hp-step:last-child { border-bottom: none; }
   .hp-form-row { grid-template-columns: 1fr; }
   .hp-hero-stats { flex-wrap: wrap; gap: 12px; padding: 16px 20px; }
   .hp-hero-stat-sep { display: none; }
