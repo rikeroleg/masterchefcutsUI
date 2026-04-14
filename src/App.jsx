@@ -25,7 +25,8 @@ import TermsPage from "./pages/Terms";
 import PrivacyPage from "./pages/Privacy";
 import OrderReceiptPage from "./pages/OrderReceipt";
 import MessagesPage from "./pages/Messages";
-import ReferralPage from "./pages/Referral";
+import ReferralPage from "./pages/Referral"
+import ErrorBoundary from "./Components/ErrorBoundary";
 import Footer from "./Components/Footer";
 import NotificationBell from "./components/NotificationBell";
 import AnimalRequestModal from "./Components/AnimalRequestModal";
@@ -211,9 +212,9 @@ function App() {
                 </div>
               </div>
             } />
-            <Route path="/cart" element={<CartPage />} />
+            <Route path="/cart" element={<ErrorBoundary><CartPage /></ErrorBoundary>} />
             <Route path="/listings" element={<ListingsPage />} />
-            <Route path="/listings/:id" element={<ListingDetailPage />} />
+            <Route path="/listings/:id" element={<ErrorBoundary><ListingDetailPage /></ErrorBoundary>} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/post" element={<PostListingPage />} />
@@ -227,7 +228,7 @@ function App() {
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/order/:id" element={<OrderReceiptPage />} />
-            <Route path="/messages" element={<MessagesPage />} />
+            <Route path="/messages" element={<ErrorBoundary><MessagesPage /></ErrorBoundary>} />
             <Route path="/refer" element={<ReferralPage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="*" element={<NotFoundPage />} />

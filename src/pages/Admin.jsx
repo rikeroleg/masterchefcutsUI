@@ -26,6 +26,10 @@ export default function Admin() {
   const [finTo,           setFinTo]           = useState('')
   const [finStatus,       setFinStatus]       = useState('ALL')
   const [finLoading,      setFinLoading]      = useState(false)
+  const [adminComments,   setAdminComments]   = useState([])
+  const [commentsPage,    setCommentsPage]    = useState(0)
+  const [commentsHasMore, setCommentsHasMore] = useState(false)
+  const [deletingCommentId, setDeletingCommentId] = useState(null)
 
   useEffect(() => {
     if (!user || user.role !== 'admin') { navigate('/'); return }
@@ -33,6 +37,26 @@ export default function Admin() {
     loadUsers()
     loadListings()
   }, [user])
+
+  async function loadComments(pg = 0) {
+    try {
+      const data = await api.get(`/api/admin/comments?page=${pg}&size=25`)
+      if (pg === 0) setAdminComments(data.content || [])
+      else setAdminComments(prev => [...prev, ...(data.content || [])])
+      setCommentsPage(pg)
+      setCommentsHasMore(data.hasNext || false)
+    } catch (err) { setError(err.message || 'Failed to load comments') }
+  }
+
+  async function deleteAdminComment(id) {
+    if (!window.confirm('Delete this comment?')) return
+    setDeletingCommentId(id)
+    try {
+      await api.delete(`/api/admin/comments/${id}`)
+      setAdminComments(prev => prev.filter(c => c.id !== id))
+    } catch (err) { setError(err.message || 'Failed to delete comment') }
+    setDeletingCommentId(null)
+  }
 
   async function loadStats() {
     try { setStats(await api.get('/api/admin/stats')) } catch {}
@@ -168,11 +192,11 @@ export default function Admin() {
         {error && <p className="admin-error">{error}</p>}
 
         <div className="admin-tabs">
-          {['stats', 'users', 'listings', 'orders', 'disputes', 'financials'].map(t => (
+          {['stats', 'users', 'listings', 'orders', 'disputes', 'financials', 'comments'].map(t => (
             <button
               key={t}
               className={`admin-tab${tab === t ? ' active' : ''}`}
-              onClick={() => { setTab(t); if (t === 'orders') loadOrders(); if (t === 'financials') loadFinancials() }}
+              onClick={() => { setTab(t); if (t === 'orders') loadOrders(); if (t === 'financials') loadFinancials(); if (t === 'comments') loadComments(0) }}
             >
               {t.charAt(0).toUpperCase() + t.slice(1)}
               {t === 'users' && pending.length > 0 && <span className="admin-tab-dot" />}
@@ -484,6 +508,38 @@ export default function Admin() {
             )}
             {!financials && !finLoading && (
               <p style={{ fontSize: '0.85rem', color: 'rgba(20,6,0,0.45)', margin: 0 }}>Select filters and click Apply to load financials.</p>
+            )}
+          </div>
+        )}
+
+        {/* ── Comments ── */}
+        {tab === 'comments' && (
+          <div className="admin-table-wrap">
+            <p className="admin-section-label">All comments ({adminComments.length}{commentsHasMore ? '+' : ''})</p>
+            {adminComments.length === 0 && <p style={{ fontSize: '0.85rem', color: 'rgba(20,6,0,0.5)', margin: 0 }}>No comments yet.</p>}
+            <div className="admin-comments-list">
+              {adminComments.map(c => (
+                <div key={c.id} className="admin-comment-row">
+                  <div className="admin-comment-info">
+                    <span className="admin-comment-author">{c.authorName}</span>
+                    <span className="admin-comment-listing">Listing #{c.listingId}</span>
+                    <span className="admin-comment-date">{c.createdAt ? new Date(c.createdAt).toLocaleDateString() : ''}</span>
+                    <p className="admin-comment-body">{c.body}</p>
+                  </div>
+                  <button
+                    className="admin-delete-btn"
+                    disabled={deletingCommentId === c.id}
+                    onClick={() => deleteAdminComment(c.id)}
+                  >
+                    {deletingCommentId === c.id ? '…' : 'Delete'}
+                  </button>
+                </div>
+              ))}
+            </div>
+            {commentsHasMore && (
+              <button className="admin-approve-btn" style={{ marginTop: '12px' }} onClick={() => loadComments(commentsPage + 1)}>
+                Load more
+              </button>
             )}
           </div>
         )}

@@ -40,6 +40,8 @@ export default function FarmerProfile() {
           name: data[0].farmerName,
           shopName: data[0].farmerShopName,
           zipCode: data[0].zipCode,
+          bio: data[0].farmerBio || null,
+          certifications: data[0].farmerCertifications || null,
         })
       }
     } catch (err) {
@@ -99,8 +101,16 @@ export default function FarmerProfile() {
                   <span className="fp-rating-count">({reviews.length} review{reviews.length !== 1 ? 's' : ''})</span>
                 </div>
               )
-            })()}
-          </div>
+            })()}            {farmer?.bio && (
+              <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.9rem', marginTop: '10px', lineHeight: '1.5', maxWidth: '600px' }}>
+                {farmer.bio}
+              </p>
+            )}
+            {farmer?.certifications && (
+              <p style={{ color: 'rgba(255,200,100,0.85)', fontSize: '0.82rem', marginTop: '6px' }}>
+                🌱 {farmer.certifications}
+              </p>
+            )}          </div>
         </div>
 
         {loading && <p className="listings-loading">Loading listings…</p>}

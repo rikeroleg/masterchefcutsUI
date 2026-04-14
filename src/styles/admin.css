@@ -712,3 +712,20 @@
 .admin-order-status--accepted    { background: rgba(52,152,219,0.18); color: #1a5276; }
 .admin-order-status--processing  { background: rgba(155,89,182,0.18); color: #5b2c79; }
 .admin-order-status--ready       { background: rgba(39,174,96,0.18);  color: #1a6636; }
+
+/* \u2500\u2500 Comments tab \u2500\u2500 */
+.admin-comments-list { display: flex; flex-direction: column; gap: 10px; }
+.admin-comment-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.admin-comment-info { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+.admin-comment-author { font-weight: 600; font-size: 0.85rem; color: rgba(20,6,0,0.85); }
+.admin-comment-listing { font-size: 0.78rem; color: rgba(20,6,0,0.45); }
+.admin-comment-date { font-size: 0.75rem; color: rgba(20,6,0,0.4); }
+.admin-comment-body { font-size: 0.87rem; color: rgba(20,6,0,0.7); margin: 4px 0 0; line-height: 1.45; }

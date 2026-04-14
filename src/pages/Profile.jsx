@@ -254,6 +254,7 @@ export default function Profile() {
     name: user?.name || '', shopName: user?.shopName || '',
     street: user?.street || '', apt: user?.apt || '',
     city: user?.city || '', state: user?.state || '', zipCode: user?.zipCode || '',
+    bio: user?.bio || '', certifications: user?.certifications || '',
   })
 
   // Add all unpaid claims from same listing to cart and navigate to checkout
@@ -527,6 +528,24 @@ export default function Profile() {
     ? new Date(user.joinedAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     : null
 
+  const ORDER_STEPS = ['PAID', 'ACCEPTED', 'PROCESSING', 'READY', 'COMPLETED']
+  function OrderTimeline({ status }) {
+    const currentIdx = ORDER_STEPS.indexOf((status || '').toUpperCase())
+    return (
+      <div className="order-timeline">
+        {ORDER_STEPS.map((step, i) => (
+          <React.Fragment key={step}>
+            <div className={`ot-step${i < currentIdx ? ' ot-step--done' : i === currentIdx ? ' ot-step--active' : ''}`}>
+              <div className="ot-dot" />
+              <span className="ot-label">{step.charAt(0) + step.slice(1).toLowerCase()}</span>
+            </div>
+            {i < ORDER_STEPS.length - 1 && <div className={`ot-line${i < currentIdx ? ' ot-line--done' : ''}`} />}
+          </React.Fragment>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="profile-page">
       <div className="profile-inner">
@@ -622,6 +641,32 @@ export default function Profile() {
                 </div>
               )}
             </div>
+            {isFarmer && (
+              <>
+                <div className="login-field" style={{ marginTop: '8px' }}>
+                  <label>Bio <span className="login-opt">(optional)</span></label>
+                  <textarea
+                    value={form.bio}
+                    onChange={e => setForm(f => ({ ...f, bio: e.target.value }))}
+                    maxLength={500}
+                    rows={3}
+                    placeholder="Tell buyers about your farm, your practices, and your animals..."
+                    style={{ resize: 'vertical' }}
+                  />
+                </div>
+                <div className="login-field" style={{ marginTop: '8px' }}>
+                  <label>Certifications <span className="login-opt">(optional)</span></label>
+                  <textarea
+                    value={form.certifications}
+                    onChange={e => setForm(f => ({ ...f, certifications: e.target.value }))}
+                    maxLength={500}
+                    rows={2}
+                    placeholder="e.g. USDA Certified Organic, Certified Humane..."
+                    style={{ resize: 'vertical' }}
+                  />
+                </div>
+              </>
+            )}
             <div className="profile-edit-title" style={{ marginTop: '4px' }}>Shipping Address</div>
             <div className="login-field">
               <label>Street address</label>
@@ -1097,6 +1142,7 @@ export default function Profile() {
                           {statusInfo.icon} {statusInfo.label}
                         </span>
                       </div>
+                      <OrderTimeline status={o.status} />
                       {items.length > 0 && (
                         <ul className="profile-order-items">
                           {items.map((it, i) => (
@@ -1123,6 +1169,45 @@ export default function Profile() {
                           {confirmingOrderId === o.id ? 'Confirming…' : '📦 Confirm Pickup'}
                         </button>
                       )}
+                      {o.status === 'COMPLETED' && (() => {
+                        const uniqueListingIds = [...new Set(items.map(it => it.listingId).filter(Boolean))]
+                        return uniqueListingIds.map(lid =>
+                          reviewedSet.has(String(lid)) ? (
+                            <div key={lid} className="profile-review-done">✅ Review submitted — thank you!</div>
+                          ) : (
+                            <div key={lid} className="profile-review-form">
+                              <p className="profile-review-label">⭐ How was your order? Leave a review</p>
+                              {reviewError && reviewLoading === null && (
+                                <p className="profile-date-error" style={{ marginBottom: 6 }}>{reviewError}</p>
+                              )}
+                              <div className="profile-review-stars">
+                                {[1, 2, 3, 4, 5].map(n => (
+                                  <button
+                                    key={n}
+                                    type="button"
+                                    className={`profile-star-btn${(reviewInputs[String(lid)]?.rating || 0) >= n ? ' active' : ''}`}
+                                    onClick={() => setReviewInputs(r => ({ ...r, [String(lid)]: { ...(r[String(lid)] || {}), rating: n } }))}
+                                  >★</button>
+                                ))}
+                              </div>
+                              <textarea
+                                className="profile-review-text"
+                                placeholder="Optional comment…"
+                                rows={2}
+                                value={reviewInputs[String(lid)]?.comment || ''}
+                                onChange={e => setReviewInputs(r => ({ ...r, [String(lid)]: { ...(r[String(lid)] || {}), comment: e.target.value } }))}
+                              />
+                              <button
+                                className="profile-date-btn"
+                                disabled={!reviewInputs[String(lid)]?.rating || reviewLoading === String(lid)}
+                                onClick={() => handleSubmitReview(String(lid))}
+                              >
+                                {reviewLoading === String(lid) ? 'Submitting…' : 'Submit Review'}
+                              </button>
+                            </div>
+                          )
+                        )
+                      })()}
                     </div>
                   )
                 })}

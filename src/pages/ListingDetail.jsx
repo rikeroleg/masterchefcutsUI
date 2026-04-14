@@ -72,6 +72,13 @@ export default function ListingDetail() {
   const [commentText,      setCommentText]      = useState('')
   const [commentSubmitting,setCommentSubmitting] = useState(false)
   const [deletingComment,  setDeletingComment]  = useState(null)
+  const [commentPage,      setCommentPage]      = useState(0)
+  const [hasMoreComments,  setHasMoreComments]  = useState(false)
+  const [loadingMoreComments, setLoadingMoreComments] = useState(false)
+
+  const [onWaitlist,     setOnWaitlist]     = useState(false)
+  const [waitlistLoading,setWaitlistLoading] = useState(false)
+  const [waitlistTotal,  setWaitlistTotal]  = useState(0)
 
   useEffect(() => { document.title = 'Listing \u2014 MasterChef Cuts' }, [])
 
@@ -86,11 +93,14 @@ export default function ListingDetail() {
     Promise.all([
       api.get(`/api/listings/${id}`),
       api.get(`/api/listings/${id}/reviews`).catch(() => []),
-      api.get(`/api/listings/${id}/comments`).catch(() => []),
+      api.get(`/api/listings/${id}/comments?page=0&size=10`).catch(() => ({ content: [], hasNext: false })),
     ]).then(([l, r, c]) => {
       setListing(l)
       setReviews(r)
-      setComments(c)
+      const commentData = Array.isArray(c) ? { content: c, hasNext: false } : c
+      setComments(commentData.content || [])
+      setHasMoreComments(commentData.hasNext || false)
+      setCommentPage(0)
     }).catch(err => setError(err.message))
       .finally(() => setLoading(false))
   }, [id])
@@ -101,6 +111,14 @@ export default function ListingDetail() {
       .then(had => setAlreadyReviewed(had))
       .catch(() => {}) // non-critical: review status
   }, [id, user])
+
+  useEffect(() => {
+    if (!user || !listing) return
+    if (listing.status !== 'FULLY_CLAIMED') return
+    api.get(`/api/listings/${listing.id}/waitlist/status`)
+      .then(s => { setOnWaitlist(s.onWaitlist || false); setWaitlistTotal(s.total || 0) })
+      .catch(() => {})
+  }, [listing, user])
 
   async function handleCutClick(cut) {
     if (!user) { navigate('/login'); return }
@@ -171,6 +189,43 @@ export default function ListingDetail() {
       toast.error(err.message || 'Failed to delete comment.')
     } finally {
       setDeletingComment(null)
+    }
+  }
+
+  async function handleLoadMoreComments() {
+    setLoadingMoreComments(true)
+    try {
+      const nextPage = commentPage + 1
+      const data = await api.get(`/api/listings/${id}/comments?page=${nextPage}&size=10`)
+      setComments(prev => [...prev, ...(data.content || [])])
+      setHasMoreComments(data.hasNext || false)
+      setCommentPage(nextPage)
+    } catch (err) {
+      toast.error(err.message || 'Failed to load more comments.')
+    } finally {
+      setLoadingMoreComments(false)
+    }
+  }
+
+  async function handleWaitlist() {
+    if (!user) { navigate('/login'); return }
+    setWaitlistLoading(true)
+    try {
+      if (onWaitlist) {
+        await api.delete(`/api/listings/${id}/waitlist`)
+        setOnWaitlist(false)
+        setWaitlistTotal(t => Math.max(0, t - 1))
+        toast.success('Removed from waitlist.')
+      } else {
+        const res = await api.post(`/api/listings/${id}/waitlist`)
+        setOnWaitlist(true)
+        setWaitlistTotal(t => t + 1)
+        toast.success(res.message || `You're on the waitlist!`)
+      }
+    } catch (err) {
+      toast.error(err.message || 'Waitlist action failed.')
+    } finally {
+      setWaitlistLoading(false)
     }
   }
 
@@ -291,6 +346,32 @@ export default function ListingDetail() {
             ))}
           </div>
         </div>
+
+        {/* Waitlist Banner — shown when listing is FULLY_CLAIMED and user is a buyer */}
+        {listing.status === 'FULLY_CLAIMED' && user?.role !== 'farmer' && (
+          <div className="ld-waitlist-banner">
+            <div className="ld-waitlist-info">
+              <span className="ld-waitlist-icon">⏳</span>
+              <div>
+                <p className="ld-waitlist-title">This listing is fully claimed.</p>
+                {waitlistTotal > 0 && (
+                  <p className="ld-waitlist-count">{waitlistTotal} {waitlistTotal === 1 ? 'person' : 'people'} on the waitlist</p>
+                )}
+              </div>
+            </div>
+            {user ? (
+              <button
+                className={`ld-waitlist-btn${onWaitlist ? ' ld-waitlist-btn--leave' : ''}`}
+                onClick={handleWaitlist}
+                disabled={waitlistLoading}
+              >
+                {waitlistLoading ? '…' : onWaitlist ? 'Leave Waitlist' : 'Join Waitlist'}
+              </button>
+            ) : (
+              <Link to="/login" className="ld-waitlist-btn">Sign in to join waitlist</Link>
+            )}
+          </div>
+        )}
 
         {/* Reviews section */}
         {reviews.length > 0 && (
@@ -417,6 +498,18 @@ export default function ListingDetail() {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {hasMoreComments && (
+            <div className="ld-comments-load-more">
+              <button
+                className="ld-comments-load-more-btn"
+                onClick={handleLoadMoreComments}
+                disabled={loadingMoreComments}
+              >
+                {loadingMoreComments ? 'Loading…' : 'Load more comments'}
+              </button>
             </div>
           )}
         </div>

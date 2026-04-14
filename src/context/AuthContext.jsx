@@ -21,6 +21,8 @@ function mapUser(data) {
     state:     data.state     || '',
     zipCode:   data.zipCode   || '',
     notificationPreference: data.notificationPreference || 'ALL',
+    bio:              data.bio              || '',
+    certifications:   data.certifications   || '',
     stripeAccountId:          data.stripeAccountId          || null,
     stripeOnboardingComplete: data.stripeOnboardingComplete ?? false,
   }
@@ -133,6 +135,8 @@ export function AuthProvider({ children }) {
       if (fields.city     !== undefined) payload.city     = fields.city
       if (fields.state    !== undefined) payload.state    = fields.state
       if (fields.zipCode  !== undefined) payload.zipCode  = fields.zipCode
+      if (fields.bio       !== undefined) payload.bio       = fields.bio
+      if (fields.certifications !== undefined) payload.certifications = fields.certifications
 
       const data = await api.patch('/api/auth/me', payload)
       setUser(mapUser(data))

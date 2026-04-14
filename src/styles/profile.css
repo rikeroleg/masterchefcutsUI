@@ -1363,3 +1363,53 @@
   .fa-grid  { grid-template-columns: 1fr; }
   .fa-bar-label { max-width: 100px; min-width: 80px; }
 }
+
+/* ── Order status timeline ── */
+.order-timeline {
+  display: flex;
+  align-items: center;
+  margin: 10px 0 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+.ot-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.ot-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  border: 2px solid rgba(255,255,255,0.25);
+  transition: background 0.2s, border-color 0.2s;
+}
+.ot-step--done .ot-dot {
+  background: #27ae60;
+  border-color: #27ae60;
+}
+.ot-step--active .ot-dot {
+  background: #3498db;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+}
+.ot-label {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.45);
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+.ot-step--done .ot-label { color: rgba(255,255,255,0.7); }
+.ot-step--active .ot-label { color: #fff; font-weight: 600; }
+.ot-line {
+  flex: 1;
+  height: 2px;
+  background: rgba(255,255,255,0.15);
+  margin-bottom: 14px;
+  min-width: 16px;
+  transition: background 0.2s;
+}
+.ot-line--done { background: #27ae60; }

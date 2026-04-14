@@ -245,10 +245,12 @@ export default function Listings() {
   const [zipInput,      setZipInput]      = useState(zip)
   const [maxPriceInput, setMaxPriceInput] = useState(maxPrice)
   const [breedInput,    setBreedInput]    = useState(breedFilter)
+  const [searchQ,       setSearchQ]       = useState(searchParams.get('q') || '')
 
   const debouncedZip      = useDebounce(zipInput,      450)
   const debouncedMaxPrice = useDebounce(maxPriceInput, 550)
   const debouncedBreed    = useDebounce(breedInput,    450)
+  const debouncedQ        = useDebounce(searchQ,       450)
 
   useEffect(() => { document.title = 'Browse Listings — MasterChef Cuts' }, [])
 
@@ -276,16 +278,18 @@ export default function Listings() {
   useEffect(() => { updateParam('zip',      debouncedZip)      }, [debouncedZip])
   useEffect(() => { updateParam('maxPrice', debouncedMaxPrice) }, [debouncedMaxPrice])
   useEffect(() => { updateParam('breed',    debouncedBreed)    }, [debouncedBreed])
+  useEffect(() => { updateParam('q',        debouncedQ)        }, [debouncedQ])
 
   // ── Fetch whenever server-side filter params change ──────────────────────
+  const q = searchParams.get('q') || ''
   useEffect(() => {
     lastServerParams.current = { animal, zip, maxPrice }
     setPage(0)
-    fetchListings(animal, zip, maxPrice, sortBy, breedFilter, radius, 0, true)
+    fetchListings(animal, zip, maxPrice, sortBy, breedFilter, radius, 0, true, q)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [animal, zip, maxPrice, sortBy, breedFilter, radius])
+  }, [animal, zip, maxPrice, sortBy, breedFilter, radius, q])
 
-  async function fetchListings(animalVal, zipVal, maxPriceVal, sortVal, breedVal, radiusVal, pageNum, reset) {
+  async function fetchListings(animalVal, zipVal, maxPriceVal, sortVal, breedVal, radiusVal, pageNum, reset, qVal) {
     setLoading(true)
     setError('')
     try {
@@ -296,6 +300,7 @@ export default function Listings() {
       if (breedVal)    params.set('breed',    breedVal)
       if (radiusVal && radiusVal !== '25') params.set('radius', radiusVal)
       if (sortVal && sortVal !== 'newest') params.set('sort',   sortVal)
+      if (qVal)        params.set('q',        qVal)
       params.set('page', String(pageNum))
       params.set('size', '12')
       const data = await api.get(`/api/listings?${params.toString()}`)
@@ -313,7 +318,7 @@ export default function Listings() {
 
   function handleLoadMore() {
     const nextPage = page + 1
-    fetchListings(animal, zip, maxPrice, sortBy, breedFilter, radius, nextPage, false)
+    fetchListings(animal, zip, maxPrice, sortBy, breedFilter, radius, nextPage, false, q)
   }
 
   function setAnimal(value) {
@@ -344,6 +349,7 @@ export default function Listings() {
     setZipInput('')
     setMaxPriceInput('')
     setBreedInput('')
+    setSearchQ('')
     setSearchParams({}, { replace: true })
   }
 
@@ -383,6 +389,13 @@ export default function Listings() {
           </div>
 
           <div className="listings-controls">
+            {/* Keyword search */}
+            <input
+              className="listings-search-input"
+              value={searchQ}
+              onChange={e => setSearchQ(e.target.value)}
+              placeholder="🔍 Search breed, farm, description…"
+            />
             {/* ZIP + radius row */}
             <div className="listings-zip-form">
               <input

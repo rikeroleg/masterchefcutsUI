@@ -706,3 +706,58 @@
   word-break: break-word;
 }
 
+
+/* ── Waitlist banner ── */
+.ld-waitlist-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: rgba(230, 126, 34, 0.15);
+  border: 1px solid rgba(230, 126, 34, 0.4);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+.ld-waitlist-info { display: flex; align-items: center; gap: 12px; }
+.ld-waitlist-icon { font-size: 1.5rem; }
+.ld-waitlist-title { margin: 0; font-weight: 600; font-size: 0.95rem; }
+.ld-waitlist-count { margin: 2px 0 0; font-size: 0.8rem; color: rgba(255,255,255,0.6); }
+.ld-waitlist-btn {
+  flex-shrink: 0;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  background: #e67e22;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.ld-waitlist-btn:hover:not(:disabled) { background: #f39c12; }
+.ld-waitlist-btn--leave { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.8); }
+.ld-waitlist-btn--leave:hover:not(:disabled) { background: rgba(255,255,255,0.22); }
+.ld-waitlist-btn:disabled { opacity: 0.6; cursor: default; }
+
+/* ── Comment pagination ── */
+.ld-comments-load-more {
+  text-align: center;
+  margin-top: 16px;
+}
+.ld-comments-load-more-btn {
+  padding: 8px 24px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: transparent;
+  color: rgba(255,255,255,0.75);
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.ld-comments-load-more-btn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.45);
+}
+.ld-comments-load-more-btn:disabled { opacity: 0.5; cursor: default; }
