@@ -1,0 +1,132 @@
+﻿/* auth.css â€” shared styles for Login, ForgotPassword, ResetPassword */
+/* Auth page — centered flex wrapper for auth screens */.auth-page {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+}
+
+/* Auth card — amber wood-textured form container */
+.auth-card {
+  background:
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
+  border-radius: 22px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: #1e0800;
+  position: relative;
+  overflow: hidden;
+  filter: drop-shadow(3px 6px 0px rgba(35,12,0,0.85));
+}
+
+.auth-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Auth header — card top section with title + subtitle */
+.auth-header { display: flex; flex-direction: column; gap: 6px; }
+/* Auth title — form heading */
+.auth-title  { font-size: 1.6rem; font-weight: 900; color: #1e0800; margin: 0; letter-spacing: -0.03em; }
+/* Auth subtitle — form subtitle text */
+.auth-sub    { font-size: 0.88rem; color: rgba(20, 6, 0, 0.62); margin: 0; }
+
+/* Auth form — vertical form layout */
+.auth-form   { display: flex; flex-direction: column; gap: 16px; }
+
+/* Auth field — individual field wrapper (label + input) */
+.auth-field  { display: flex; flex-direction: column; gap: 6px; }
+.auth-field label { font-size: 0.82rem; font-weight: 600; color: rgba(20, 6, 0, 0.72); }
+
+/* Auth input — styled text input on dark semi-transparent background */
+.auth-input {
+  background: rgba(0,0,0,0.14);
+  border: 1.5px solid rgba(0,0,0,0.28);
+  border-radius: 10px;
+  padding: 11px 14px;
+  color: #1e0800;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.auth-input:focus { border-color: rgba(120,40,0,0.7); }
+.auth-input::placeholder { color: rgba(20, 6, 0, 0.35); }
+
+/* Auth submit — red gradient submit button */
+.auth-submit-btn {
+  padding: 13px;
+  border-radius: 12px;
+  border: 1px solid #4a0e00;
+  background: linear-gradient(170deg, #8b1a00 0%, #a82800 50%, #781500 100%);
+  color: #fde8c0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.12s;
+  margin-top: 4px;
+}
+.auth-submit-btn:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+.auth-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* Auth error — red error message box */
+.auth-error {
+  font-size: 0.82rem;
+  color: #7a1a00;
+  background: rgba(180,60,0,0.12);
+  border: 1px solid rgba(180,60,0,0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 0;
+}
+
+/* Auth success — green success message box */
+.auth-success {
+  background: rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 0.9rem;
+  color: rgba(20, 6, 0, 0.8);
+}
+
+/* Auth link — inline text link */
+.auth-link {
+  color: #7a3a00;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.15s;
+}
+.auth-link:hover { color: #1e0800; }
+
+/* Auth footer link — bottom-of-card navigation link */
+.auth-footer-link {
+  text-align: center;
+  font-size: 0.82rem;
+  color: rgba(20, 6, 0, 0.55);
+  margin: 0;
+}
+
+/* Mobile — responsive adjustments */
+@media (max-width: 480px) {
+  .auth-card { padding: 28px 20px; }
+}

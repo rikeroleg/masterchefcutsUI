@@ -1,0 +1,268 @@
+/* header.css — top nav, brand, nav links, bottom hint, cart badge */
+
+/* Top navigation bar — amber wood gradient + SVG texture overlay */
+.ui-header {
+  background:
+    /* nail holes — left and right ends */
+    radial-gradient(circle at 18px 50%,             #150600 3.5px, #5a3010 5px, transparent 6px),
+    radial-gradient(circle at calc(100% - 18px) 50%, #150600 3.5px, #5a3010 5px, transparent 6px),
+    /* horizontal wood grain */
+    repeating-linear-gradient(
+      180deg,
+      transparent 0px, transparent 10px,
+      rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px,
+      transparent 11px, transparent 20px,
+      rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px
+    ),
+    /* vertical streaks */
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px, transparent 38px,
+      rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px
+    ),
+    /* main wood — honey/amber */
+    linear-gradient(
+      168deg,
+      #9a5c1a 0%, #c07828 12%, #d4922e 25%,
+      #e6aa3a 40%, #f0ba42 50%, #e4a833 60%,
+      #cc8828 74%, #b06a1e 88%, #8a4a12 100%
+    );
+  box-shadow:
+    0 4px 0 rgba(35,12,0,0.85),
+    0 8px 20px rgba(0,0,0,0.5);
+  padding: 0 1.5rem;
+  opacity: 0.82;
+  position: relative;
+  z-index: 200;
+}
+
+/* Wood grain texture pseudo-element — via feTurbulence SVG */
+.ui-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='80'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='1200' height='80' filter='url(%23w)'/></svg>");
+  background-size: 1200px 80px;
+  background-repeat: repeat-x;
+  mix-blend-mode: overlay;
+  opacity: 0.38;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Inner flex container — 64px height, centered content */
+.ui-header-inner { position: relative; z-index: 1; }
+
+.ui-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Brand logo + text link wrapper */
+.ui-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Red circle logo icon */
+.ui-brand-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #b91c1c, #7f1d1d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 16px rgba(185,28,28,0.6);
+  flex-shrink: 0;
+}
+
+/* "MasterChef" brand name text */
+.ui-brand-title {
+  display: block;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #1e0800;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  text-shadow: 0 1px 0 rgba(255,210,120,0.5);
+}
+
+/* "Cuts" subtitle text */
+.ui-brand-sub {
+  display: block;
+  font-size: 0.7rem;
+  color: rgba(40,14,0,0.6);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Desktop navigation links row */
+.ui-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Individual nav link — wood-styled borders */
+.ui-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 0;
+  border-top: 1px solid rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(255,220,140,0.1);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: rgba(20, 6, 0, 0.88);
+  transition: background 0.2s, color 0.2s;
+  text-shadow: 0 1px 0 rgba(255,210,120,0.4);
+}
+
+.ui-nav-link:hover {
+  background: rgba(0,0,0,0.14);
+  color: #1e0800;
+}
+
+.ui-nav-link.active {
+  background: rgba(0,0,0,0.22);
+  color: #1e0800;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.25);
+}
+
+/* Login button variant of nav link */
+.ui-nav-link--login {
+  border: 1px solid rgba(120,30,0,0.4);
+  color: #7a1f00;
+}
+
+.ui-nav-link--login:hover {
+  background: rgba(120,30,0,0.15);
+  border-color: rgba(120,30,0,0.6);
+  color: #5a1500;
+}
+
+/* User avatar circle — red, shows initials */
+.ui-avatar-chip {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7a1500, #a82800);
+  color: #fde8c0;
+  font-size: 0.65rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.45);
+}
+
+/* Absolute-positioned centered help text below header */
+.ui-bottom-hint {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  user-select: none;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Red pill counter — shows cart item count */
+.cart-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 50px;
+  background: #e74c3c;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+/* Mobile hamburger menu button — hidden on desktop */
+.ui-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: #1e0800;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.ui-hamburger:hover {
+  background: rgba(0,0,0,0.12);
+}
+
+/* Mobile layout — nav becomes dropdown overlay, brand shrinks */
+@media (max-width: 768px) {
+  .ui-hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ui-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background:
+      linear-gradient(168deg,
+        #9a5c1a 0%, #c07828 12%, #d4922e 25%,
+        #e6aa3a 40%, #f0ba42 50%, #e4a833 60%,
+        #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    padding: 8px 0;
+    z-index: 300;
+    gap: 0;
+  }
+
+  .ui-nav--open {
+    display: flex;
+  }
+
+  .ui-nav-link {
+    padding: 12px 24px;
+    border-top: none;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    font-size: 0.95rem;
+  }
+
+  .ui-nav-link:last-child {
+    border-bottom: none;
+  }
+
+  .ui-brand-title {
+    font-size: 1.25rem;
+  }
+
+  .ui-brand-sub {
+    display: none;
+  }
+}
