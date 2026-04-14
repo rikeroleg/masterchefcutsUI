@@ -1,0 +1,240 @@
+/* referral.css — Invite Friends / Referral page */
+
+.refer-page {
+  min-height: 100%;
+  padding: 100px 24px 60px;
+  color: #fff;
+}
+
+.refer-inner {
+  max-width: 680px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Hero block */
+.refer-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.refer-hero--small .refer-hero-icon { font-size: 2.4rem; }
+.refer-hero--small .refer-hero-title { font-size: clamp(1.5rem, 4vw, 2rem); }
+
+.refer-hero-icon {
+  font-size: 3.5rem;
+}
+
+.refer-hero-title {
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin: 0;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.refer-hero-sub {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.6;
+  max-width: 540px;
+  margin: 0;
+}
+
+.refer-hero-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+/* Feature cards */
+.refer-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.refer-feature-card {
+  background:
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 25%, #e6aa3a 50%, #c07828 75%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
+  border-radius: 14px;
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  filter: drop-shadow(2px 3px 0px rgba(35,12,0,0.6));
+}
+
+.refer-feature-icon  { font-size: 1.6rem; }
+.refer-feature-title { font-size: 0.9rem; font-weight: 700; color: #1e0800; }
+.refer-feature-body  { font-size: 0.8rem; color: rgba(20,6,0,0.68); line-height: 1.5; }
+
+/* Stats row */
+.refer-stats {
+  display: flex;
+  gap: 0;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.refer-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 22px 20px;
+  gap: 4px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+}
+.refer-stat:last-child { border-right: none; }
+
+.refer-stat-value {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #f5c97a;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.refer-stat-label {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Referral link card */
+.refer-link-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 22px 22px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.refer-link-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+}
+
+.refer-link-row {
+  display: flex;
+  gap: 10px;
+}
+
+.refer-link-input {
+  flex: 1;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.82rem;
+  font-family: monospace;
+  outline: none;
+}
+
+.refer-copy-btn {
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.refer-copy-btn:hover { background: rgba(255,255,255,0.18); }
+
+.refer-share-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  color: #fff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-family: inherit;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: filter 0.15s, transform 0.12s;
+  box-shadow: 0 4px 20px rgba(231,76,60,0.35);
+}
+.refer-share-btn:hover { filter: brightness(1.12); transform: translateY(-2px); }
+
+/* How it works */
+.refer-how {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.refer-how-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+}
+
+.refer-how-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.refer-how-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.5;
+}
+
+.refer-how-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(231,76,60,0.2);
+  border: 1px solid rgba(231,76,60,0.4);
+  color: #e74c3c;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.refer-how-text { padding-top: 2px; }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .refer-features { grid-template-columns: 1fr; }
+  .refer-link-row { flex-direction: column; }
+  .refer-share-btn { align-self: stretch; text-align: center; }
+}

@@ -1,0 +1,203 @@
+﻿/* post.css â€” Post New Listing page */
+
+.post-page {
+  min-height: 100%;
+  padding: 40px 16px 80px;
+}
+
+.post-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.post-back {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.65);
+  text-decoration: none;
+  transition: color 0.2s;
+  width: fit-content;
+}
+.post-back:hover { color: rgba(255,255,255,0.95); }
+
+.post-header { display: flex; flex-direction: column; gap: 6px; }
+
+.post-title {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.post-sub {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.65);
+  margin: 0;
+}
+
+.post-form {
+  background:
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.post-form::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Photo upload */
+.post-photo-drop {
+  border: 2px dashed rgba(35,12,0,0.35);
+  border-radius: 12px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.2s;
+  min-height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.post-photo-drop:hover { border-color: rgba(35,12,0,0.65); }
+.post-photo-drop--filled { border-style: solid; border-color: rgba(35,12,0,0.45); }
+
+.post-photo-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 24px 16px;
+  text-align: center;
+}
+.post-photo-icon  { font-size: 1.8rem; line-height: 1; }
+.post-photo-label { font-size: 0.88rem; font-weight: 700; color: rgba(20,6,0,0.7); }
+.post-photo-hint  { font-size: 0.75rem; color: rgba(20,6,0,0.45); }
+
+.post-photo-preview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+.post-photo-remove {
+  margin-top: 6px;
+  background: none;
+  border: none;
+  font-size: 0.8rem;
+  color: rgba(20,6,0,0.5);
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+.post-photo-remove:hover { color: #c0392b; }
+
+/* Success state */
+.post-success {
+  background:
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  filter: drop-shadow(3px 5px 0px rgba(35,12,0,0.7));
+  padding: 48px 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.post-success::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.post-success-check {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.12);
+  border: 2px solid rgba(0,0,0,0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: #1e0800;
+}
+
+.post-success h2 { margin: 0; font-size: 1.4rem; color: #1e0800; }
+.post-success p  { margin: 0; font-size: 0.9rem; color: rgba(20,6,0,0.65); }
+
+.post-success-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+/* Unauth guard */
+.post-unauth {
+  max-width: 400px;
+  margin: 100px auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: rgba(255,255,255,0.75);
+}
+
+/* ── Stripe Connect gate on Post Listing page ── */
+.post-connect-gate {
+  text-align: center;
+  padding: 48px 32px;
+  background: #fff8f0;
+  border: 1.5px solid #f0a040;
+  border-radius: 18px;
+  margin-bottom: 24px;
+}
+.post-connect-gate-icon { font-size: 3rem; margin-bottom: 12px; }
+.post-connect-gate-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2d1001;
+  margin: 0 0 10px;
+}
+.post-connect-gate-text {
+  font-size: 0.9rem;
+  color: rgba(20,6,0,0.65);
+  margin: 0 0 22px;
+  line-height: 1.5;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}

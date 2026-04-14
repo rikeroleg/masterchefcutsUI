@@ -1,0 +1,198 @@
+/* whole-animal-panel.css — left-side panel for buying whole/half/quarter animals */
+
+.wap-panel {
+  position: absolute;
+  left: 20px;
+  top: 30%;
+  transform: translateY(-10%);
+  width: 220px;
+
+  background:
+    /* nail holes — 4 corners */
+    radial-gradient(circle at 16px 22px,             #150600 3.5px, #5a3010 5px, transparent 6px),
+    radial-gradient(circle at calc(100% - 16px) 22px,#150600 3.5px, #5a3010 5px, transparent 6px),
+    radial-gradient(circle at 16px calc(100% - 22px),#150600 3.5px, #5a3010 5px, transparent 6px),
+    radial-gradient(circle at calc(100% - 16px) calc(100% - 22px),#150600 3.5px, #5a3010 5px, transparent 6px),
+    /* horizontal wood grain */
+    repeating-linear-gradient(
+      180deg,
+      transparent 0px, transparent 10px,
+      rgba(0,0,0,0.08) 10px, rgba(0,0,0,0.08) 11px,
+      transparent 11px, transparent 20px,
+      rgba(255,230,160,0.05) 20px, rgba(255,230,160,0.05) 21px
+    ),
+    /* subtle vertical streaks */
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px, transparent 38px,
+      rgba(0,0,0,0.04) 38px, rgba(0,0,0,0.04) 39px,
+      transparent 39px, transparent 80px,
+      rgba(255,255,255,0.025) 80px, rgba(255,255,255,0.025) 81px
+    ),
+    /* main wood colour — honey/amber, light centre, darker edges */
+    linear-gradient(
+      168deg,
+      #9a5c1a 0%,
+      #c07828 12%,
+      #d4922e 25%,
+      #e6aa3a 40%,
+      #f0ba42 50%,
+      #e4a833 60%,
+      #cc8828 74%,
+      #b06a1e 88%,
+      #8a4a12 100%
+    );
+
+  /* wavy banner / farm-sign shape */
+  clip-path: polygon(
+    2%   6%,  10%  1%,  30%  3.5%, 50%  5%,
+    70%  3.5%, 90%  1%,  98%  6%,
+    100% 94%,  90%  99%, 70%  96.5%, 50%  95%,
+    30%  96.5%, 10%  99%,  2%  94%
+  );
+
+  /* 3-D depth: hard offset shadow below + soft ambient */
+  filter:
+    drop-shadow(4px 9px 0px rgba(35,12,0,0.95))
+    drop-shadow(0 16px 24px rgba(0,0,0,0.6));
+
+  opacity: 0.82;
+  padding: 28px 18px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+/* SVG feTurbulence wood texture overlay */
+.wap-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.38;
+  pointer-events: none;
+  border-radius: inherit;
+}
+.wap-panel::after { display: none; }
+
+.wap-header {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(50,18,0,0.45);
+  box-shadow: 0 1px 0 rgba(255,220,140,0.15);
+}
+
+.wap-title {
+  font-size: 0.82rem;
+  font-weight: 900;
+  color: #2a0e00;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-shadow: 0 1px 0 rgba(255,210,130,0.55);
+}
+
+.wap-desc {
+  font-size: 0.72rem;
+  color: rgba(50,18,0,0.68);
+  line-height: 1.4;
+}
+
+.wap-options {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.wap-card {
+  background: rgba(0,0,0,0.18);
+  border-top: 1px solid rgba(0,0,0,0.35);
+  border-bottom: 1px solid rgba(255,220,140,0.12);
+  border-left: none;
+  border-right: none;
+  border-radius: 0;
+  padding: 8px 6px 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: background 0.15s;
+}
+
+.wap-card:hover {
+  background: rgba(0,0,0,0.27);
+}
+
+.wap-card-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.wap-symbol {
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.wap-label {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #2a0e00;
+  flex: 1;
+  text-shadow: 0 1px 0 rgba(255,210,120,0.5);
+}
+
+.wap-weight {
+  font-size: 0.72rem;
+  color: rgba(50,18,0,0.6);
+  white-space: nowrap;
+}
+
+.wap-note {
+  font-size: 0.70rem;
+  color: rgba(50,18,0,0.5);
+  line-height: 1.3;
+}
+
+.wap-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+
+.wap-price {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1e0800;
+  letter-spacing: -0.02em;
+  text-shadow: 0 1px 0 rgba(255,210,120,0.4);
+}
+
+.wap-btn {
+  font-size: 0.70rem;
+  font-weight: 800;
+  color: #fde8c0;
+  background: linear-gradient(170deg, #8b1a00 0%, #a82800 50%, #781500 100%);
+  border: 1px solid #4a0e00;
+  border-radius: 3px;
+  padding: 5px 10px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.55);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,140,80,0.2);
+  transition: filter 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+.wap-btn:hover  { filter: brightness(1.2); transform: translateY(-1px); }
+.wap-btn:active { transform: translateY(0); filter: brightness(0.88); }
+
+.wap-btn--added {
+  background: linear-gradient(170deg, #155c1a 0%, #22a040 100%) !important;
+  border-color: #0e3e12 !important;
+}

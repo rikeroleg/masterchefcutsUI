@@ -1,0 +1,42 @@
+/* base.css — global reset, body, root, animations */
+
+/* Global box-sizing reset — ensures padding/border included in element widths */
+* {
+  box-sizing: border-box;
+}
+
+/* Page body — dark vignette overlay on farm background image */
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.55) 65%, rgba(0,0,0,0.88) 100%),
+    url('/farmbkg.png') center center / cover no-repeat fixed;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: #fff;
+}
+
+/* React root container — sticky-footer flex column */
+#root {
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main application wrapper — ensures minimum full-screen height */
+.App {
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Pulsing glow animation keyframes — text-shadow in/out */
+@keyframes glow {
+  0%, 100% { text-shadow: 0 0 20px currentColor; }
+  50% { text-shadow: 0 0 40px currentColor, 0 0 60px currentColor; }
+}
+
+/* Utility class — applies infinite glow animation to text */
+.text-glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}

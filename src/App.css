@@ -1,0 +1,25 @@
+﻿/* App.css � import aggregator; edit individual files in src/styles/ */
+@import './styles/base.css';
+@import './styles/header.css';
+@import './styles/shop.css';
+@import './styles/cut-modal.css';
+@import './styles/cut-popup.css';
+@import './styles/cart.css';
+@import './styles/whole-animal-panel.css';
+@import './styles/about.css';
+@import './styles/home.css';
+@import './styles/listings.css';
+@import './styles/listing-detail.css';
+@import './styles/login.css';
+@import './styles/profile.css';
+@import './styles/post.css';
+@import './styles/demand-board.css';
+@import './styles/animal-request-modal.css';
+@import './styles/toast.css';
+@import './styles/dispute-modal.css';
+@import './styles/payment-modal.css';
+@import './styles/spinner.css';
+@import './styles/footer.css';
+@import './styles/receipt.css';
+@import './styles/messages.css';
+@import './styles/referral.css';
