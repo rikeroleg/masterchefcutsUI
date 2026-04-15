@@ -94,10 +94,12 @@ const LAMB_LABEL_MAP = {
   'shank': ['shank'],
 }
 
+const GLB_BASE = 'https://storage.googleapis.com/masterchefcuts-static'
+
 const ANIMAL_CONFIG = {
-  BEEF: { glb: '/3DCow.glb',  cuts: BEEF_CUTS, findCut: findBeefCut, labelMap: BEEF_LABEL_MAP },
-  PORK: { glb: '/3DPig.glb',  cuts: PORK_CUTS, findCut: findPorkCut, labelMap: PORK_LABEL_MAP },
-  LAMB: { glb: '/3DLamb.glb', cuts: LAMB_CUTS, findCut: findLambCut, labelMap: LAMB_LABEL_MAP },
+  BEEF: { glb: `${GLB_BASE}/3DCow.glb`,  cuts: BEEF_CUTS, findCut: findBeefCut, labelMap: BEEF_LABEL_MAP },
+  PORK: { glb: `${GLB_BASE}/3DPig.glb`,  cuts: PORK_CUTS, findCut: findPorkCut, labelMap: PORK_LABEL_MAP },
+  LAMB: { glb: `${GLB_BASE}/3DLamb.glb`, cuts: LAMB_CUTS, findCut: findLambCut, labelMap: LAMB_LABEL_MAP },
 }
 
 function hexToRgb(hex) {
@@ -168,9 +170,9 @@ function ColoredMesh({ glbPath, findCut, listingCuts, labelMap }) {
 
 // ── Preloads ──────────────────────────────────────────────────────────────
 
-useGLTF.preload('/3DCow.glb')
-useGLTF.preload('/3DPig.glb')
-useGLTF.preload('/3DLamb.glb')
+useGLTF.preload(`${GLB_BASE}/3DCow.glb`)
+useGLTF.preload(`${GLB_BASE}/3DPig.glb`)
+useGLTF.preload(`${GLB_BASE}/3DLamb.glb`)
 
 // ── Main export ───────────────────────────────────────────────────────────
 
