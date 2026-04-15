@@ -28,7 +28,7 @@ import MessagesPage from "./pages/Messages";
 import ReferralPage from "./pages/Referral"
 import ErrorBoundary from "./Components/ErrorBoundary";
 import Footer from "./Components/Footer";
-import NotificationBell from "./components/NotificationBell";
+import NotificationBell from "./Components/NotificationBell";
 import AnimalRequestModal from "./Components/AnimalRequestModal";
 import { useAuth } from "./context/AuthContext";
 import { useCart } from "./context/CartContext";

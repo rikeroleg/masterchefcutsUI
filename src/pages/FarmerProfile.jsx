@@ -4,7 +4,7 @@ import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { useFavorites } from '../utils/index'
-import PaymentModal from '../components/PaymentModal'
+import PaymentModal from '../Components/PaymentModal'
 import '../styles/listings.css'
 
 const ANIMAL_META = {

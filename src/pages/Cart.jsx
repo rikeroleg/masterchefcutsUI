@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { ShoppingCart, Trash2, ArrowLeft, Package } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
-import CartPaymentModal from '../components/CartPaymentModal'
+import CartPaymentModal from '../Components/CartPaymentModal'
 import '../styles/cart.css'
 
 const ANIMAL_INFO = {
