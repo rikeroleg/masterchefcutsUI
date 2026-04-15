@@ -730,3 +730,31 @@
 .admin-comment-listing { font-size: 0.78rem; color: rgba(20,6,0,0.45); }
 .admin-comment-date { font-size: 0.75rem; color: rgba(20,6,0,0.4); }
 .admin-comment-body { font-size: 0.87rem; color: rgba(20,6,0,0.7); margin: 4px 0 0; line-height: 1.45; }
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  .admin-inner { padding: 0 12px; }
+
+  .admin-title { font-size: 1.4rem; }
+
+  .admin-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+  }
+  .admin-tab { font-size: 0.78rem; padding: 8px 6px; }
+
+  .admin-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .admin-stat-card { padding: 16px 14px; }
+  .admin-stat-card strong { font-size: 1.6rem; }
+
+  .admin-table-wrap { padding: 14px 12px; }
+
+  .admin-fin-table-wrap { overflow-x: auto; }
+
+  .admin-user-actions { flex-wrap: wrap; }
+
+  .admin-resolve-form { flex-direction: column; }
+
+  .aud-grid { grid-template-columns: 1fr; }
+  .aud-order-row { flex-direction: column; gap: 6px; }
+}

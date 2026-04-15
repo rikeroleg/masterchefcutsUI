@@ -196,3 +196,17 @@
   background: linear-gradient(170deg, #155c1a 0%, #22a040 100%) !important;
   border-color: #0e3e12 !important;
 }
+
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  .wap-panel {
+    position: static;
+    width: 100%;
+    max-width: 100%;
+    transform: none;
+    clip-path: none;
+    border-radius: 14px;
+    opacity: 1;
+    margin: 0 0 16px;
+  }
+}

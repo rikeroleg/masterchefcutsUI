@@ -255,3 +255,26 @@
   color: rgba(50,18,0,0.58);
   line-height: 1.3;
 }
+
+/* ── Mobile ── */
+@media (max-width: 480px) {
+  .animal-switcher {
+    max-width: calc(100vw - 24px);
+    padding: 8px 16px;
+    overflow: hidden;
+  }
+
+  .animal-btn {
+    padding: 8px 14px;
+    font-size: 0.88rem;
+  }
+
+  .animal-label { display: none; }
+
+  .shop-action-chooser {
+    right: 12px;
+    bottom: 32px;
+    min-width: 200px;
+    max-width: calc(100vw - 24px);
+  }
+}
