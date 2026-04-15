@@ -44,13 +44,15 @@
   letter-spacing: -0.03em;
   margin: 0 0 6px;
   color: #fff;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.95), 0 4px 24px rgba(0,0,0,0.9);
 }
 
 /* Subtitle paragraph */
 .listings-sub {
   font-size: 0.9rem;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255,255,255,0.9);
   margin: 0;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.95);
 }
 
 /* â”€â”€ Controls (ZIP + filters) â”€â”€ */
@@ -70,8 +72,8 @@
 
 /* Zip code text input */
 .listings-zip-input {
-  background: rgba(255,255,255,0.07);
-  border: 1.5px solid rgba(255,255,255,0.14);
+  background: rgba(0,0,0,0.45);
+  border: 1.5px solid rgba(255,255,255,0.25);
   border-radius: 8px;
   padding: 7px 12px;
   color: #fff;
@@ -81,8 +83,8 @@
   outline: none;
   transition: border-color 0.15s;
 }
-.listings-zip-input:focus { border-color: rgba(243,156,18,0.5); }
-.listings-zip-input::placeholder { color: rgba(255,255,255,0.3); }
+.listings-zip-input:focus { border-color: rgba(243,156,18,0.7); }
+.listings-zip-input::placeholder { color: rgba(255,255,255,0.45); }
 
 .listings-zip-btn {
   padding: 7px 14px;
@@ -112,28 +114,29 @@
 
 /* Radius dropdown select */
 .listings-radius-select {
-  background: rgba(255,255,255,0.07);
-  border: 1.5px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.45);
+  border: 1.5px solid rgba(255,255,255,0.25);
   border-radius: 8px;
   padding: 7px 8px;
-  color: rgba(255,255,255,0.65);
+  color: rgba(255,255,255,0.9);
   font-size: 0.8rem;
   font-family: inherit;
   cursor: pointer;
   outline: none;
   transition: border-color 0.15s;
 }
-.listings-radius-select:focus { border-color: rgba(243,156,18,0.45); }
+.listings-radius-select:focus { border-color: rgba(243,156,18,0.7); }
 .listings-radius-select option { background: #2a1a08; }
 
 /* Zip code label text */
 .listings-zip-label {
   font-size: 0.8rem;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.9);
   margin: -20px 0 12px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.9);
 }
-.listings-zip-label strong { color: #f39c12; }
-.listings-radius-label { color: rgba(255,255,255,0.35); font-size: 0.75rem; }
+.listings-zip-label strong { color: #f5c97a; }
+.listings-radius-label { color: rgba(255,255,255,0.8); font-size: 0.75rem; text-shadow: 0 1px 4px rgba(0,0,0,0.9); }
 
 /* "Load More" pagination button */
 .listings-load-more {
@@ -156,7 +159,7 @@
   grid-column: 1 / -1;
   text-align: center;
   padding: 48px 24px;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255,255,255,0.9);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -165,6 +168,7 @@
 .listings-empty p {
   margin: 0;
   font-size: 1rem;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
 }
 .listings-browse-all {
   color: #f5c97a;
@@ -185,14 +189,15 @@
 .listings-view-btn {
   padding: 8px 16px;
   border-radius: 50px;
-  border: 1.5px solid rgba(255,255,255,0.15);
-  background: transparent;
-  color: rgba(255,255,255,0.55);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  background: rgba(0,0,0,0.4);
+  color: rgba(255,255,255,0.85);
   font-size: 0.82rem;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
   transition: all 0.15s;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
 }
 
 .listings-view-btn.active,
@@ -258,17 +263,18 @@
 .listings-filter-btn {
   padding: 8px 18px;
   border-radius: 50px;
-  border: 1.5px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.05);
-  color: rgba(255,255,255,0.5);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  background: rgba(0,0,0,0.42);
+  color: rgba(255,255,255,0.9);
   font-size: 0.82rem;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
   transition: all 0.15s;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
 }
 
-.listings-filter-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.listings-filter-btn:hover { background: rgba(0,0,0,0.58); color: #fff; }
 .listings-filter-btn.active {
   background: rgba(231,76,60,0.15);
   border-color: rgba(231,76,60,0.5);
@@ -300,15 +306,16 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.85);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.9);
 }
 
 /* Filter text input */
 .listings-filter-input {
   padding: 7px 10px;
   border-radius: 8px;
-  border: 1.5px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.06);
+  border: 1.5px solid rgba(255,255,255,0.25);
+  background: rgba(0,0,0,0.45);
   color: #fff;
   font-size: 0.84rem;
   font-family: inherit;
@@ -316,15 +323,15 @@
   transition: border-color 0.15s;
   width: 100%;
 }
-.listings-filter-input:focus { border-color: rgba(255,255,255,0.3); }
-.listings-filter-input::placeholder { color: rgba(255,255,255,0.25); }
+.listings-filter-input:focus { border-color: rgba(255,255,255,0.5); }
+.listings-filter-input::placeholder { color: rgba(255,255,255,0.45); }
 
 /* Sort dropdown */
 .listings-sort-select {
   padding: 7px 10px;
   border-radius: 8px;
-  border: 1.5px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.06);
+  border: 1.5px solid rgba(255,255,255,0.25);
+  background: rgba(0,0,0,0.45);
   color: #fff;
   font-size: 0.84rem;
   font-family: inherit;
@@ -868,13 +875,13 @@
   width: 100%;
   padding: 10px 14px;
   border-radius: 10px;
-  border: 1.5px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.06);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  background: rgba(0,0,0,0.5);
   color: #fff;
   font-size: 0.92rem;
   outline: none;
   transition: border-color 0.2s;
   margin-bottom: 10px;
 }
-.listings-search-input::placeholder { color: rgba(255,255,255,0.4); }
-.listings-search-input:focus { border-color: rgba(255,255,255,0.4); }
+.listings-search-input::placeholder { color: rgba(255,255,255,0.5); }
+.listings-search-input:focus { border-color: rgba(255,255,255,0.55); }
