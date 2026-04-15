@@ -41,8 +41,9 @@
 .ld-loading, .ld-error {
   text-align: center;
   padding: 80px 24px;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255,255,255,0.9);
   font-size: 0.95rem;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
 }
 .ld-error a { color: #f39c12; text-decoration: none; margin-left: 8px; }
 
@@ -113,11 +114,12 @@
 
 /* Back navigation link */
 .ld-back {
-  color: rgba(255,255,255,0.45);
+  color: rgba(255,255,255,0.85);
   text-decoration: none;
   font-size: 0.82rem;
   font-weight: 600;
   transition: color 0.15s;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.85);
 }
 .ld-back:hover { color: #fff; }
 

@@ -41,7 +41,8 @@
 
 .profile-unauth-msg {
   font-size: 1.1rem;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.9);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
 }
 
 /* â”€â”€ Avatar â”€â”€ */
