@@ -176,7 +176,6 @@
   color: rgba(255,255,255,0.75);
 }
 
-/* ── Stripe Connect gate on Post Listing page ── */
 .post-connect-gate {
   text-align: center;
   padding: 48px 32px;
@@ -200,4 +199,20 @@
   max-width: 480px;
   margin-left: auto;
   margin-right: auto;
+}
+
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  .post-page { padding: 24px 12px 60px; }
+
+  .post-inner { gap: 18px; }
+
+  .post-title { font-size: 1.4rem; }
+
+  .post-form { padding: 18px 14px; }
+
+  .post-success { padding: 32px 18px; }
+
+  .post-connect-gate { padding: 32px 16px; }
+  .post-connect-gate-title { font-size: 1.1rem; }
 }

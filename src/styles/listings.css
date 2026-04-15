@@ -824,9 +824,31 @@
 
 /* Mobile responsive adjustments */
 @media (max-width: 600px) {
-  .listings-header { flex-direction: column; align-items: flex-start; }
-  .lc-header { flex-wrap: wrap; }
+  .listings-inner { padding: 24px 14px 60px; }
+
+  .listings-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+
+  .listings-controls { align-items: flex-start; width: 100%; }
+
+  .listings-zip-form { flex-wrap: wrap; }
+  .listings-zip-input { width: 100%; }
+
+  .listings-filters { gap: 6px; }
+  .listings-filter-btn { padding: 6px 12px; font-size: 0.78rem; }
+
+  .listings-more-filters { gap: 8px; }
+  .listings-filter-group { min-width: 0; width: 100%; }
+  .listings-sort-select { min-width: 0; width: 100%; }
+
+  .lc-header { flex-wrap: wrap; gap: 10px; }
   .lc-price-block { margin-left: auto; }
+
+  .lc-footer { flex-wrap: wrap; gap: 8px; }
+  .lc-footer-actions { flex-wrap: wrap; }
+
+  .listings-map { height: 50vh; min-height: 280px; }
+
+  .listings-search-input { font-size: 0.88rem; }
 }
 /* ── FarmerProfile rating badge ── */
 .fp-rating-badge {

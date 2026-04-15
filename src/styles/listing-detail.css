@@ -450,10 +450,32 @@
 
 /* Mobile responsive breakpoint */
 @media (max-width: 600px) {
-  .ld-hero { flex-direction: column; }
+  .ld-page { padding: 24px 0 60px; }
+
+  .ld-hero-section { padding: 40px 14px 24px; }
+
+  .ld-section { padding: 40px 14px; }
+  .ld-section-inner { gap: 16px; }
+  .ld-inner { padding: 0 14px; gap: 16px; }
+
+  .ld-content-wrapper { padding: 20px 14px; }
+
+  .ld-hero { flex-direction: column; gap: 12px; }
   .ld-hero-right { text-align: left; }
-  .ld-stats { gap: 14px; padding: 14px 16px; }
+
+  .ld-title { font-size: 1.25rem; }
+  .ld-price { font-size: 1.4rem; }
+
+  .ld-stats { gap: 10px; padding: 14px 12px; flex-wrap: wrap; }
   .ld-stat-sep { display: none; }
+
+  .ld-cuts-section { padding: 16px 14px; }
+  .ld-cuts-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+
+  .ld-confirm { margin: 40px 14px; padding: 32px 20px; }
+  .ld-confirm h2 { font-size: 1.25rem; }
+
+  .ld-waitlist-banner { flex-direction: column; align-items: flex-start; gap: 12px; }
 }
 /* Leave a Review form */
 .ld-review-form-section {
