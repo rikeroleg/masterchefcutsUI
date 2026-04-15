@@ -46,7 +46,9 @@ async function request(method, path, body) {
 
   if (!res.ok) {
     const message = data?.error || data?.message || `Request failed (${res.status})`
-    throw new Error(message)
+    const err = new Error(message)
+    if (data?.fields && typeof data.fields === 'object') err.fields = data.fields
+    throw err
   }
 
   return data
