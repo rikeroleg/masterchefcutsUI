@@ -31,8 +31,7 @@ import Footer from "./Components/Footer";
 import NotificationBell from "./Components/NotificationBell";
 import AnimalRequestModal from "./Components/AnimalRequestModal";
 import { useAuth } from "./context/AuthContext";
-import { useCart } from "./context/CartContext";
-import { WholeAnimalPanel } from "./Components/WholeAnimalPanel";
+import { useCart } from "./context/CartContext";import { shopBridge } from './context/CartContext';import { WholeAnimalPanel } from "./Components/WholeAnimalPanel";
 import './App.css';
 
 const ANIMALS = [
@@ -48,6 +47,7 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [wapOpen, setWapOpen] = useState(false);
   const [chooserOpen, setChooserOpen] = useState(false);
+  shopBridge.openRequestModal = () => setShowRequestModal(true);
   const { totalItems } = useCart();
   const { user } = useAuth();
   const isShop = location.pathname === '/shop';

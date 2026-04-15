@@ -1,26 +1,11 @@
-﻿import React, { useState } from 'react'
+﻿import React from 'react'
 import { WHOLE_ANIMAL_DATA } from '../data/wholeAnimalData'
-import { useCart } from '../context/CartContext'
+import { shopBridge } from '../context/CartContext'
 
 export function WholeAnimalPanel({ activeAnimal }) {
-  const { addToCart } = useCart()
-  const [added, setAdded] = useState(null)
   const animalKey = activeAnimal === 'beef' ? 'beef' : activeAnimal === 'pork' ? 'pork' : 'lamb'
   const data = WHOLE_ANIMAL_DATA[animalKey]
   if (!data) return null
-
-  function handleAdd(opt) {
-    addToCart({
-      animal: animalKey,
-      cutId: `${animalKey}-${opt.id}`,
-      name: `${data.label} \u2014 ${opt.label} (${opt.weight})`,
-      color: data.color,
-      price: opt.price,
-      qty: 1,
-    })
-    setAdded(opt.id)
-    setTimeout(() => setAdded(null), 1800)
-  }
 
   return (
     <div className="wap-panel">
@@ -38,13 +23,12 @@ export function WholeAnimalPanel({ activeAnimal }) {
             </div>
             <span className="wap-note">{opt.note}</span>
             <div className="wap-card-bottom">
-              <span className="wap-price">${opt.price.toLocaleString()}</span>
               <button
-                className={`wap-btn${added === opt.id ? ' wap-btn--added' : ''}`}
+                className="wap-btn"
                 style={{ '--accent': data.color }}
-                onClick={() => handleAdd(opt)}
+                onClick={() => shopBridge.openRequestModal()}
               >
-                {added === opt.id ? '\u2713 Added' : 'Add to Cart'}
+                Claim
               </button>
             </div>
           </div>
