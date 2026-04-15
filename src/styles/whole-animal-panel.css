@@ -198,7 +198,7 @@
 }
 
 /* ── Mobile ── */
-@media (max-width: 600px) {
+@media (max-width: 480px) {
   .wap-panel {
     position: static;
     width: 100%;
@@ -207,6 +207,6 @@
     clip-path: none;
     border-radius: 14px;
     opacity: 1;
-    margin: 0 0 16px;
+    margin: 0;
   }
 }
