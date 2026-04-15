@@ -8,6 +8,7 @@ const CartContext = createContext({
 
 export const cartBridge = { addToCart: noop }
 export const cartClearBridge = { clearCart: noop }
+export const shopBridge = { openRequestModal: noop }
 
 export function CartProvider({ children }) {
   const [items, setItems] = useState(() => {

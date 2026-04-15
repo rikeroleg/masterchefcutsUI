@@ -2,7 +2,7 @@
 import { useGLTF, Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { LAMB_CUT_DATA } from '../../../data/lambCutData'
-import { cartBridge } from '../../../context/CartContext'
+import { shopBridge } from '../../../context/CartContext'
 
 // 3D local-space cut detection for 3DLamb.glb
 // Convention: HEAD at +Z, TAIL at -Z (same as 3DCow / 3DPig)
@@ -39,17 +39,13 @@ function easeOutCubic(t) {
 }
 
 function CutFullPopup({ cut, onClose }) {
-  const [qty, setQty] = useState(1)
-  const [added, setAdded] = useState(false)
   const data = LAMB_CUT_DATA[cut.id]
   if (!data) return null
   const { color } = cut
-  const total = (data.price * qty).toFixed(0)
 
-  const handleOrder = () => {
-    cartBridge.addToCart({ animal: 'lamb', cutId: cut.id, name: data.name, color, price: data.price, qty })
-    setAdded(true)
-    setTimeout(() => setAdded(false), 1800)
+  const handleClaim = () => {
+    onClose()
+    shopBridge.openRequestModal()
   }
 
   return (
@@ -67,11 +63,6 @@ function CutFullPopup({ cut, onClose }) {
             <h3 className="cpf-title" style={{ color }}>{data.name}</h3>
           </div>
           <button className="cpf-close" onClick={onClose}>&times;</button>
-        </div>
-
-        <div className="cpf-price-row">
-          <span className="cpf-price" style={{ color }}>${data.price.toLocaleString()}</span>
-          <span className="cpf-per-lb"> / whole cut</span>
         </div>
 
         <div className="cpf-tenderness">
@@ -125,20 +116,8 @@ function CutFullPopup({ cut, onClose }) {
         <hr className="cpf-divider" />
 
         <div className="cpf-order">
-          <div className="cpf-qty-row">
-            <span className="cpf-qty-label">Quantity</span>
-            <div className="cpf-qty-controls">
-              <button className="cpf-qty-btn" onClick={() => setQty((q) => Math.max(1, q - 1))}>&#8722;</button>
-              <span className="cpf-qty-val">{qty}</span>
-              <button className="cpf-qty-btn" onClick={() => setQty((q) => q + 1)}>+</button>
-            </div>
-          </div>
-          <button
-            className="cpf-add-btn"
-            style={{ background: added ? '#27ae60' : color }}
-            onClick={handleOrder}
-          >
-            {added ? '\u2713 Added to Cart!' : `Order ${qty} ${qty === 1 ? 'Cut' : 'Cuts'} \u2014 $${total}`}
+          <button className="cpf-add-btn" style={{ background: color }} onClick={handleClaim}>
+            Claim This Cut
           </button>
         </div>
       </div>
