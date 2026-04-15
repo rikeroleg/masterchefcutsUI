@@ -795,8 +795,6 @@ export default function Profile() {
               )}
             </>
           ) : (
-            </>
-          ) : (
             <>
               <div className="profile-stat"><strong>{myClaims.length}</strong><span>Cuts claimed</span></div>
               <div className="profile-stat-sep" />
