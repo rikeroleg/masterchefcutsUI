@@ -25,6 +25,8 @@ function mapUser(data) {
     certifications:   data.certifications   || '',
     stripeAccountId:          data.stripeAccountId          || null,
     stripeOnboardingComplete: data.stripeOnboardingComplete ?? false,
+    licenseUrl:               data.licenseUrl               || null,
+    rejectionReason:          data.rejectionReason           || null,
   }
 }
 

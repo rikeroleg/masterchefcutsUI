@@ -97,6 +97,37 @@ function FarmerAnalytics({ listings, orders }) {
           })}
         </div>
       )}
+
+      {/* Payout breakdown table */}
+      {paidOrders.length > 0 && (
+        <div className="fa-card fa-card--wide">
+          <div className="fa-card-title">Payout Breakdown (85% after 15% platform fee)</div>
+          <div className="fa-payout-header">
+            <span>Date</span><span>Gross</span><span>Fee (15%)</span><span>Net</span><span>Status</span>
+          </div>
+          {paidOrders.map(o => {
+            const gross = o.amountCents != null ? o.amountCents / 100 : (o.totalAmount || 0)
+            const fee   = gross * 0.15
+            const net   = gross * 0.85
+            return (
+              <div key={o.id} className="fa-payout-row">
+                <span>{o.orderDate ? new Date(o.orderDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</span>
+                <span>${gross.toFixed(2)}</span>
+                <span className="fa-payout-fee">−${fee.toFixed(2)}</span>
+                <span className="fa-payout-net">${net.toFixed(2)}</span>
+                <span className="fa-payout-status">{o.status}</span>
+              </div>
+            )
+          })}
+          <div className="fa-payout-row fa-payout-row--total">
+            <span>Total</span>
+            <span>${totalRevenue.toFixed(2)}</span>
+            <span className="fa-payout-fee">−${(totalRevenue * 0.15).toFixed(2)}</span>
+            <span className="fa-payout-net">${(totalRevenue * 0.85).toFixed(2)}</span>
+            <span></span>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -186,6 +217,7 @@ export default function Profile() {
   const [claimsError, setClaimsError]       = useState('')
   const [listingFillMap, setListingFillMap] = useState({}) // { [listingId]: { claimed, total } }
   const [dateInputs, setDateInputs]         = useState({})
+  const [pickupInputs, setPickupInputs]     = useState({})
   const [dateLoading, setDateLoading]       = useState(null)
   const [dateError, setDateError]           = useState('')
   const [reviewInputs, setReviewInputs]     = useState({})
@@ -211,6 +243,7 @@ export default function Profile() {
   const [pwLoading, setPwLoading]       = useState(false)
   const [notifPref, setNotifPref]       = useState(user?.notificationPreference || 'ALL')
   const [notifPrefLoading, setNotifPrefLoading] = useState(false)
+  const [licenseUploading, setLicenseUploading] = useState(false)
 
   useEffect(() => { document.title = 'Profile — MasterChef Cuts' }, [])
 
@@ -301,11 +334,12 @@ export default function Profile() {
     }
   }
 
-  // Farmer: update order status
-  async function handleUpdateOrderStatus(orderId, newStatus) {
+  async function handleUpdateOrderStatus(orderId, newStatus, pickupLocation) {
     setUpdatingOrderId(orderId)
     try {
-      await api.patch(`/api/orders/${orderId}/status`, { status: newStatus })
+      const payload = { status: newStatus }
+      if (newStatus === 'READY' && pickupLocation?.trim()) payload.pickupLocation = pickupLocation.trim()
+      await api.patch(`/api/orders/${orderId}/status`, payload)
       toast.success(`Order marked as ${newStatus.toLowerCase()}`)
       // Refresh farmer orders
       const updated = await api.get('/api/orders/farmer')
@@ -355,6 +389,32 @@ export default function Profile() {
       toast.error(err.message || 'Failed to open Stripe dashboard')
     } finally {
       setConnectLoading(false)
+    }
+  }
+
+  async function handleLicenseUpload(file) {
+    if (!file) return
+    setLicenseUploading(true)
+    try {
+      const token = localStorage.getItem('mc_token')
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch(`${import.meta.env.VITE_API_URL ?? ''}/api/auth/me/license`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.message || 'Upload failed')
+      }
+      toast.success('License uploaded — pending admin review.')
+      const updated = await res.json()
+      if (updated?.licenseUrl) updateUser({ licenseUrl: updated.licenseUrl })
+    } catch (err) {
+      toast.error(err.message || 'Failed to upload license')
+    } finally {
+      setLicenseUploading(false)
     }
   }
 
@@ -665,6 +725,25 @@ export default function Profile() {
                     style={{ resize: 'vertical' }}
                   />
                 </div>
+                <div className="login-field" style={{ marginTop: '8px' }}>
+                  <label>Farmer License / Permit</label>
+                  {user.licenseUrl ? (
+                    <div className="profile-license-uploaded">
+                      <span>✅ License uploaded</span>
+                      <a href={user.licenseUrl} target="_blank" rel="noopener noreferrer" className="profile-license-view">View file ↗</a>
+                      <label className="profile-license-replace">
+                        Replace
+                        <input type="file" accept=".pdf,.jpg,.jpeg,.png" hidden onChange={e => handleLicenseUpload(e.target.files[0])} />
+                      </label>
+                    </div>
+                  ) : (
+                    <label className={`profile-license-upload${licenseUploading ? ' loading' : ''}`}>
+                      {licenseUploading ? 'Uploading…' : '📎 Upload license or permit (PDF/image)'}
+                      <input type="file" accept=".pdf,.jpg,.jpeg,.png" hidden disabled={licenseUploading} onChange={e => handleLicenseUpload(e.target.files[0])} />
+                    </label>
+                  )}
+                  <span className="login-hint">Required for admin approval. Accepted formats: PDF, JPG, PNG.</span>
+                </div>
               </>
             )}
             <div className="profile-edit-title" style={{ marginTop: '4px' }}>Shipping Address</div>
@@ -716,6 +795,8 @@ export default function Profile() {
               )}
             </>
           ) : (
+            </>
+          ) : (
             <>
               <div className="profile-stat"><strong>{myClaims.length}</strong><span>Cuts claimed</span></div>
               <div className="profile-stat-sep" />
@@ -725,6 +806,14 @@ export default function Profile() {
             </>
           )}
         </div>
+
+        {/* ── Buyer: Saved Farmers ── */}
+        {isFarmer && user.approved === false && user.rejectionReason && (
+          <div className="profile-rejection-banner">
+            <strong>⚠️ Account not approved:</strong> {user.rejectionReason}
+            <span className="profile-rejection-hint">Please update your license or contact support.</span>
+          </div>
+        )}
 
         {/* ── Buyer: Saved Farmers ── */}
         {!isFarmerUser && favorites.length > 0 && (
@@ -934,11 +1023,27 @@ export default function Profile() {
                       <div className="profile-order-date">
                         Ordered {order.orderDate ? new Date(order.orderDate).toLocaleDateString() : ''}
                       </div>
+                      {order.pickupLocation && (
+                        <div className="profile-pickup-info">
+                          📍 Pickup: {order.pickupLocation}
+                        </div>
+                      )}
+                      {nextStatus === 'READY' && !order.pickupLocation && (
+                        <div className="profile-date-row">
+                          <input
+                            type="text"
+                            className="profile-date-input"
+                            placeholder="Pickup location (e.g. 123 Farm Rd, Gate 2)"
+                            value={pickupInputs[order.id] || ''}
+                            onChange={e => setPickupInputs(p => ({ ...p, [order.id]: e.target.value }))}
+                          />
+                        </div>
+                      )}
                       {nextStatus && (
                         <button
                           className="profile-order-action-btn"
-                          onClick={() => handleUpdateOrderStatus(order.id, nextStatus)}
-                          disabled={updatingOrderId === order.id}
+                          onClick={() => handleUpdateOrderStatus(order.id, nextStatus, pickupInputs[order.id])}
+                          disabled={updatingOrderId === order.id || (nextStatus === 'READY' && !order.pickupLocation && !pickupInputs[order.id]?.trim())}
                         >
                           {updatingOrderId === order.id ? 'Updating...' : getActionLabel(order.status)}
                         </button>
@@ -1143,6 +1248,11 @@ export default function Profile() {
                         </span>
                       </div>
                       <OrderTimeline status={o.status} />
+                      {o.status === 'READY' && o.pickupLocation && (
+                        <div className="profile-pickup-banner">
+                          📍 <strong>Pickup Location:</strong> {o.pickupLocation}
+                        </div>
+                      )}
                       {items.length > 0 && (
                         <ul className="profile-order-items">
                           {items.map((it, i) => (

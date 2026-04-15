@@ -206,6 +206,12 @@
 
 .admin-user-shop { font-size: 0.78rem; color: rgba(20,6,0,0.55); font-style: italic; }
 
+.admin-license-link {
+  font-size: 0.78rem;
+  color: #7a1500;
+  text-decoration: underline;
+}
+
 .admin-role-badge {
   font-size: 0.72rem;
   font-weight: 700;

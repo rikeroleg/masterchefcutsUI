@@ -26,7 +26,7 @@ export function WholeAnimalPanel({ activeAnimal }) {
               <button
                 className="wap-btn"
                 style={{ '--accent': data.color }}
-                onClick={() => shopBridge.openRequestModal()}
+                onClick={() => shopBridge.openRequestModal({ animal: animalKey })}
               >
                 Claim
               </button>
