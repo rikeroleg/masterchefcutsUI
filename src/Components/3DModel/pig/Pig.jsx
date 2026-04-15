@@ -45,9 +45,12 @@ function CutFullPopup({ cut, onClose }) {
   if (!data) return null
   const { color } = cut
 
+  // Map 3D zone names to AnimalRequestModal primal IDs
+  const PIG_CUT_MAP = { Ham: 'Leg', Head: null }
   const handleClaim = () => {
     onClose()
-    shopBridge.openRequestModal()
+    const primalId = cut.name in PIG_CUT_MAP ? PIG_CUT_MAP[cut.name] : cut.name
+    shopBridge.openRequestModal({ animal: 'pork', cuts: primalId ? [primalId] : [] })
   }
 
   return (

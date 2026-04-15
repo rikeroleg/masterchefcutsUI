@@ -294,6 +294,59 @@
   padding: 3px 10px;
 }
 
+/* ── Rejection banner ── */
+.profile-rejection-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(192,57,43,0.12);
+  border: 1px solid rgba(192,57,43,0.4);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  color: #5a0a00;
+}
+.profile-rejection-hint {
+  font-size: 0.78rem;
+  opacity: 0.75;
+}
+
+/* ── License upload UI ── */
+.profile-license-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1.5px dashed rgba(120,60,0,0.4);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: rgba(20,6,0,0.7);
+  transition: background 0.15s, border-color 0.15s;
+}
+.profile-license-upload:hover {
+  background: rgba(120,60,0,0.07);
+  border-color: rgba(120,60,0,0.6);
+}
+.profile-license-upload.loading {
+  opacity: 0.6;
+  cursor: wait;
+}
+.profile-license-uploaded {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: #1a5c30;
+}
+.profile-license-view,
+.profile-license-replace {
+  font-size: 0.8rem;
+  color: #7a1500;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 /* â”€â”€ Section â”€â”€ */
 .profile-section {
   background:
@@ -1064,6 +1117,28 @@
   transform: translateY(-1px);
 }
 
+/* ── Pickup location info (farmer order card) ── */
+.profile-pickup-info {
+  font-size: 0.82rem;
+  color: rgba(20,6,0,0.7);
+  background: rgba(39,174,96,0.12);
+  border: 1px solid rgba(39,174,96,0.3);
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-top: 8px;
+}
+
+/* ── Pickup location banner (buyer order card) ── */
+.profile-pickup-banner {
+  font-size: 0.85rem;
+  color: #1a5c30;
+  background: rgba(39,174,96,0.15);
+  border: 1px solid rgba(39,174,96,0.4);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 8px 0;
+}
+
 /* ── Confirm Receipt modal ── */
 .profile-modal-overlay {
   position: fixed;
@@ -1350,6 +1425,44 @@
   font-size: 0.82rem;
   color: rgba(255,255,255,0.35);
   margin: 0;
+}
+
+/* Payout table */
+.fa-payout-header,
+.fa-payout-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  gap: 8px;
+  font-size: 0.78rem;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  align-items: center;
+}
+.fa-payout-header {
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.68rem;
+}
+.fa-payout-fee  { color: #e74c3c; }
+.fa-payout-net  { color: #2ecc71; font-weight: 700; }
+.fa-payout-status {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+}
+.fa-payout-row--total {
+  font-weight: 700;
+  border-top: 2px solid rgba(255,255,255,0.2);
+  border-bottom: none;
+  margin-top: 4px;
+  font-size: 0.82rem;
+}
+@media (max-width: 600px) {
+  .fa-payout-header,
+  .fa-payout-row { grid-template-columns: 1fr 1fr 1fr; }
+  .fa-payout-fee, .fa-payout-status { display: none; }
 }
 
 /* Clickable section header for analytics toggle */

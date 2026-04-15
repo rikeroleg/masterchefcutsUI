@@ -40,13 +40,16 @@ const PRIMAL_CUTS = {
   ],
 }
 
-export default function AnimalRequestModal({ onClose }) {
+export default function AnimalRequestModal({ onClose, initialAnimal, initialCuts }) {
   const { user } = useAuth()
   const navigate = useNavigate()
 
   const [step, setStep] = useState(1) // 1 = animal/cuts, 2 = details
-  const [animalType, setAnimalType] = useState('beef')
-  const [selectedCuts, setSelectedCuts] = useState({})
+  const [animalType, setAnimalType] = useState(initialAnimal || 'beef')
+  const [selectedCuts, setSelectedCuts] = useState(() => {
+    if (!initialCuts || initialCuts.length === 0) return {}
+    return Object.fromEntries(initialCuts.map(c => [c, true]))
+  })
   const [form, setForm] = useState({ breed: '', description: '', zipCode: user?.zipCode || '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')

@@ -31,7 +31,9 @@ import Footer from "./Components/Footer";
 import NotificationBell from "./Components/NotificationBell";
 import AnimalRequestModal from "./Components/AnimalRequestModal";
 import { useAuth } from "./context/AuthContext";
-import { useCart } from "./context/CartContext";import { shopBridge } from './context/CartContext';import { WholeAnimalPanel } from "./Components/WholeAnimalPanel";
+import { useCart } from "./context/CartContext";
+import { shopBridge } from './context/CartContext';
+import { WholeAnimalPanel } from "./Components/WholeAnimalPanel";
 import './App.css';
 
 const ANIMALS = [
@@ -47,9 +49,10 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [wapOpen, setWapOpen] = useState(false);
   const [chooserOpen, setChooserOpen] = useState(false);
-  shopBridge.openRequestModal = () => setShowRequestModal(true);
+  const [requestPayload, setRequestPayload] = useState(null);
+  shopBridge.openRequestModal = (payload) => { setRequestPayload(payload || null); setShowRequestModal(true); };
   const { totalItems } = useCart();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const isShop = location.pathname === '/shop';
 
   useEffect(() => { setMenuOpen(false) }, [location.pathname]);
@@ -161,6 +164,16 @@ function App() {
                   <span>Sign In</span>
                 </Link>
               )}
+              {user && (
+                <button
+                  className="ui-nav-link ui-nav-link--logout"
+                  onClick={() => { logout(); setMenuOpen(false); }}
+                  aria-label="Sign out"
+                >
+                  <UserCircle2 size={18} />
+                  <span>Sign Out</span>
+                </button>
+              )}
             </nav>
             <button className="ui-hamburger" onClick={() => setMenuOpen(o => !o)} aria-label="Toggle menu">
               {menuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -216,7 +229,7 @@ function App() {
                         <small>See available animals near you</small>
                       </span>
                     </Link>
-                    <button className="shop-action-btn" onClick={() => setShowRequestModal(true)}>
+                    <button className="shop-action-btn" onClick={() => { setRequestPayload(null); setShowRequestModal(true); }}>
                       <span className="shop-action-icon">✏️</span>
                       <span className="shop-action-text">
                         <strong>Request an Animal</strong>
@@ -260,7 +273,7 @@ function App() {
       </div>
     </div>
 
-    {showRequestModal && <AnimalRequestModal onClose={() => setShowRequestModal(false)} />}
+    {showRequestModal && <AnimalRequestModal onClose={() => { setShowRequestModal(false); setRequestPayload(null); }} initialAnimal={requestPayload?.animal} initialCuts={requestPayload?.cuts} />}
     </>
   );
 }

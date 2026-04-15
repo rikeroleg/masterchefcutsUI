@@ -151,6 +151,19 @@
   color: #5a1500;
 }
 
+/* Logout — button element styled as nav link, hidden on desktop */
+.ui-nav-link--logout {
+  display: none;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  color: #7a1f00;
+}
+
 /* User avatar circle — red, shows initials */
 .ui-avatar-chip {
   width: 26px;
@@ -252,6 +265,10 @@
     border-top: none;
     border-bottom: 1px solid rgba(0,0,0,0.08);
     font-size: 0.95rem;
+  }
+
+  .ui-nav-link--logout {
+    display: flex;
   }
 
   .ui-nav-link:last-child {

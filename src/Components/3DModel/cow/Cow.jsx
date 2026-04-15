@@ -59,7 +59,7 @@ function CutFullPopup({ cut, onClose }) {
   const handleClaim = () => {
     setClaimed(true)
     onClose()
-    shopBridge.openRequestModal()
+    shopBridge.openRequestModal({ animal: 'beef', cuts: [cut.name] })
   }
 
   return (

@@ -235,6 +235,9 @@ export default function Admin() {
                       <Link to={`/admin/user/${u.id}`} className="admin-user-name admin-user-link">{u.firstName} {u.lastName}</Link>
                       <span className="admin-user-email">{u.email}</span>
                       <span className="admin-user-shop">{u.shopName}</span>
+                      {u.licenseUrl && (
+                        <a href={u.licenseUrl} target="_blank" rel="noopener noreferrer" className="admin-license-link">📄 View License</a>
+                      )}
                     </div>
                     <div className="admin-user-actions">
                       <button className="admin-approve-btn" disabled={loading} onClick={() => approveFarmer(u.id)}>Approve</button>
