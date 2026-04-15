@@ -46,6 +46,8 @@ function App() {
   const [activeAnimal, setActiveAnimal] = useState('beef');
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [wapOpen, setWapOpen] = useState(false);
+  const [chooserOpen, setChooserOpen] = useState(false);
   const { totalItems } = useCart();
   const { user } = useAuth();
   const isShop = location.pathname === '/shop';
@@ -184,10 +186,27 @@ function App() {
                     </button>
                   ))}
                 </div>
+                {/* Mobile toggle buttons — hidden on desktop via CSS */}
+                <button
+                  className="shop-mob-toggle shop-mob-toggle--wap"
+                  style={{ pointerEvents: 'auto' }}
+                  onClick={() => { setWapOpen(o => !o); setChooserOpen(false); }}
+                  aria-label="Toggle animal panel"
+                >
+                  {wapOpen ? '✕' : '🐄'}
+                </button>
+                <button
+                  className="shop-mob-toggle shop-mob-toggle--chooser"
+                  style={{ pointerEvents: 'auto' }}
+                  onClick={() => { setChooserOpen(o => !o); setWapOpen(false); }}
+                  aria-label="Toggle action menu"
+                >
+                  {chooserOpen ? '✕' : '📋'}
+                </button>
                 {/* Whole Animal Panel */}
-                <div style={{ pointerEvents: 'auto', zIndex: 100 }}><WholeAnimalPanel activeAnimal={activeAnimal} /></div>
+                <div className={`wap-mobile-wrap${wapOpen ? ' wap-mobile-wrap--open' : ''}`} style={{ pointerEvents: 'auto', zIndex: 100 }}><WholeAnimalPanel activeAnimal={activeAnimal} /></div>
                 {/* Shop action chooser */}
-                <div className="shop-action-chooser" style={{ pointerEvents: 'auto' }}>
+                <div className={`shop-action-chooser${chooserOpen ? ' shop-action-chooser--mobile-open' : ''}`} style={{ pointerEvents: 'auto' }}>
                   <p className="shop-action-label">What are you looking for?</p>
                   <div className="shop-action-btns">
                     <Link to="/listings" className="shop-action-btn">
