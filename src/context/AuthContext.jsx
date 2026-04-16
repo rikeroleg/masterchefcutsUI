@@ -99,7 +99,7 @@ export function AuthProvider({ children }) {
       setUser(mapUser(data))
       return { ok: true }
     } catch (err) {
-      return { error: err.message }
+      return { error: err.message, fields: err.fields || null }
     }
   }
 

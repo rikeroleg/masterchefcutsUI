@@ -11,6 +11,7 @@ const ROLES = [
 export default function Login() {
   const [tab, setTab]       = useState('signin')
   const [error, setError]   = useState('')
+  const [fieldErrors, setFieldErrors] = useState(null)
   const [loading, setLoad]  = useState(false)
   const [verified, setVerified] = useState(false)
   const [registered, setRegistered] = useState(false) // Show email verification prompt
@@ -33,17 +34,20 @@ export default function Login() {
   async function handleSignin(e) {
     e.preventDefault()
     setError('')
+    setFieldErrors(null)
     setLoad(true)
     const res = await login({ email: signin.email, password: signin.password })
     setLoad(false)
     if (res.error) {
       setError(res.error)
+      setFieldErrors(res.fields || null)
     } else navigate(res.role === 'admin' ? '/admin' : '/profile')
   }
 
   async function handleSignup(e) {
     e.preventDefault()
     setError('')
+    setFieldErrors(null)
     if (!termsAccepted) { setError('You must accept the Terms & Conditions to create an account.'); return }
     if (signup.password !== signup.confirm) { setError('Passwords do not match.'); return }
     if (signup.password.length < 6) { setError('Password must be at least 6 characters.'); return }
@@ -59,6 +63,7 @@ export default function Login() {
     setLoad(false)
     if (res.error) {
       setError(res.error)
+      setFieldErrors(res.fields || null)
     } else if (res.verify) {
       // Email verification required - show confirmation
       localStorage.removeItem('mcc_ref')
@@ -88,10 +93,10 @@ export default function Login() {
         {/* Tabs */}
         {!registered && (
           <div className="login-tabs">
-            <button className={`login-tab${tab === 'signin' ? ' active' : ''}`} onClick={() => { setTab('signin'); setError('') }}>
+            <button className={`login-tab${tab === 'signin' ? ' active' : ''}`} onClick={() => { setTab('signin'); setError(''); setFieldErrors(null) }}>
               Sign In
             </button>
-            <button className={`login-tab${tab === 'signup' ? ' active' : ''}`} onClick={() => { setTab('signup'); setError('') }}>
+            <button className={`login-tab${tab === 'signup' ? ' active' : ''}`} onClick={() => { setTab('signup'); setError(''); setFieldErrors(null) }}>
               Create Account
             </button>
           </div>
@@ -101,7 +106,17 @@ export default function Login() {
         {sessionExpiredMsg && <div className="login-error" style={{ background: 'rgba(180,120,0,0.18)', borderColor: '#c9922a' }}>{sessionExpiredMsg}</div>}
 
         {/* Error */}
-        {!registered && error && <div className="login-error">{error}</div>}
+        {!registered && error && (
+          <div className="login-error">
+            {fieldErrors ? (
+              <ul className="login-error-list">
+                {Object.entries(fieldErrors).map(([field, msg]) => (
+                  <li key={field}><strong>{field}:</strong> {msg}</li>
+                ))}
+              </ul>
+            ) : error}
+          </div>
+        )}
 
         {/* ── Registration Confirmation ── */}
         {registered && (

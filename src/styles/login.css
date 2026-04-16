@@ -109,6 +109,11 @@
   padding: 10px 14px;
   margin-bottom: 16px;
 }
+.login-error-list {
+  margin: 0;
+  padding-left: 18px;
+}
+.login-error-list li { margin-bottom: 4px; }
 
 /* Form */
 .login-form {
