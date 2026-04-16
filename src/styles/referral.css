@@ -82,10 +82,12 @@
 .refer-stats {
   display: flex;
   gap: 0;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 14px;
   overflow: hidden;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .refer-stat {
@@ -95,7 +97,7 @@
   align-items: center;
   padding: 22px 20px;
   gap: 4px;
-  border-right: 1px solid rgba(255,255,255,0.08);
+  border-right: 1px solid rgba(255,255,255,0.12);
 }
 .refer-stat:last-child { border-right: none; }
 
@@ -109,20 +111,22 @@
 
 .refer-stat-label {
   font-size: 0.72rem;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255,255,255,0.65);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 
 /* Referral link card */
 .refer-link-card {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 16px;
   padding: 22px 22px 18px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .refer-link-label {
@@ -130,7 +134,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.65);
 }
 
 .refer-link-row {
@@ -183,13 +187,15 @@
 
 /* How it works */
 .refer-how {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 14px;
   padding: 22px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .refer-how-title {
@@ -197,7 +203,8 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.65);
+}
 }
 
 .refer-how-steps {
