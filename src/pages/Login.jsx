@@ -59,9 +59,13 @@ export default function Login() {
     const refCode = localStorage.getItem('mcc_ref')
     const res = await register({
       name: signup.name, email: signup.email, password: signup.password,
-      role: signup.role, shopName: signup.shopName,
-      street: signup.street, apt: signup.apt,
-      city: signup.city, state: signup.state, zipCode: signup.zipCode,
+      role: signup.role,
+      ...(signup.shopName ? { shopName: signup.shopName } : {}),
+      ...(signup.street   ? { street: signup.street }     : {}),
+      ...(signup.apt      ? { apt: signup.apt }           : {}),
+      ...(signup.city     ? { city: signup.city }         : {}),
+      ...(signup.state    ? { state: signup.state }       : {}),
+      ...(signup.zipCode  ? { zipCode: signup.zipCode }   : {}),
       ...(refCode ? { referralCode: refCode } : {}),
     })
     setLoad(false)
