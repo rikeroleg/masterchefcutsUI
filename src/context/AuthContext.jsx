@@ -83,7 +83,7 @@ export function AuthProvider({ children }) {
     else { localStorage.removeItem('mc_user'); localStorage.removeItem('mc_token') }
   }, [user])
 
-  async function register({ name, email, password, role, shopName, street, apt, city, state, zipCode }) {
+  async function register({ name, email, password, role, shopName, street, apt, city, state, zipCode, referralCode }) {
     const [firstName, ...rest] = (name || '').trim().split(' ')
     const lastName = rest.join(' ')
     try {
@@ -91,6 +91,7 @@ export function AuthProvider({ children }) {
         firstName, lastName, email, password,
         role: role?.toUpperCase(),
         shopName, street, apt, city, state, zipCode,
+        ...(referralCode ? { referralCode } : {}),
       })
       if (!data.token) {
         return { verify: true }

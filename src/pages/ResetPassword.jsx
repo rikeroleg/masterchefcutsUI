@@ -13,14 +13,16 @@ export default function ResetPassword() {
   const [error,     setError]     = useState('')
   const [done,      setDone]      = useState(false)
 
+  const pwdPattern = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$/
+
   async function handleSubmit(e) {
     e.preventDefault()
     if (password !== confirm) { setError('Passwords do not match.'); return }
-    if (password.length < 8)  { setError('Password must be at least 8 characters.'); return }
+    if (!pwdPattern.test(password)) { setError('Password must be at least 8 characters with an uppercase letter, a number, and a special character.'); return }
     setLoading(true)
     setError('')
     try {
-      await api.post(`/api/auth/reset-password?token=${encodeURIComponent(token)}&password=${encodeURIComponent(password)}`)
+      await api.post('/api/auth/reset-password', { token, password })
       setDone(true)
       setTimeout(() => navigate('/login'), 2500)
     } catch (err) {
@@ -60,7 +62,7 @@ export default function ResetPassword() {
                 required
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                placeholder="Min. 8 characters"
+                placeholder="Min 8 chars, uppercase, number & special"
                 className="auth-input"
               />
             </div>
