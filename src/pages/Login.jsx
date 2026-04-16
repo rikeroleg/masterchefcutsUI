@@ -50,7 +50,11 @@ export default function Login() {
     setFieldErrors(null)
     if (!termsAccepted) { setError('You must accept the Terms & Conditions to create an account.'); return }
     if (signup.password !== signup.confirm) { setError('Passwords do not match.'); return }
-    if (signup.password.length < 6) { setError('Password must be at least 6 characters.'); return }
+    const pwdPattern = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$/
+    if (!pwdPattern.test(signup.password)) {
+      setError('Password must be at least 8 characters and contain at least one uppercase letter, one number, and one special character.')
+      return
+    }
     setLoad(true)
     const refCode = localStorage.getItem('mcc_ref')
     const res = await register({
@@ -264,7 +268,8 @@ export default function Login() {
               <div className="login-field">
                 <label>Password *</label>
                 <input name="password" type="password" value={signup.password} onChange={fieldSignup}
-                  placeholder="Min 6 characters" required />
+                  placeholder="Min 8 chars" required />
+                <span className="login-hint">Min 8 characters with uppercase, number &amp; special character</span>
               </div>
               <div className="login-field">
                 <label>Confirm password *</label>
