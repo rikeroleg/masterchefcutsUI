@@ -209,6 +209,7 @@ export default function Cart() {
                   const cityState = [user?.city, user?.state].filter(Boolean).join(', ') || null
                   const zip = user?.zipCode || null
                   const parts = [street, cityState, zip].filter(Boolean)
+                  const addressComplete = user?.street?.trim() && user?.city?.trim() && user?.state?.trim()
                   return (
                     <div className="cart-delivery-address">
                       <div className="cart-delivery-label">
@@ -225,6 +226,12 @@ export default function Cart() {
                           <Link to="/profile" className="cart-delivery-edit">add one in your profile</Link>
                         </p>
                       )}
+                      {!addressComplete && parts.length > 0 && (
+                        <p className="cart-delivery-missing">
+                          Street, city, and state are required —{' '}
+                          <Link to="/profile" className="cart-delivery-edit">update your profile</Link>
+                        </p>
+                      )}
                     </div>
                   )
                 })()}
@@ -232,11 +239,13 @@ export default function Cart() {
                 <button 
                   className="cart-checkout-btn" 
                   onClick={() => { setCheckoutInProgress(true); setPaying(true) }}
-                  disabled={checkoutInProgress}
+                  disabled={checkoutInProgress || !(user?.street?.trim() && user?.city?.trim() && user?.state?.trim())}
                 >
                   {checkoutInProgress 
                     ? 'Opening checkout…'
-                    : `Place Order \u2014 $${selectedTotal.toLocaleString()}`}
+                    : !(user?.street?.trim() && user?.city?.trim() && user?.state?.trim())
+                      ? 'Add address to checkout'
+                      : `Place Order \u2014 $${selectedTotal.toLocaleString()}`}
                 </button>
               </>
             )}
