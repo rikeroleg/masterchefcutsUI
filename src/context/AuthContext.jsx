@@ -90,8 +90,13 @@ export function AuthProvider({ children }) {
       const data = await api.post('/api/auth/register', {
         firstName, lastName, email, password,
         role: role?.toUpperCase(),
-        shopName, street, apt, city, state, zipCode,
-        ...(referralCode ? { referralCode } : {}),
+        ...(shopName ? { shopName } : {}),
+        ...(street?.trim()  ? { street }  : {}),
+        ...(apt             ? { apt }     : {}),
+        ...(city?.trim()    ? { city }    : {}),
+        ...(state?.trim()   ? { state }   : {}),
+        ...(zipCode         ? { zipCode } : {}),
+        ...(referralCode    ? { referralCode } : {}),
       })
       if (!data.token) {
         return { verify: true }
