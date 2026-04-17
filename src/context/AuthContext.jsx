@@ -133,10 +133,10 @@ export function AuthProvider({ children }) {
         payload.lastName  = rest.join(' ')
       }
       if (fields.shopName !== undefined) payload.shopName = fields.shopName
-      if (fields.street   !== undefined) payload.street   = fields.street
+      if (fields.street   !== undefined && fields.street.trim())   payload.street   = fields.street
       if (fields.apt      !== undefined) payload.apt      = fields.apt
-      if (fields.city     !== undefined) payload.city     = fields.city
-      if (fields.state    !== undefined) payload.state    = fields.state
+      if (fields.city     !== undefined && fields.city.trim())     payload.city     = fields.city
+      if (fields.state    !== undefined && fields.state.trim())    payload.state    = fields.state
       if (fields.zipCode  !== undefined) payload.zipCode  = fields.zipCode
       if (fields.bio       !== undefined) payload.bio       = fields.bio
       if (fields.certifications !== undefined) payload.certifications = fields.certifications
