@@ -1,0 +1,155 @@
+/* contact.css — MasterChef Cuts Contact / Support */
+
+.contact-page {
+  pointer-events: auto;
+  color: #fff;
+  position: relative;
+  min-height: 100vh;
+}
+
+.contact-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.55) 65%, rgba(0,0,0,0.88) 100%),
+    url('/farmbkg.png') center center / cover no-repeat;
+  filter: blur(8px);
+  transform: scale(1.05);
+}
+
+.contact-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 100px 24px 80px;
+}
+
+.contact-hero {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.contact-hero-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #fff;
+  margin: 16px 0 12px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 4px 20px rgba(0,0,0,0.85);
+}
+
+.contact-hero-sub {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.7);
+}
+
+/* ── Card ── */
+.contact-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  padding: 36px;
+  backdrop-filter: blur(12px);
+}
+
+/* ── Form ── */
+.contact-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.contact-field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.75);
+}
+
+.contact-input,
+.contact-select,
+.contact-textarea {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 10px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 12px 14px;
+  transition: border-color 0.15s;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.contact-input::placeholder,
+.contact-textarea::placeholder { color: rgba(255,255,255,0.35); }
+.contact-input:focus,
+.contact-select:focus,
+.contact-textarea:focus { border-color: rgba(231,76,60,0.7); }
+
+.contact-select option { background: #1a1a1a; color: #fff; }
+
+.contact-textarea { resize: vertical; min-height: 120px; }
+
+.contact-submit {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: inherit;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-top: 8px;
+  box-shadow: 0 4px 20px rgba(231,76,60,0.35);
+  transition: filter 0.15s, transform 0.12s;
+}
+
+.contact-submit:hover:not(:disabled) { filter: brightness(1.12); transform: translateY(-2px); }
+.contact-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.contact-success {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.contact-success-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.contact-success h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+
+.contact-success p {
+  color: rgba(255,255,255,0.65);
+  margin: 0 0 24px;
+}
+
+.contact-error {
+  color: #e74c3c;
+  font-size: 0.875rem;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: rgba(231,76,60,0.12);
+  border-radius: 8px;
+  border: 1px solid rgba(231,76,60,0.25);
+}
+
+.contact-back-link {
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  font-size: 0.9rem;
+  display: inline-block;
+  margin-top: 20px;
+  transition: color 0.15s;
+}
+
+.contact-back-link:hover { color: rgba(255,255,255,0.85); }

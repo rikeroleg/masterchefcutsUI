@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /profile
+Disallow: /messages
+Disallow: /cart
+Disallow: /order/*
+Disallow: /verify-email
+Disallow: /reset-password
+Disallow: /forgot-password
+
+Sitemap: https://masterchefcuts.com/sitemap.xml

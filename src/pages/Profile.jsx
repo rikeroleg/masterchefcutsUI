@@ -243,6 +243,8 @@ export default function Profile() {
   const [pwLoading, setPwLoading]       = useState(false)
   const [notifPref, setNotifPref]       = useState(user?.notificationPreference || 'ALL')
   const [notifPrefLoading, setNotifPrefLoading] = useState(false)
+  const [emailPref, setEmailPref]       = useState(user?.emailPreference || 'ALL')
+  const [emailPrefLoading, setEmailPrefLoading] = useState(false)
   const [licenseUploading, setLicenseUploading] = useState(false)
 
   useEffect(() => { document.title = 'Profile — MasterChef Cuts' }, [])
@@ -478,6 +480,19 @@ export default function Profile() {
       toast.error(err.message || 'Failed to update preference.')
     } finally {
       setNotifPrefLoading(false)
+    }
+  }
+
+  async function handleEmailPrefChange(pref) {
+    setEmailPrefLoading(true)
+    try {
+      await api.patch('/api/participants/me/email-preference', { emailPreference: pref })
+      setEmailPref(pref)
+      toast.success('Email preference saved.')
+    } catch (err) {
+      toast.error(err.message || 'Failed to update email preference.')
+    } finally {
+      setEmailPrefLoading(false)
     }
   }
 
@@ -1360,7 +1375,7 @@ export default function Profile() {
             <h2 className="profile-section-title">🔔 Notification Preferences</h2>
           </div>
           <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem', marginBottom: '12px' }}>
-            Choose which notifications you receive.
+            Choose which in-app notifications you receive.
           </p>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             {['ALL', 'IMPORTANT_ONLY'].map(opt => (
@@ -1377,6 +1392,26 @@ export default function Profile() {
           </div>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.78rem', marginTop: '8px' }}>
             Important: pool full, processing set, order complete.
+          </p>
+
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem', marginTop: '20px', marginBottom: '10px' }}>
+            Email notification preference:
+          </p>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            {[['ALL', '📧 All emails'], ['IMPORTANT', '⭐ Orders only'], ['NONE', '🔕 No emails']].map(([val, label]) => (
+              <button
+                key={val}
+                disabled={emailPrefLoading}
+                className={`profile-date-btn${emailPref === val ? ' profile-date-btn--active' : ''}`}
+                style={emailPref === val ? { background: '#f5c97a', color: '#1a0a00', fontWeight: 700, border: 'none' } : {}}
+                onClick={() => emailPref !== val && handleEmailPrefChange(val)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.78rem', marginTop: '8px' }}>
+            ‘Orders only’ = claim accepted, order ready, dispute updates. ‘No emails’ = in-app only.
           </p>
         </div>
 
