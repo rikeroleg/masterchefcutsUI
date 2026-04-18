@@ -39,7 +39,7 @@ jobs:
         id: build-image
         env:
           IMAGE_TAG: ${{ github.sha }}
-          VITE_API_URL: https://masterchefcuts-eqilqj43qa-uc.a.run.app
+          VITE_API_URL: ""
           VITE_STRIPE_PUBLIC_KEY: ${{ secrets.VITE_STRIPE_PUBLIC_KEY }}
         run: |
           IMAGE_URI="${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${ARTIFACT_REGISTRY_REPO}/masterchefcuts-ui:${IMAGE_TAG}"
