@@ -26,6 +26,7 @@ import PrivacyPage from "./pages/Privacy";
 import OrderReceiptPage from "./pages/OrderReceipt";
 import MessagesPage from "./pages/Messages";
 import ReferralPage from "./pages/Referral"
+import VerifyEmailPage from "./pages/VerifyEmail"
 import ErrorBoundary from "./Components/ErrorBoundary";
 import Footer from "./Components/Footer";
 import NotificationBell from "./Components/NotificationBell";
@@ -262,6 +263,7 @@ function App() {
             <Route path="/order/:id" element={<OrderReceiptPage />} />
             <Route path="/messages" element={<ErrorBoundary><MessagesPage /></ErrorBoundary>} />
             <Route path="/refer" element={<ReferralPage />} />
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
