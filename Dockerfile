@@ -23,9 +23,13 @@ FROM nginx:alpine AS final
 # Remove default nginx config
 RUN rm /etc/nginx/conf.d/default.conf
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# nginx:alpine's entrypoint automatically runs envsubst on *.conf.template files
+# in /etc/nginx/templates/ and writes results to /etc/nginx/conf.d/.
+# ${RENDERTRON_URL} is substituted at container startup from the env var.
+# Default keeps nginx healthy even before the rendertron service is deployed.
+ENV RENDERTRON_URL=http://localhost:19999
+
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
