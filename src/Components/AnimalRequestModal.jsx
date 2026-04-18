@@ -40,17 +40,26 @@ const PRIMAL_CUTS = {
   ],
 }
 
-export default function AnimalRequestModal({ onClose, initialAnimal, initialCuts }) {
+export default function AnimalRequestModal({ onClose, initialAnimal, initialCuts, existingRequest, onSaved }) {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const isEdit = !!existingRequest
 
-  const [step, setStep] = useState(1) // 1 = animal/cuts, 2 = details
-  const [animalType, setAnimalType] = useState(initialAnimal || 'beef')
+  const [step, setStep] = useState(1)
+  const [animalType, setAnimalType] = useState(
+    existingRequest ? existingRequest.animalType.toLowerCase() : (initialAnimal || 'beef')
+  )
   const [selectedCuts, setSelectedCuts] = useState(() => {
+    if (existingRequest && existingRequest.cutLabels?.length > 0)
+      return Object.fromEntries(existingRequest.cutLabels.map(c => [c, true]))
     if (!initialCuts || initialCuts.length === 0) return {}
     return Object.fromEntries(initialCuts.map(c => [c, true]))
   })
-  const [form, setForm] = useState({ breed: '', description: '', zipCode: user?.zipCode || '' })
+  const [form, setForm] = useState({
+    breed: existingRequest?.breed || '',
+    description: existingRequest?.description || '',
+    zipCode: existingRequest?.zipCode || user?.zipCode || '',
+  })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [done, setDone] = useState(false)
@@ -97,14 +106,21 @@ export default function AnimalRequestModal({ onClose, initialAnimal, initialCuts
     if (!form.zipCode.trim()) { setError('Please enter your ZIP code.'); return }
     setLoading(true)
     try {
-      await api.post('/api/animal-requests', {
+      const payload = {
         animalType: animalType.toUpperCase(),
         breed: form.breed.trim(),
         description: form.description.trim() || null,
         zipCode: form.zipCode.trim(),
         cutLabels: cuts,
-      })
-      setDone(true)
+      }
+      if (isEdit) {
+        const updated = await api.patch(`/api/animal-requests/${existingRequest.id}`, payload)
+        if (onSaved) onSaved(updated)
+        onClose()
+      } else {
+        await api.post('/api/animal-requests', payload)
+        setDone(true)
+      }
     } catch (err) {
       setError(err.message)
     } finally {
@@ -138,8 +154,8 @@ export default function AnimalRequestModal({ onClose, initialAnimal, initialCuts
         <button className="arm-close" onClick={onClose}>✕</button>
 
         <div className="arm-header">
-          <h2 className="arm-title">Request an Animal</h2>
-          <p className="arm-sub">Tell farmers what you need — they can fulfill your request directly.</p>
+          <h2 className="arm-title">{isEdit ? 'Edit Your Request' : 'Request an Animal'}</h2>
+          <p className="arm-sub">{isEdit ? 'Update your cuts or details. Only open requests can be edited.' : 'Tell farmers what you need — they can fulfill your request directly.'}</p>
         </div>
 
         <form className="arm-form" onSubmit={handleSubmit}>
@@ -221,7 +237,7 @@ export default function AnimalRequestModal({ onClose, initialAnimal, initialCuts
           <div className="arm-actions">
             <button type="button" className="arm-btn-secondary" onClick={onClose}>Cancel</button>
             <button type="submit" className="arm-btn-primary" disabled={loading}>
-              {loading ? 'Submitting…' : 'Submit Request →'}
+              {loading ? (isEdit ? 'Saving…' : 'Submitting…') : (isEdit ? 'Save Changes →' : 'Submit Request →')}
             </button>
           </div>
 
