@@ -1,4 +1,4 @@
-import { OrbitControls, Center, Bounds } from "@react-three/drei";
+import { OrbitControls, Center, Bounds, Environment } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, Routes, Route } from "react-router-dom";
@@ -73,8 +73,10 @@ function App() {
             style={{ width: '100%', height: '100%', background: 'transparent' }}
           >
             <ambientLight intensity={1.2} />
+            <directionalLight position={[8, 12, 6]} intensity={1.8} castShadow />
             <pointLight position={[10, 10, 10]} intensity={1.5} />
             <pointLight position={[-10, -10, -10]} intensity={0.5} />
+            <Environment preset="warehouse" />
             <Bounds fit clip observe margin={1.5}>
               <Center>
                 {activeAnimal === 'beef' && <Cow />}
