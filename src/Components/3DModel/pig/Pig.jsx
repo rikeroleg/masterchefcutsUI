@@ -200,7 +200,7 @@ export function Pig({ ...props }) {
 
   const mat = useMemo(() => {
     const m = (Object.values(materials)[0] ?? meshObj?.material)?.clone()
-    if (m) { m.metalness = 0; m.roughness = 0.65 }
+    if (m) { m.metalness = 0; m.roughness = 0.72; m.color.set('#e8b49a') }
     return m
   }, [materials, meshObj])
 

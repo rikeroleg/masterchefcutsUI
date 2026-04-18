@@ -191,7 +191,7 @@ export function Lamb({ ...props }) {
 
   const mat = useMemo(() => {
     const m = (Object.values(materials)[0] ?? meshObj?.material)?.clone()
-    if (m) { m.metalness = 0; m.roughness = 0.65 }
+    if (m) { m.metalness = 0; m.roughness = 0.75; m.color.set('#d4c9b0') }
     return m
   }, [materials, meshObj])
 

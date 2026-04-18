@@ -209,7 +209,7 @@ export function Cow({ ...props }) {
 
   const mat = useMemo(() => {
     const m = (Object.values(materials)[0] ?? meshObj?.material)?.clone()
-    if (m) { m.metalness = 0; m.roughness = 0.65 }
+    if (m) { m.metalness = 0; m.roughness = 0.72; m.color.set('#c8a882') }
     return m
   }, [materials, meshObj])
 
