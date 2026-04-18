@@ -72,10 +72,9 @@ function App() {
             gl={{ antialias: true, alpha: true }}
             style={{ width: '100%', height: '100%', background: 'transparent' }}
           >
-            <ambientLight intensity={1.8} />
-            <hemisphereLight skyColor="#fff8e7" groundColor="#7a4a00" intensity={1.2} />
-            <directionalLight position={[8, 12, 6]} intensity={2.0} castShadow />
-            <pointLight position={[-10, 5, -10]} intensity={0.8} />
+            <ambientLight intensity={1.2} />
+            <pointLight position={[10, 10, 10]} intensity={1.5} />
+            <pointLight position={[-10, -10, -10]} intensity={0.5} />
             <Bounds fit clip observe margin={1.5}>
               <Center>
                 {activeAnimal === 'beef' && <Cow />}
