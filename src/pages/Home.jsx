@@ -44,12 +44,14 @@ export default function Home() {
   const { user }                = useAuth()
   const [role, setRole]         = useState(null)
   const [listings, setListings] = useState([])
+  const [testimonials, setTestimonials] = useState([])
 
   useEffect(() => {
     const params = new URLSearchParams()
     if (user?.zipCode) params.set('zip', user.zipCode)
     const query = params.toString()
     api.get(`/api/listings${query ? `?${query}` : ''}`).then(setListings).catch(() => {})
+    api.get('/api/reviews/featured').then(setTestimonials).catch(() => {})
   }, [user?.zipCode])
 
   const activeListings  = listings.filter(l => l.status === 'ACTIVE' || l.status === 'FULLY_CLAIMED')
@@ -103,6 +105,32 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ════ TESTIMONIALS (only shown when backend returns data) ════ */}
+      {testimonials.length > 0 && (
+        <section className="hp-testimonials">
+          <div className="hp-section-inner">
+            <span className="about-eyebrow">What buyers say</span>
+            <h2 className="hp-h2">Real cuts. Real people.</h2>
+            <div className="hp-testimonials-grid">
+              {testimonials.slice(0, 4).map((r, i) => (
+                <div key={r.id ?? i} className="hp-testimonial-card">
+                  <div className="hp-testimonial-stars">
+                    {'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}
+                  </div>
+                  <p className="hp-testimonial-body">"{r.comment || r.body || ''}"</p>
+                  <div className="hp-testimonial-author">
+                    <span className="hp-testimonial-name">{r.reviewerName || r.buyerName || 'Anonymous'}</span>
+                    {r.animalType && (
+                      <span className="hp-testimonial-meta">{r.animalType} · {r.farmName || ''}</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ════ JOIN / ROLE ════ */}
       <section className="hp-join" id="hp-join">

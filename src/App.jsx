@@ -27,6 +27,8 @@ import OrderReceiptPage from "./pages/OrderReceipt";
 import MessagesPage from "./pages/Messages";
 import ReferralPage from "./pages/Referral"
 import VerifyEmailPage from "./pages/VerifyEmail"
+import FaqPage from "./pages/Faq"
+import ContactPage from "./pages/Contact"
 import ErrorBoundary from "./Components/ErrorBoundary";
 import Footer from "./Components/Footer";
 import NotificationBell from "./Components/NotificationBell";
@@ -133,6 +135,10 @@ function App() {
               <Link to="/about" className={`ui-nav-link${location.pathname === '/about' ? ' active' : ''}`}>
                 <Info size={18} />
                 <span>About</span>
+              </Link>
+              <Link to="/faq" className={`ui-nav-link${location.pathname === '/faq' ? ' active' : ''}`}>
+                <Info size={18} />
+                <span>FAQ</span>
               </Link>
               {user && <NotificationBell />}
               {user && (
@@ -264,6 +270,8 @@ function App() {
             <Route path="/messages" element={<ErrorBoundary><MessagesPage /></ErrorBoundary>} />
             <Route path="/refer" element={<ReferralPage />} />
             <Route path="/verify-email" element={<VerifyEmailPage />} />
+            <Route path="/faq" element={<FaqPage />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>

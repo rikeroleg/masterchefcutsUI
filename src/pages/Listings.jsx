@@ -254,6 +254,30 @@ export default function Listings() {
 
   useEffect(() => { document.title = 'Browse Listings — MasterChef Cuts' }, [])
 
+  // ItemList JSON-LD — updates whenever visible listings change
+  useEffect(() => {
+    if (!listings.length) return
+    const script = document.createElement('script')
+    script.type = 'application/ld+json'
+    script.id = 'ld-listings-itemlist'
+    script.text = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Farm-Fresh Meat Listings on MasterChef Cuts',
+      url: 'https://masterchefcuts.com/listings',
+      numberOfItems: listings.length,
+      itemListElement: listings.map((l, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `https://masterchefcuts.com/listings/${l.id}`,
+        name: `${l.breed || ''} ${l.animalType || ''} — ${l.farmerShopName || l.farmerName || ''}`.trim(),
+      })),
+    })
+    document.getElementById('ld-listings-itemlist')?.remove()
+    document.head.appendChild(script)
+    return () => script.remove()
+  }, [listings])
+
   // ── Data state ───────────────────────────────────────────────────────────
   const [listings,    setListings]    = useState([])
   const [loading,     setLoading]     = useState(true)
