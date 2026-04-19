@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { cartBridge } from '../context/CartContext'
 import { useFavorites } from '../utils/index'
+import { DEFAULT_OG_IMAGE, SITE_URL, useSEO } from '../utils/seo'
 
 const ListingsMap = lazy(() => import('../Components/ListingsMap'))
 
@@ -252,8 +253,6 @@ export default function Listings() {
   const debouncedBreed    = useDebounce(breedInput,    450)
   const debouncedQ        = useDebounce(searchQ,       450)
 
-  useEffect(() => { document.title = 'Browse Listings — MasterChef Cuts' }, [])
-
   // ── Data state ───────────────────────────────────────────────────────────
   const [listings,    setListings]    = useState([])
   const [loading,     setLoading]     = useState(true)
@@ -262,6 +261,34 @@ export default function Listings() {
   const [hasMore,     setHasMore]     = useState(true)
   const [moreFilters, setMoreFilters] = useState(false)
   const [viewMode, setViewMode] = useState('grid')
+
+  const listingsTitle = animal !== 'All' ? `${animal} Listings - MasterChef Cuts` : 'Browse Listings - MasterChef Cuts'
+  const listingsDescription = animal !== 'All'
+    ? `Browse ${animal.toLowerCase()} listings from local butchers and farmers near you.`
+    : 'Browse available beef, pork, and lamb listings from local butchers and farmers near you.'
+
+  useSEO({
+    title: listingsTitle,
+    description: listingsDescription,
+    image: DEFAULT_OG_IMAGE,
+    url: `/listings${searchParams.toString() ? `?${searchParams.toString()}` : ''}`,
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: listingsTitle,
+      url: `${SITE_URL}/listings${searchParams.toString() ? `?${searchParams.toString()}` : ''}`,
+      description: listingsDescription,
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: listings.slice(0, 10).map((listing, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          url: `${SITE_URL}/listings/${listing.id}`,
+          name: `${listing.breed} ${(ANIMAL_META[listing.animalType] || {}).label || listing.animalType}`,
+        })),
+      },
+    },
+  })
 
   // Track last-fetched server params to detect resets vs appends
   const lastServerParams = useRef({ animal, zip, maxPrice })

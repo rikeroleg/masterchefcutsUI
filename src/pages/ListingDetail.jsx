@@ -6,6 +6,7 @@ import { useToast } from '../context/ToastContext'
 import { cartBridge } from '../context/CartContext'
 import Spinner from '../Components/Spinner'
 import '../styles/listing-detail.css'
+import { DEFAULT_OG_IMAGE, SITE_URL, useSEO } from '../utils/seo'
 
 function ShareButton({ title }) {
   const { toast } = useToast()
@@ -80,14 +81,51 @@ export default function ListingDetail() {
   const [waitlistLoading,setWaitlistLoading] = useState(false)
   const [waitlistTotal,  setWaitlistTotal]  = useState(0)
 
-  useEffect(() => { document.title = 'Listing \u2014 MasterChef Cuts' }, [])
+  const listingMeta = listing ? (ANIMAL_META[listing.animalType] || { emoji: '🥩', label: listing.animalType }) : null
+  const availableCuts = listing ? listing.cuts.filter(c => !c.claimed).length : 0
+  const avgRatingValue = reviews.length > 0 ? reviews.reduce((a, r) => a + r.rating, 0) / reviews.length : null
+  const listingTitle = listingMeta && listing
+    ? `${listing.breed} ${listingMeta.label} - MasterChef Cuts`
+    : 'Listing - MasterChef Cuts'
+  const listingDescription = listing
+    ? (listing.description || `Claim ${listingMeta.label.toLowerCase()} cuts from ${listing.farmerShopName || listing.farmerName} in ZIP ${listing.zipCode}.`)
+    : 'View whole-animal listing details from local butchers on MasterChef Cuts.'
+  const listingImage = listing?.imageUrl || DEFAULT_OG_IMAGE
 
-  useEffect(() => {
-    if (listing) {
-      const animalLabel = ANIMAL_META[listing.animalType]?.label || ''
-      document.title = `${listing.breed} ${animalLabel} \u2014 MasterChef Cuts`
-    }
-  }, [listing])
+  useSEO({
+    title: listingTitle,
+    description: listingDescription,
+    image: listingImage,
+    url: listing ? `/listings/${listing.id}` : `/listings/${id}`,
+    type: listing ? 'product' : 'website',
+    schema: listing ? {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: `${listing.breed} ${listingMeta.label}`,
+      description: listingDescription,
+      image: [listingImage],
+      brand: {
+        '@type': 'Brand',
+        name: 'MasterChef Cuts',
+      },
+      seller: {
+        '@type': 'Organization',
+        name: listing.farmerShopName || listing.farmerName || 'MasterChef Cuts Seller',
+      },
+      offers: {
+        '@type': 'Offer',
+        priceCurrency: 'USD',
+        price: Number(listing.pricePerLb).toFixed(2),
+        availability: availableCuts > 0 ? 'https://schema.org/InStock' : 'https://schema.org/SoldOut',
+        url: `${SITE_URL}/listings/${listing.id}`,
+      },
+      aggregateRating: avgRatingValue !== null ? {
+        '@type': 'AggregateRating',
+        ratingValue: avgRatingValue.toFixed(1),
+        reviewCount: reviews.length,
+      } : undefined,
+    } : undefined,
+  })
 
   useEffect(() => {
     Promise.all([

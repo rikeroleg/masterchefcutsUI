@@ -1,8 +1,20 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import '../styles/auth.css'
+import { DEFAULT_OG_IMAGE, SITE_URL, useSEO } from '../utils/seo'
 
 export default function Privacy() {
-  useEffect(() => { document.title = 'Privacy Policy — MasterChef Cuts' }, [])
+  useSEO({
+    title: 'Privacy Policy - MasterChef Cuts',
+    description: 'Read how MasterChef Cuts collects, uses, and protects your account, payment, and marketplace data.',
+    image: DEFAULT_OG_IMAGE,
+    url: '/privacy',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: 'Privacy Policy',
+      url: `${SITE_URL}/privacy`,
+    },
+  })
 
   return (
     <div className="auth-page" style={{ alignItems: 'flex-start', padding: '48px 24px' }}>
