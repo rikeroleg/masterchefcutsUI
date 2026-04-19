@@ -192,6 +192,7 @@ function App() {
         <div style={{ flex: 1, position: 'relative', pointerEvents: isShop ? 'none' : 'auto' }}>
           <Routes>
             <Route path="/shop" element={
+              <ErrorBoundary>
               <div style={{ position: 'relative', height: 'calc(100vh - 72px)', pointerEvents: 'none' }}>
                 {/* Animal Switcher */}
                 <div className="animal-switcher" style={{ pointerEvents: 'auto' }}>
@@ -250,9 +251,9 @@ function App() {
                   <span>Drag to rotate &nbsp;·&nbsp; Scroll to zoom</span>
                 </div>
               </div>
+              </ErrorBoundary>
             } />
-            <Route path="/cart" element={<ErrorBoundary><CartPage /></ErrorBoundary>} />
-            <Route path="/listings" element={<ListingsPage />} />
+            <Route path="/listings" element={<ErrorBoundary><ListingsPage /></ErrorBoundary>} />
             <Route path="/listings/:id" element={<ErrorBoundary><ListingDetailPage /></ErrorBoundary>} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/profile" element={<ProfilePage />} />
