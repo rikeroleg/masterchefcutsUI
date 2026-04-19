@@ -207,11 +207,7 @@ export function Cow({ ...props }) {
     return found
   }, [scene])
 
-  const mat = useMemo(() => {
-    const m = (Object.values(materials)[0] ?? meshObj?.material)?.clone()
-    if (m) { m.metalness = 0; m.roughness = 0.65 }
-    return m
-  }, [materials, meshObj])
+  const mat = Object.values(materials)[0] ?? meshObj?.material
 
   const handleClick = useCallback((event) => {
     event.stopPropagation()
