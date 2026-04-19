@@ -189,7 +189,11 @@ export function Lamb({ ...props }) {
     return found
   }, [scene])
 
-  const mat = Object.values(materials)[0] ?? meshObj?.material
+  const mat = useMemo(() => {
+    const m = (Object.values(materials)[0] ?? meshObj?.material)?.clone()
+    if (m) { m.metalness = 0; m.roughness = 0.65 }
+    return m
+  }, [materials, meshObj])
 
   const handleClick = useCallback((event) => {
     event.stopPropagation()
