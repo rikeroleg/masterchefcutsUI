@@ -189,7 +189,7 @@ function CutMarker({ position, color, cut, onClose }) {
 
 export function Pig({ ...props }) {
   const meshRef = useRef()
-  const { scene, materials } = useGLTF('https://storage.googleapis.com/masterchefcuts-static/3DPig.glb')
+  const { scene, materials } = useGLTF('/3DPig.glb')
   const [markers, setMarkers] = useState([])
 
   const meshObj = useMemo(() => {
@@ -249,7 +249,7 @@ export function Pig({ ...props }) {
   )
 }
 
-useGLTF.preload('https://storage.googleapis.com/masterchefcuts-static/3DPig.glb')
+useGLTF.preload('/3DPig.glb')
 
 
 
