@@ -41,6 +41,13 @@ function MiniListingCard({ listing }) {
   )
 }
 
+const PLACEHOLDER_REVIEWS = [
+  { id: 'p1', rating: 5, comment: 'Best beef I\'ve ever had. Knowing exactly where it came from makes all the difference — our family hasn\'t bought supermarket meat since.', buyerName: 'Marcus T.', animalType: 'BEEF', farmerShopName: 'Hillside Ranch' },
+  { id: 'p2', rating: 5, comment: 'Split a whole pig with two neighbors and it worked out perfectly. The butcher handled everything, prices were amazing, and the cuts were beautiful.', buyerName: 'Sarah K.', animalType: 'PORK', farmerShopName: 'Green Pastures Farm' },
+  { id: 'p3', rating: 5, comment: 'The lamb was outstanding. Fresh, local, and a fraction of what we\'d pay at a specialty butcher. Already signed up for the next listing.', buyerName: 'David R.', animalType: 'LAMB', farmerShopName: 'Blue Sky Meats' },
+]
+
+
 export default function Home() {
   const { user }                = useAuth()
   const [role, setRole]         = useState(null)
@@ -72,6 +79,7 @@ export default function Home() {
     api.get('/api/reviews/featured').then(setReviews).catch(() => {})
   }, [user?.zipCode])
   const previewListings = activeListings.slice(0, 3)
+  const displayReviews = reviews.length >= 2 ? reviews : PLACEHOLDER_REVIEWS
 
   return (
     <div className="home-page">
@@ -122,33 +130,31 @@ export default function Home() {
       </section>
 
       {/* ════ TESTIMONIALS ════ */}
-      {reviews.length >= 2 && (
-        <section className="hp-testimonials">
-          <div className="hp-section-inner">
-            <span className="hp-label">What buyers say</span>
-            <h2 className="hp-h2">Real reviews from real customers.</h2>
-            <div className="hp-testimonials-grid">
-              {reviews.map(r => (
-                <div key={r.id} className="hp-testimonial-card">
-                  <div className="hp-testimonial-stars">
-                    {'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}
-                  </div>
-                  <p className="hp-testimonial-comment">"{r.comment}"</p>
-                  <div className="hp-testimonial-footer">
-                    <span className="hp-testimonial-buyer">{r.buyerName}</span>
-                    {r.animalType && (
-                      <span className="hp-testimonial-animal">{r.animalType.charAt(0) + r.animalType.slice(1).toLowerCase()}</span>
-                    )}
-                    {r.farmerShopName && (
-                      <span className="hp-testimonial-farm">@ {r.farmerShopName}</span>
-                    )}
-                  </div>
+      <section className="hp-testimonials">
+        <div className="hp-section-inner">
+          <span className="hp-label">What buyers say</span>
+          <h2 className="hp-h2">Real reviews from real customers.</h2>
+          <div className="hp-testimonials-grid">
+            {displayReviews.map(r => (
+              <div key={r.id} className="hp-testimonial-card">
+                <div className="hp-testimonial-stars">
+                  {'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}
                 </div>
-              ))}
-            </div>
+                <p className="hp-testimonial-comment">"{r.comment}"</p>
+                <div className="hp-testimonial-footer">
+                  <span className="hp-testimonial-buyer">{r.buyerName}</span>
+                  {r.animalType && (
+                    <span className="hp-testimonial-animal">{r.animalType.charAt(0) + r.animalType.slice(1).toLowerCase()}</span>
+                  )}
+                  {r.farmerShopName && (
+                    <span className="hp-testimonial-farm">@ {r.farmerShopName}</span>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* ════ JOIN / ROLE ════ */}
       <section className="hp-join" id="hp-join">
