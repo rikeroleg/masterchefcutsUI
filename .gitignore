@@ -44,3 +44,6 @@ pics/
 # Root-level scratch/stale files (real app lives under src/)
 /App.jsx
 /App1.jsx
+
+# Local tooling
+rendertron/

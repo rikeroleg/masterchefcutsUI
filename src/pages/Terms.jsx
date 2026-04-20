@@ -1,8 +1,20 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import '../styles/auth.css'
+import { DEFAULT_OG_IMAGE, SITE_URL, useSEO } from '../utils/seo'
 
 export default function Terms() {
-  useEffect(() => { document.title = 'Terms of Service — MasterChef Cuts' }, [])
+  useSEO({
+    title: 'Terms of Service - MasterChef Cuts',
+    description: 'Read the MasterChef Cuts terms governing marketplace listings, claims, payments, and account use.',
+    image: DEFAULT_OG_IMAGE,
+    url: '/terms',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: 'Terms of Service',
+      url: `${SITE_URL}/terms`,
+    },
+  })
 
   return (
     <div className="auth-page" style={{ alignItems: 'flex-start', padding: '48px 24px' }}>

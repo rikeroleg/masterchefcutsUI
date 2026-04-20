@@ -1,0 +1,310 @@
+/* contact.css — MasterChef Cuts Contact / Support Page */
+
+/* -- Page shell (matches about.css background) -- */
+.contact-page {
+  pointer-events: auto;
+  color: #fff;
+  position: relative;
+  min-height: 100vh;
+}
+
+.contact-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.55) 65%, rgba(0,0,0,0.88) 100%),
+    url('/farmbkg.png') center center / cover no-repeat;
+  filter: blur(8px);
+  transform: scale(1.05);
+}
+
+/* -- Hero -- */
+.contact-hero {
+  padding: 120px 24px 60px;
+  text-align: center;
+}
+
+.contact-hero-eyebrow {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #e74c3c;
+  margin-bottom: 18px;
+  padding: 5px 14px;
+  border: 1px solid rgba(231,76,60,0.35);
+  border-radius: 50px;
+  background: rgba(231,76,60,0.08);
+}
+
+.contact-hero-title {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  margin: 0 0 16px;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 4px 20px rgba(0,0,0,0.85);
+}
+
+.contact-hero-sub {
+  font-size: 1.08rem;
+  color: rgba(255,255,255,0.88);
+  margin: 0 auto;
+  max-width: 540px;
+  line-height: 1.6;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+}
+
+/* -- Form section -- */
+.contact-form-section {
+  padding: 0 24px 80px;
+  display: flex;
+  justify-content: center;
+}
+
+.contact-form-wrap {
+  width: 100%;
+  max-width: 600px;
+  background:
+    linear-gradient(168deg, #9a5c1a 0%, #c07828 12%, #d4922e 25%, #e6aa3a 40%, #f0ba42 50%, #e4a833 60%, #cc8828 74%, #b06a1e 88%, #8a4a12 100%);
+  border: 2px solid #3a1f07;
+  border-radius: 22px;
+  padding: 40px 36px;
+  color: #1e0800;
+  position: relative;
+  overflow: hidden;
+  filter: drop-shadow(3px 6px 0px rgba(35,12,0,0.85));
+}
+
+/* Wood grain texture overlay */
+.contact-form-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.58' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.32 0 0 0 0 0.05 0 0 5 0 -2'/></filter><rect width='600' height='400' filter='url(%23w)'/></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.contact-form-wrap > * { position: relative; z-index: 1; }
+
+.contact-form-title {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #1e0800;
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+}
+
+.contact-form-subtitle {
+  font-size: 0.88rem;
+  color: rgba(20, 6, 0, 0.6);
+  margin: 0 0 28px;
+}
+
+/* -- Form -- */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contact-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.contact-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.contact-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(20, 6, 0, 0.72);
+}
+
+.contact-input,
+.contact-textarea {
+  background: rgba(0,0,0,0.14);
+  border: 1.5px solid rgba(0,0,0,0.28);
+  border-radius: 10px;
+  padding: 11px 14px;
+  color: #1e0800;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.contact-input:focus,
+.contact-textarea:focus {
+  border-color: rgba(120,40,0,0.7);
+}
+
+.contact-input::placeholder,
+.contact-textarea::placeholder {
+  color: rgba(20, 6, 0, 0.35);
+}
+
+.contact-textarea {
+  resize: vertical;
+  min-height: 140px;
+  line-height: 1.55;
+}
+
+/* -- Submit button -- */
+.contact-submit {
+  padding: 13px;
+  border-radius: 12px;
+  border: 1px solid #4a0e00;
+  background: linear-gradient(170deg, #8b1a00 0%, #a82800 50%, #781500 100%);
+  color: #fde8c0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.12s;
+  margin-top: 4px;
+}
+
+.contact-submit:hover:not(:disabled) {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+.contact-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* -- Success state -- */
+.contact-success {
+  text-align: center;
+  padding: 20px 0 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.contact-success-icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.contact-success-title {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: #1e0800;
+  margin: 0;
+}
+
+.contact-success-body {
+  font-size: 0.9rem;
+  color: rgba(20, 6, 0, 0.65);
+  margin: 0;
+  max-width: 380px;
+  line-height: 1.55;
+}
+
+.contact-success-back {
+  margin-top: 8px;
+  display: inline-block;
+  padding: 10px 24px;
+  background: rgba(0,0,0,0.12);
+  border: 1.5px solid rgba(0,0,0,0.22);
+  border-radius: 50px;
+  color: #1e0800;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.contact-success-back:hover {
+  background: rgba(0,0,0,0.2);
+}
+
+/* -- Error banner -- */
+.contact-error {
+  background: rgba(180, 30, 0, 0.15);
+  border: 1.5px solid rgba(180, 30, 0, 0.4);
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 0.87rem;
+  color: #6a0800;
+  font-weight: 600;
+}
+
+/* -- Info cards below form -- */
+.contact-info-section {
+  padding: 0 24px 80px;
+  display: flex;
+  justify-content: center;
+}
+
+.contact-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.contact-info-card {
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 22px 20px;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+.contact-info-icon {
+  font-size: 1.6rem;
+  margin-bottom: 10px;
+}
+
+.contact-info-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 6px;
+}
+
+.contact-info-value {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+}
+
+/* -- Responsive -- */
+@media (max-width: 560px) {
+  .contact-form-wrap {
+    padding: 28px 20px;
+  }
+
+  .contact-row {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-info-grid {
+    grid-template-columns: 1fr;
+  }
+}

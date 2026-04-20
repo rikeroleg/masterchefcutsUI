@@ -180,7 +180,7 @@ function CutMarker({ position, color, cut, onClose }) {
 
 export function Lamb({ ...props }) {
   const meshRef = useRef()
-  const { scene, materials } = useGLTF('https://storage.googleapis.com/masterchefcuts-static/3DLamb.glb')
+  const { scene, materials } = useGLTF('/3DLamb.glb')
   const [markers, setMarkers] = useState([])
 
   const meshObj = useMemo(() => {
@@ -239,4 +239,4 @@ export function Lamb({ ...props }) {
   )
 }
 
-useGLTF.preload('https://storage.googleapis.com/masterchefcuts-static/3DLamb.glb')
+useGLTF.preload('/3DLamb.glb')

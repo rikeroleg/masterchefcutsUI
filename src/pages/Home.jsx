@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
+import { DEFAULT_OG_IMAGE, SITE_URL, useSEO } from '../utils/seo'
 
 const ANIMAL_META = {
   BEEF: { emoji: '🐄', label: 'Beef' },
@@ -44,6 +45,23 @@ export default function Home() {
   const { user }                = useAuth()
   const [role, setRole]         = useState(null)
   const [listings, setListings] = useState([])
+  const activeListings  = listings.filter(l => l.status === 'ACTIVE' || l.status === 'FULLY_CLAIMED')
+  const availableCuts   = listings.reduce((a, l) => a + (l.totalCuts - l.claimedCuts), 0)
+
+  useSEO({
+    title: 'MasterChef Cuts - Farm-Fresh Meat Marketplace',
+    description: 'Browse whole-animal listings from local butchers and pool with neighbors to claim premium cuts.',
+    image: DEFAULT_OG_IMAGE,
+    url: '/',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'MasterChef Cuts',
+      url: SITE_URL,
+      logo: DEFAULT_OG_IMAGE,
+      description: 'A marketplace connecting local farmers and butchers with buyers who want to split whole animals.',
+    },
+  })
 
   useEffect(() => {
     const params = new URLSearchParams()
@@ -51,9 +69,6 @@ export default function Home() {
     const query = params.toString()
     api.get(`/api/listings${query ? `?${query}` : ''}`).then(setListings).catch(() => {})
   }, [user?.zipCode])
-
-  const activeListings  = listings.filter(l => l.status === 'ACTIVE' || l.status === 'FULLY_CLAIMED')
-  const availableCuts   = listings.reduce((a, l) => a + (l.totalCuts - l.claimedCuts), 0)
   const previewListings = activeListings.slice(0, 3)
 
   return (

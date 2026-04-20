@@ -27,6 +27,8 @@ import OrderReceiptPage from "./pages/OrderReceipt";
 import MessagesPage from "./pages/Messages";
 import ReferralPage from "./pages/Referral"
 import VerifyEmailPage from "./pages/VerifyEmail"
+import ContactPage from "./pages/Contact"
+import FAQPage from "./pages/FAQ"
 import ErrorBoundary from "./Components/ErrorBoundary";
 import Footer from "./Components/Footer";
 import NotificationBell from "./Components/NotificationBell";
@@ -264,6 +266,8 @@ function App() {
             <Route path="/messages" element={<ErrorBoundary><MessagesPage /></ErrorBoundary>} />
             <Route path="/refer" element={<ReferralPage />} />
             <Route path="/verify-email" element={<VerifyEmailPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/faq" element={<FAQPage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
