@@ -35,13 +35,32 @@ export default function Admin() {
   const [reviewsHasMore,  setReviewsHasMore]  = useState(false)
   const [togglingReviewId, setTogglingReviewId] = useState(null)
   const [deletingReviewId, setDeletingReviewId] = useState(null)
+  const [adminSettings,   setAdminSettings]   = useState(null)
+  const [togglingSettings, setTogglingSettings] = useState(false)
 
   useEffect(() => {
     if (!user || user.role !== 'admin') { navigate('/'); return }
     loadStats()
     loadUsers()
     loadListings()
+    loadAdminSettings()
   }, [user])
+
+  async function loadAdminSettings() {
+    try {
+      const data = await api.get('/api/admin/settings')
+      setAdminSettings(data)
+    } catch { /* silent */ }
+  }
+
+  async function toggleOrderNotifications() {
+    setTogglingSettings(true)
+    try {
+      const data = await api.post('/api/admin/settings/order-notifications/toggle')
+      setAdminSettings(data)
+    } catch (err) { setError(err.message || 'Failed to update setting') }
+    setTogglingSettings(false)
+  }
 
   async function loadComments(pg = 0) {
     try {
@@ -241,6 +260,7 @@ export default function Admin() {
 
         {/* ── Stats ── */}
         {tab === 'stats' && stats && (
+          <>
           <div className="admin-stats-grid">
             <div className="admin-stat-card">
               <strong>{stats.totalUsers}</strong><span>Total users</span>
@@ -255,6 +275,40 @@ export default function Admin() {
               <strong>{stats.pendingFarmers}</strong><span>Pending farmers</span>
             </div>
           </div>
+
+          {/* ── Admin Settings ── */}
+          {adminSettings !== null && (
+            <div className="admin-table-wrap" style={{ marginTop: '24px' }}>
+              <p className="admin-section-label">⚙️ Notification Settings</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', background: 'rgba(0,0,0,0.12)', border: '1px solid rgba(0,0,0,0.2)', borderRadius: '10px' }}>
+                <span style={{ flex: 1, fontSize: '0.88rem', color: 'rgba(20,6,0,0.75)' }}>
+                  <strong>Admin order notifications</strong>
+                  <span style={{ display: 'block', fontSize: '0.78rem', marginTop: '2px', color: 'rgba(20,6,0,0.5)' }}>
+                    Receive an in-app notification when a new order is paid.
+                  </span>
+                </span>
+                <button
+                  onClick={toggleOrderNotifications}
+                  disabled={togglingSettings}
+                  style={{
+                    padding: '7px 18px',
+                    borderRadius: '20px',
+                    border: 'none',
+                    cursor: togglingSettings ? 'not-allowed' : 'pointer',
+                    fontWeight: 700,
+                    fontSize: '0.82rem',
+                    background: adminSettings.adminOrderNotificationsEnabled ? '#27ae60' : 'rgba(0,0,0,0.25)',
+                    color: '#fff',
+                    opacity: togglingSettings ? 0.6 : 1,
+                    transition: 'background 0.2s',
+                  }}
+                >
+                  {adminSettings.adminOrderNotificationsEnabled ? '✓ On' : '✕ Off'}
+                </button>
+              </div>
+            </div>
+          )}
+          </>
         )}
 
         {/* ── Users ── */}
