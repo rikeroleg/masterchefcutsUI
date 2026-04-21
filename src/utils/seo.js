@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 
 export const SITE_URL = 'https://masterchefcuts.com'
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/farm.png`
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.jpg`
 export const DEFAULT_TITLE = 'MasterChef Cuts - Farm-Fresh Meat Marketplace'
 export const DEFAULT_DESCRIPTION = 'Claim primal cuts from whole animals raised by local farmers near you.'
 
