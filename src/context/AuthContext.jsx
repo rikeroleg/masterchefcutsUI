@@ -105,6 +105,12 @@ export function AuthProvider({ children }) {
       setUser(mapUser(data))
       return { ok: true }
     } catch (err) {
+      // Duplicate registration of an unverified email: backend resent the
+      // verification link and returned 409 EMAIL_NOT_VERIFIED. Show the same
+      // "Check your email" screen the user would see after a fresh signup.
+      if (err.message === 'EMAIL_NOT_VERIFIED') {
+        return { verify: true }
+      }
       return { error: err.message, fields: err.fields || null }
     }
   }
