@@ -41,6 +41,12 @@ jobs:
             exit 1
           fi
 
+      - name: Verify bucket access
+        env:
+          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
+        run: |
+          gcloud storage buckets describe "gs://${GCS_BUCKET}" > /dev/null
+
       - name: Upload 3D models to GCS
         env:
           GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
