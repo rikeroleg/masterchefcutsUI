@@ -130,7 +130,11 @@ export function AuthProvider({ children }) {
       return { error: msg }
     }
   }
+
+  function logout() {
     setUser(null)
+    localStorage.removeItem('mc_token')
+    localStorage.removeItem('mc_user')
     localStorage.removeItem('mc_cart')
     cartClearBridge.clearCart()
     clearSessionMsg()
