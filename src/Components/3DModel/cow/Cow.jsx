@@ -198,7 +198,8 @@ function CutMarker({ position, color, cut, onClose }) {
 
 export function Cow({ ...props }) {
   const meshRef = useRef()
-  const { scene, materials } = useGLTF('/3DCow.glb')
+  const GLB_URL = import.meta.env.VITE_GLB_BASE_URL ? `${import.meta.env.VITE_GLB_BASE_URL}/3DCow.glb` : '/3DCow.glb'
+  const { scene, materials } = useGLTF(GLB_URL)
   const [markers, setMarkers] = useState([])
 
   const meshObj = useMemo(() => {
@@ -263,6 +264,6 @@ export function Cow({ ...props }) {
   )
 }
 
-useGLTF.preload('/3DCow.glb')
+useGLTF.preload(import.meta.env.VITE_GLB_BASE_URL ? `${import.meta.env.VITE_GLB_BASE_URL}/3DCow.glb` : '/3DCow.glb')
 
 

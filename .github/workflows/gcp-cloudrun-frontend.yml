@@ -32,6 +32,21 @@ jobs:
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@v2
 
+      - name: Validate GCS_BUCKET secret
+        env:
+          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
+        run: |
+          if [ -z "$GCS_BUCKET" ]; then
+            echo "::error::GCS_BUCKET secret is not set. 3D models cannot be uploaded to GCS and will be served from Cloud Run, which has a 32 MiB response limit — causing 500 errors for 3DCow.glb and 3DLamb.glb."
+            exit 1
+          fi
+
+      - name: Upload 3D models to GCS
+        env:
+          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
+        run: |
+          gcloud storage cp public/*.glb gs://$GCS_BUCKET/
+
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker "${{ env.GCP_REGION }}-docker.pkg.dev" --quiet
 
@@ -42,12 +57,14 @@ jobs:
           VITE_API_URL: ""
           VITE_STRIPE_PUBLIC_KEY: ${{ secrets.VITE_STRIPE_PUBLIC_KEY }}
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
         run: |
           IMAGE_URI="${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${ARTIFACT_REGISTRY_REPO}/masterchefcuts-ui:${IMAGE_TAG}"
           docker build \
             --build-arg VITE_API_URL="${VITE_API_URL}" \
             --build-arg VITE_STRIPE_PUBLIC_KEY="${VITE_STRIPE_PUBLIC_KEY}" \
             --build-arg VITE_SENTRY_DSN="${VITE_SENTRY_DSN}" \
+            --build-arg VITE_GLB_BASE_URL="https://storage.googleapis.com/${GCS_BUCKET}" \
             -t "${IMAGE_URI}" .
           docker push "${IMAGE_URI}"
           echo "image=${IMAGE_URI}" >> "$GITHUB_OUTPUT"

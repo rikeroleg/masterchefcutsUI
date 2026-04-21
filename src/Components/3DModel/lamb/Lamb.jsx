@@ -180,7 +180,8 @@ function CutMarker({ position, color, cut, onClose }) {
 
 export function Lamb({ ...props }) {
   const meshRef = useRef()
-  const { scene, materials } = useGLTF('/3DLamb.glb')
+  const GLB_URL = import.meta.env.VITE_GLB_BASE_URL ? `${import.meta.env.VITE_GLB_BASE_URL}/3DLamb.glb` : '/3DLamb.glb'
+  const { scene, materials } = useGLTF(GLB_URL)
   const [markers, setMarkers] = useState([])
 
   const meshObj = useMemo(() => {
@@ -239,4 +240,4 @@ export function Lamb({ ...props }) {
   )
 }
 
-useGLTF.preload('/3DLamb.glb')
+useGLTF.preload(import.meta.env.VITE_GLB_BASE_URL ? `${import.meta.env.VITE_GLB_BASE_URL}/3DLamb.glb` : '/3DLamb.glb')
