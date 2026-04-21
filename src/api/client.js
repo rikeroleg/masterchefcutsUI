@@ -1,5 +1,15 @@
 const BASE_URL = import.meta.env.VITE_API_URL ?? ''
 
+// Fields that are implementation details and must never surface in the UI.
+// Acts as a safety net even if the backend accidentally re-adds them.
+const TECHNICAL_FIELDS = ['timestamp', 'status', 'path', 'trace']
+function sanitizeErrorBody(data) {
+  if (!data || typeof data !== 'object') return data
+  return Object.fromEntries(
+    Object.entries(data).filter(([k]) => !TECHNICAL_FIELDS.includes(k))
+  )
+}
+
 function getToken() {
   return localStorage.getItem('mc_token')
 }
@@ -45,9 +55,10 @@ async function request(method, path, body) {
   }
 
   if (!res.ok) {
-    const message = data?.error || data?.message || `Request failed (${res.status})`
+    const safe = sanitizeErrorBody(data)
+    const message = safe?.error || safe?.message || `Request failed (${res.status})`
     const err = new Error(message)
-    if (data?.fields && typeof data.fields === 'object') err.fields = data.fields
+    if (safe?.fields && typeof safe.fields === 'object') err.fields = safe.fields
     throw err
   }
 
@@ -68,7 +79,10 @@ export const api = {
       .then(async res => {
         const text = await res.text()
         const data = text ? JSON.parse(text) : null
-        if (!res.ok) throw new Error(data?.error || data?.message || `Upload failed (${res.status})`)
+        if (!res.ok) {
+          const safe = sanitizeErrorBody(data)
+          throw new Error(safe?.error || safe?.message || `Upload failed (${res.status})`)
+        }
         return data
       })
   },
