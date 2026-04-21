@@ -41,7 +41,7 @@ async function request(method, path, body) {
   }
 
   if (res.status === 403) {
-    throw new Error('Access denied — you do not have permission.')
+    throw new Error(data?.error || data?.message || 'Access denied — you do not have permission.')
   }
 
   if (!res.ok) {

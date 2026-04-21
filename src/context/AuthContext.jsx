@@ -118,11 +118,12 @@ export function AuthProvider({ children }) {
       clearSessionMsg()
       return { ok: true, role: mapped.role }
     } catch (err) {
-      return { error: err.message }
+      const msg = err.message === 'EMAIL_NOT_VERIFIED'
+        ? 'Please verify your email before signing in. Check your inbox for the verification link.'
+        : err.message
+      return { error: msg }
     }
   }
-
-  function logout() {
     setUser(null)
     localStorage.removeItem('mc_cart')
     cartClearBridge.clearCart()
