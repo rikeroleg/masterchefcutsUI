@@ -14,7 +14,7 @@ export default function ForgotPassword() {
     setLoading(true)
     setError('')
     try {
-      await api.post(`/api/auth/forgot-password?email=${encodeURIComponent(email)}`)
+      await api.post('/api/auth/forgot-password', { email })
       setSent(true)
     } catch (err) {
       setError(err.message || 'Something went wrong.')
