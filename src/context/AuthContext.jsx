@@ -119,7 +119,7 @@ export function AuthProvider({ children }) {
       return { ok: true, role: mapped.role }
     } catch (err) {
       const msg = err.message === 'EMAIL_NOT_VERIFIED'
-        ? 'Please verify your email before signing in. Check your inbox for the verification link.'
+        ? 'Please check your inbox for the email verification link.'
         : err.message
       return { error: msg }
     }
