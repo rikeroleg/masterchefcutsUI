@@ -94,7 +94,7 @@ const LAMB_LABEL_MAP = {
   'shank': ['shank'],
 }
 
-const GLB_BASE = ''
+const GLB_BASE = import.meta.env.VITE_GLB_BASE_URL || ''
 
 const ANIMAL_CONFIG = {
   BEEF: { glb: `${GLB_BASE}/3DCow.glb`,  cuts: BEEF_CUTS, findCut: findBeefCut, labelMap: BEEF_LABEL_MAP },

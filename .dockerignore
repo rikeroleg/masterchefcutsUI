@@ -4,3 +4,4 @@ dist
 .env
 .env.*
 pics
+public/*.glb
