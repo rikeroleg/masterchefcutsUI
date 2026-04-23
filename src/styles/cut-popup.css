@@ -453,3 +453,17 @@
 
 .cpf-add-btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
 .cpf-add-btn:active { transform: translateY(0); filter: brightness(0.95); }
+
+.cpf-claimed-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(240, 186, 66, 0.2);
+  border: 1px solid rgba(240, 186, 66, 0.55);
+  color: #f0ba42;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}

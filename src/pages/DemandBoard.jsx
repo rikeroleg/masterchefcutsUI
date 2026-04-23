@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
-import AnimalRequestModal from '../Components/AnimalRequestModal'
 import '../styles/demand-board.css'
 
 const ANIMAL_FILTERS = ['All', 'Beef', 'Pork', 'Lamb']
@@ -203,11 +202,10 @@ function FulfilledPanel({ listingId, currentUserId }) {
   )
 }
 
-function RequestCard({ request, onFulfilled, onCancelled, onEdited }) {
+function RequestCard({ request, onFulfilled, onCancelled }) {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [showFulfill,   setShowFulfill]   = useState(false)
-  const [showEdit,      setShowEdit]      = useState(false)
   const [showPanel,     setShowPanel]     = useState(false)
   const [cancelling,    setCancelling]    = useState(false)
   const meta = ANIMAL_META[request.animalType] || { emoji: '🐄', label: request.animalType }
@@ -260,7 +258,7 @@ function RequestCard({ request, onFulfilled, onCancelled, onEdited }) {
           )}
           {isOwner && (
             <>
-              <button className="db-btn-edit" onClick={() => setShowEdit(true)}>Edit</button>
+              <button className="db-btn-edit" onClick={() => navigate('/shop', { state: { editRequest: request } })}>Edit</button>
               <button className="db-btn-cancel" disabled={cancelling} onClick={handleCancel}>
                 {cancelling ? 'Cancelling…' : 'Cancel'}
               </button>
@@ -299,14 +297,6 @@ function RequestCard({ request, onFulfilled, onCancelled, onEdited }) {
           onFulfilled={() => { setShowFulfill(false); onFulfilled() }}
         />
       )}
-
-      {showEdit && (
-        <AnimalRequestModal
-          existingRequest={request}
-          onClose={() => setShowEdit(false)}
-          onSaved={(updated) => { setShowEdit(false); onEdited(updated) }}
-        />
-      )}
     </div>
   )
 }
@@ -338,10 +328,6 @@ export default function DemandBoard() {
 
   function handleCancelled(id) {
     setRequests(prev => prev.filter(r => r.id !== id))
-  }
-
-  function handleEdited(updated) {
-    setRequests(prev => prev.map(r => r.id === updated.id ? updated : r))
   }
 
   const openCount      = requests.filter(r => r.status === 'OPEN').length
@@ -428,7 +414,6 @@ export default function DemandBoard() {
               request={r}
               onFulfilled={fetchRequests}
               onCancelled={handleCancelled}
-              onEdited={handleEdited}
             />
           ))}
           {!loading && !error && visible.length === 0 && (

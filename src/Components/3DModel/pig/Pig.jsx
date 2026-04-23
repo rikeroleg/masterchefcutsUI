@@ -1,6 +1,7 @@
 ﻿import React, { useRef, useState, useCallback, useMemo } from 'react'
 import { useGLTF, Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
+import * as THREE from 'three'
 import { PIG_CUT_DATA } from '../../../data/pigCutData'
 import { shopBridge } from '../../../context/CartContext'
 
@@ -44,6 +45,8 @@ function CutFullPopup({ cut, onClose }) {
   const data = PIG_CUT_DATA[cut.id]
   if (!data) return null
   const { color } = cut
+  const isEditMode = !!shopBridge.editMode
+  const isSelected = isEditMode && shopBridge.editCutIds?.has(cut.id)
 
   // Map 3D zone names to AnimalRequestModal primal IDs
   const PIG_CUT_MAP = { Ham: 'Leg', Head: null }
@@ -51,6 +54,11 @@ function CutFullPopup({ cut, onClose }) {
     onClose()
     const primalId = cut.name in PIG_CUT_MAP ? PIG_CUT_MAP[cut.name] : cut.name
     shopBridge.openRequestModal({ animal: 'pork', cuts: primalId ? [primalId] : [] })
+  }
+
+  const handleEditToggle = () => {
+    shopBridge.toggleEditCut?.(cut.id)
+    onClose()
   }
 
   return (
@@ -126,9 +134,22 @@ function CutFullPopup({ cut, onClose }) {
         <hr className="cpf-divider" />
 
         <div className="cpf-order">
-          <button className="cpf-add-btn" style={{ background: color }} onClick={handleClaim}>
-            Claim This Cut
-          </button>
+          {isEditMode ? (
+            <button
+              className="cpf-add-btn"
+              style={{ background: isSelected ? '#e74c3c' : color }}
+              onClick={handleEditToggle}
+            >
+              {isSelected ? 'Remove from Request' : 'Add to Request'}
+            </button>
+          ) : (
+            <button className="cpf-add-btn" style={{ background: color }} onClick={handleClaim}>
+              Claim This Cut
+            </button>
+          )}
+          {isEditMode && isSelected && (
+            <span className="cpf-claimed-badge">In your request</span>
+          )}
         </div>
 
       </div>
@@ -187,7 +208,7 @@ function CutMarker({ position, color, cut, onClose }) {
   )
 }
 
-export function Pig({ ...props }) {
+export function Pig({ claimedCutIds, ...props }) {
   const meshRef = useRef()
   const GLB_URL = import.meta.env.VITE_GLB_BASE_URL ? `${import.meta.env.VITE_GLB_BASE_URL}/3DPig.glb` : '/3DPig.glb'
   const { scene, materials } = useGLTF(GLB_URL)
@@ -200,6 +221,51 @@ export function Pig({ ...props }) {
   }, [scene])
 
   const mat = Object.values(materials)[0] ?? meshObj?.material
+
+  const cutGeometries = useMemo(() => {
+    if (!claimedCutIds || claimedCutIds.size === 0 || !meshObj?.geometry) return {}
+    const geo = meshObj.geometry
+    const pos = geo.attributes.position
+    const idx = geo.index
+    const cutTriangles = {}
+    if (idx) {
+      for (let i = 0; i < idx.count; i += 3) {
+        const a = idx.getX(i), b = idx.getX(i + 1), c = idx.getX(i + 2)
+        const cx = (pos.getX(a) + pos.getX(b) + pos.getX(c)) / 3
+        const cy = (pos.getY(a) + pos.getY(b) + pos.getY(c)) / 3
+        const cz = (pos.getZ(a) + pos.getZ(b) + pos.getZ(c)) / 3
+        const cut = findCutByPosition({ x: cx, y: cy, z: cz })
+        if (!cut || !claimedCutIds.has(cut.id)) continue
+        if (!cutTriangles[cut.id]) cutTriangles[cut.id] = []
+        cutTriangles[cut.id].push(a, b, c)
+      }
+    } else {
+      for (let i = 0; i < pos.count; i += 3) {
+        const cx = (pos.getX(i) + pos.getX(i + 1) + pos.getX(i + 2)) / 3
+        const cy = (pos.getY(i) + pos.getY(i + 1) + pos.getY(i + 2)) / 3
+        const cz = (pos.getZ(i) + pos.getZ(i + 1) + pos.getZ(i + 2)) / 3
+        const cut = findCutByPosition({ x: cx, y: cy, z: cz })
+        if (!cut || !claimedCutIds.has(cut.id)) continue
+        if (!cutTriangles[cut.id]) cutTriangles[cut.id] = []
+        cutTriangles[cut.id].push(i, i + 1, i + 2)
+      }
+    }
+    const result = {}
+    for (const [cutId, tris] of Object.entries(cutTriangles)) {
+      const subGeo = new THREE.BufferGeometry()
+      const srcPos = pos.array
+      const verts = new Float32Array(tris.length * 3)
+      for (let i = 0; i < tris.length; i++) {
+        const vi = tris[i]
+        verts[i * 3]     = srcPos[vi * 3]
+        verts[i * 3 + 1] = srcPos[vi * 3 + 1]
+        verts[i * 3 + 2] = srcPos[vi * 3 + 2]
+      }
+      subGeo.setAttribute('position', new THREE.BufferAttribute(verts, 3))
+      result[cutId] = subGeo
+    }
+    return result
+  }, [claimedCutIds, meshObj])
 
   const handleClick = useCallback((event) => {
     event.stopPropagation()
@@ -237,6 +303,11 @@ export function Pig({ ...props }) {
         onPointerOver={handlePointerOver}
         onPointerOut={handlePointerOut}
       />
+      {Object.entries(cutGeometries).map(([cutId, geo]) => (
+        <mesh key={cutId} geometry={geo}>
+          <meshBasicMaterial color="#666666" transparent opacity={0.62} depthWrite={false} />
+        </mesh>
+      ))}
       {markers.map((m) => (
         <CutMarker
           key={m.id}
