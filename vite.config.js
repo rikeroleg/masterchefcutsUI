@@ -24,9 +24,11 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
+          // 'vendor-stripe' is intentionally absent — CartPaymentModal and
+          // PaymentModal are lazy-loaded, so Rollup auto-splits the Stripe
+          // chunk and only fetches it when a payment modal is opened.
           'vendor-react':  ['react', 'react-dom', 'react-router-dom'],
           'vendor-three':  ['three', '@react-three/fiber', '@react-three/drei', '@react-spring/three'],
-          'vendor-stripe': ['@stripe/stripe-js', '@stripe/react-stripe-js'],
           'vendor-map':    ['leaflet', 'react-leaflet'],
         },
       },

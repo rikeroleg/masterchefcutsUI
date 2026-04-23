@@ -241,9 +241,21 @@ function App() {
                     </button>
                   </div>
                 </div>
+                {/* Animated beacon — auto-fades after 5 s via CSS, pointer-events none */}
+                <div className="shop-click-beacon" aria-hidden="true">
+                  <div className="shop-click-beacon__ring" />
+                  <span className="shop-click-beacon__icon">👆</span>
+                  <p className="shop-click-beacon__title">Click the animal</p>
+                  <p className="shop-click-beacon__sub">Tap any zone to explore cuts &amp; claim</p>
+                </div>
+
                 {/* Bottom hint */}
                 <div className="ui-bottom-hint">
-                  <span>Drag to rotate &nbsp;·&nbsp; Scroll to zoom</span>
+                  <span className="ui-bottom-hint__item">Drag to rotate</span>
+                  <span className="ui-bottom-hint__sep" />
+                  <span className="ui-bottom-hint__item ui-bottom-hint__item--click">Click to explore cuts</span>
+                  <span className="ui-bottom-hint__sep" />
+                  <span className="ui-bottom-hint__item">Scroll to zoom</span>
                 </div>
               </div>
             } />

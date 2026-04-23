@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
+import React, { lazy, Suspense, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ShoppingCart, Trash2, ArrowLeft, Package } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
-import CartPaymentModal from '../Components/CartPaymentModal'
 import '../styles/cart.css'
+
+// Loaded on demand — keeps Stripe JS out of the initial bundle.
+const CartPaymentModal = lazy(() => import('../Components/CartPaymentModal'))
 
 const ANIMAL_INFO = {
   beef: { label: 'Beef',  emoji: '\uD83D\uDC04' },
@@ -255,11 +257,13 @@ export default function Cart() {
       </div>
 
       {paying && (
-        <CartPaymentModal
-          items={selectedItems}
-          onSuccess={() => { removeItems(selectedItems.map(i => i.id)); setPaying(false); setConfirmed(true); setCheckoutInProgress(false) }}
-          onClose={() => { setPaying(false); setCheckoutInProgress(false) }}
-        />
+        <Suspense fallback={null}>
+          <CartPaymentModal
+            items={selectedItems}
+            onSuccess={() => { removeItems(selectedItems.map(i => i.id)); setPaying(false); setConfirmed(true); setCheckoutInProgress(false) }}
+            onClose={() => { setPaying(false); setCheckoutInProgress(false) }}
+          />
+        </Suspense>
       )}
     </div>
   )

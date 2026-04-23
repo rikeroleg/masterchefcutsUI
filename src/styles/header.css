@@ -195,6 +195,9 @@
   user-select: none;
   white-space: nowrap;
   pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Red pill counter — shows cart item count */

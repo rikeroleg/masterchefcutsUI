@@ -220,7 +220,9 @@ function RequestCard({ request, onFulfilled, onCancelled, onEdited }) {
     try {
       await api.delete(`/api/animal-requests/${request.id}`)
       onCancelled(request.id)
-    } catch {}
+    } catch (err) {
+      console.error('Failed to cancel request:', err)
+    }
     setCancelling(false)
   }
 

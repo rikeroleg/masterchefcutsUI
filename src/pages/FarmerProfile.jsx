@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { lazy, Suspense, useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { useFavorites } from '../utils/index'
-import PaymentModal from '../Components/PaymentModal'
-import '../styles/listings.css'
 import { DEFAULT_OG_IMAGE, SITE_URL, useSEO } from '../utils/seo'
+import '../styles/listings.css'
+
+// Loaded on demand — keeps Stripe JS out of the initial bundle.
+const PaymentModal = lazy(() => import('../Components/PaymentModal'))
 
 const ANIMAL_META = {
   BEEF: { emoji: '🐄', label: 'Beef' },
@@ -251,13 +253,15 @@ function FarmerListingCard({ listing, onClaimed, user, navigate, toast }) {
       </div>
 
       {payingCut && (
-        <PaymentModal
-          listing={listing}
-          cutLabel={payingCut.label}
-          cutId={payingCut.id}
-          onSuccess={handlePaymentSuccess}
-          onClose={() => setPayingCut(null)}
-        />
+        <Suspense fallback={null}>
+          <PaymentModal
+            listing={listing}
+            cutLabel={payingCut.label}
+            cutId={payingCut.id}
+            onSuccess={handlePaymentSuccess}
+            onClose={() => setPayingCut(null)}
+          />
+        </Suspense>
       )}
     </div>
   )

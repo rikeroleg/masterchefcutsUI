@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
@@ -65,7 +66,7 @@ export default function AnimalRequestModal({ onClose, initialAnimal, initialCuts
   const [done, setDone] = useState(false)
 
   if (!user) {
-    return (
+    return createPortal(
       <div className="arm-overlay" onClick={onClose}>
         <div className="arm-modal" onClick={e => e.stopPropagation()}>
           <button className="arm-close" onClick={onClose}>✕</button>
@@ -73,11 +74,11 @@ export default function AnimalRequestModal({ onClose, initialAnimal, initialCuts
           <button className="arm-btn-primary" onClick={() => { onClose(); navigate('/login') }}>Sign In →</button>
         </div>
       </div>
-    )
+    , document.body)
   }
 
   if (user.role !== 'buyer') {
-    return (
+    return createPortal(
       <div className="arm-overlay" onClick={onClose}>
         <div className="arm-modal" onClick={e => e.stopPropagation()}>
           <button className="arm-close" onClick={onClose}>✕</button>
@@ -85,7 +86,7 @@ export default function AnimalRequestModal({ onClose, initialAnimal, initialCuts
           <button className="arm-btn-secondary" onClick={onClose}>Close</button>
         </div>
       </div>
-    )
+    , document.body)
   }
 
   function toggleCut(id) {
@@ -129,7 +130,7 @@ export default function AnimalRequestModal({ onClose, initialAnimal, initialCuts
   }
 
   if (done) {
-    return (
+    return createPortal(
       <div className="arm-overlay" onClick={onClose}>
         <div className="arm-modal" onClick={e => e.stopPropagation()}>
           <div className="arm-success">
@@ -143,12 +144,12 @@ export default function AnimalRequestModal({ onClose, initialAnimal, initialCuts
           </div>
         </div>
       </div>
-    )
+    , document.body)
   }
 
   const cuts = PRIMAL_CUTS[animalType] || []
 
-  return (
+  return createPortal(
     <div className="arm-overlay" onClick={onClose}>
       <div className="arm-modal" onClick={e => e.stopPropagation()}>
         <button className="arm-close" onClick={onClose}>✕</button>
@@ -244,5 +245,5 @@ export default function AnimalRequestModal({ onClose, initialAnimal, initialCuts
         </form>
       </div>
     </div>
-  )
+  , document.body)
 }

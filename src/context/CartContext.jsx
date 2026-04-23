@@ -20,7 +20,7 @@ export function CartProvider({ children }) {
   })
 
   React.useEffect(() => {
-    try { localStorage.setItem('mc_cart', JSON.stringify(items)) } catch (_) {}
+    try { localStorage.setItem('mc_cart', JSON.stringify(items)) } catch (err) { console.error('Failed to save cart to localStorage', err) }
   }, [items])
 
   function addToCart({ animal, cutId, name, color, price, qty, listingId, breed, sourceFarm }) {

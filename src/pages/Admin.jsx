@@ -125,23 +125,23 @@ export default function Admin() {
   }
 
   async function loadStats() {
-    try { setStats(await api.get('/api/admin/stats')) } catch {}
+    try { setStats(await api.get('/api/admin/stats')) } catch (err) { setError(err.message || 'Failed to load stats') }
   }
 
   async function loadUsers() {
-    try { setUsers(await api.get('/api/admin/users')) } catch {}
+    try { setUsers(await api.get('/api/admin/users')) } catch (err) { setError(err.message || 'Failed to load users') }
   }
 
   async function loadListings() {
-    try { setListings(await api.get('/api/listings')) } catch {}
+    try { setListings(await api.get('/api/listings')) } catch (err) { setError(err.message || 'Failed to load listings') }
   }
 
   async function loadDisputes() {
-    try { setDisputes(await api.get('/api/admin/disputes')) } catch {}
+    try { setDisputes(await api.get('/api/admin/disputes')) } catch (err) { setError(err.message || 'Failed to load disputes') }
   }
 
   async function loadOrders() {
-    try { setOrders(await api.get('/api/admin/orders')) } catch {}
+    try { setOrders(await api.get('/api/admin/orders')) } catch (err) { setError(err.message || 'Failed to load orders') }
   }
 
   async function loadFinancials() {

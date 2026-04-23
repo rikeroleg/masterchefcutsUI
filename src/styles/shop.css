@@ -1,5 +1,116 @@
 /* shop.css — animal switcher on the 3D shop page */
 
+/* ── Animated "click the animal" beacon ─────────────────────────────────── */
+@keyframes shop-beacon-life {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.82); }
+  10%  { opacity: 1; transform: translate(-50%, -50%) scale(1);    }
+  78%  { opacity: 1; transform: translate(-50%, -50%) scale(1);    }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.88); }
+}
+
+@keyframes shop-beacon-ring {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  100% { transform: scale(2.1); opacity: 0;   }
+}
+
+@keyframes shop-beacon-tap {
+  0%, 100% { transform: scale(1)    translateY(0);   }
+  50%       { transform: scale(0.88) translateY(4px); }
+}
+
+.shop-click-beacon {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 80;
+
+  background: rgba(8, 3, 0, 0.86);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(240, 186, 66, 0.4);
+  border-radius: 18px;
+  padding: 18px 28px 16px;
+  text-align: center;
+  min-width: 200px;
+
+  animation: shop-beacon-life 5.5s ease forwards;
+}
+
+.shop-click-beacon__ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 24px;
+  border: 2px solid rgba(240, 186, 66, 0.55);
+  animation: shop-beacon-ring 1.5s ease-out infinite;
+}
+
+.shop-click-beacon__icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 10px;
+  animation: shop-beacon-tap 0.9s ease-in-out infinite;
+}
+
+.shop-click-beacon__title {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #f0ba42;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+.shop-click-beacon__sub {
+  margin: 0;
+  font-size: 0.72rem;
+  color: rgba(255, 220, 160, 0.72);
+  letter-spacing: 0.04em;
+}
+
+/* ── Enhanced bottom hint — 3 gesture pills ─────────────────────────────── */
+.ui-bottom-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ui-bottom-hint__item {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.38);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ui-bottom-hint__item--click {
+  color: rgba(240, 186, 66, 0.65);
+  font-weight: 700;
+}
+
+.ui-bottom-hint__sep {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  flex-shrink: 0;
+}
+
+/* Reduce beacon size on mobile — avoid overlapping panels */
+@media (max-width: 480px) {
+  .shop-click-beacon {
+    top: 42%;
+    left: 50%;
+    padding: 14px 20px 12px;
+    min-width: 170px;
+  }
+
+  .shop-click-beacon__icon  { font-size: 1.6rem; }
+  .shop-click-beacon__title { font-size: 0.82rem; }
+  .shop-click-beacon__sub   { font-size: 0.66rem; }
+}
+
 .animal-switcher {
   position: absolute;
   top: 20px;
