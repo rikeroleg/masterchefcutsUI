@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Dark rounded background -->
+  <rect width="64" height="64" rx="14" fill="#1a0800"/>
+
+  <!-- Stylised "M" lettermark in warm red/orange brand colour -->
+  <text
+    x="32"
+    y="47"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-weight="700"
+    font-size="40"
+    fill="#c03000"
+    letter-spacing="-2"
+  >M</text>
+
+  <!-- Small chef-knife slash accent beneath the M -->
+  <line x1="14" y1="52" x2="50" y2="52" stroke="#c03000" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+</svg>

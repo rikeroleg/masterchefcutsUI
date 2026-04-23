@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { api } from '../api/client'
-import { useAuth } from '../context/AuthContext'
-import '../styles/admin.css'
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { api } from '../api/client';
+import { useAuth } from '../context/AuthContext';
+import AccessDenied from './AccessDenied';
+import '../styles/admin.css';
 
 const ROLE_COLOR = { BUYER: '#2b00ec', FARMER: '#cc1a1a', ADMIN: '#faf8fa' }
 
@@ -39,12 +40,24 @@ export default function Admin() {
   const [togglingSettings, setTogglingSettings] = useState(false)
 
   useEffect(() => {
-    if (!user || user.role !== 'admin') { navigate('/'); return }
-    loadStats()
-    loadUsers()
-    loadListings()
-    loadAdminSettings()
-  }, [user])
+    if (!user) {
+      // Not logged in: redirect to login with redirect param and flash
+      navigate('/login?redirect=/admin', { state: { flash: 'Please sign in as an admin to access this page.' } });
+      return;
+    }
+    if (user.role !== 'admin') {
+      // Logged in but not admin: do not redirect, just show access denied
+      return;
+    }
+    loadStats();
+    loadUsers();
+    loadListings();
+    loadAdminSettings();
+  }, [user]);
+  // Show access denied page for logged-in non-admins
+  if (user && user.role !== 'admin') {
+    return <AccessDenied message="You must be an admin to access this page." />;
+  }
 
   async function loadAdminSettings() {
     try {
