@@ -1,8 +1,8 @@
 import { OrbitControls, Center, Bounds } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import React, { useState, useEffect } from "react";
-import { Link, useLocation, Routes, Route } from "react-router-dom";
-import { Beef, ShoppingCart, Home, Info, LayoutList, ClipboardList, MessageSquare, PlusCircle, UserCircle2, Menu, X } from "lucide-react";
+import { Link, useLocation, Routes, Route, Navigate } from "react-router-dom";
+import { Beef, ShoppingCart, Home, Info, HelpCircle, LayoutList, ClipboardList, MessageSquare, PlusCircle, UserCircle2, Menu, X } from "lucide-react";
 import { Cow }  from "./Components/3DModel/cow/Cow";
 import { Pig }  from "./Components/3DModel/pig/Pig";
 import { Lamb } from "./Components/3DModel/lamb/Lamb";
@@ -138,7 +138,7 @@ function App() {
                 <span>About</span>
               </Link>
               <Link to="/faq" className={`ui-nav-link${location.pathname === '/faq' ? ' active' : ''}`}>
-                <Info size={18} />
+                <HelpCircle size={18} />
                 <span>FAQ</span>
               </Link>
               {user && <NotificationBell />}
@@ -162,9 +162,9 @@ function App() {
               {user ? (
                 <Link to="/profile" className={`ui-nav-link ui-nav-link--avatar${location.pathname === '/profile' ? ' active' : ''}`}>
                   <span className="ui-avatar-chip">
-                    {user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                    {(user.name || user.email || '?').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                   </span>
-                  <span>{user.name.split(' ')[0]}</span>
+                  <span>{(user.name || user.email || 'Profile').split(' ')[0]}</span>
                 </Link>
               ) : (
                 <Link to="/login" className={`ui-nav-link ui-nav-link--login${location.pathname === '/login' ? ' active' : ''}`}>
@@ -257,7 +257,7 @@ function App() {
             <Route path="/listings/:id" element={<ErrorBoundary><ListingDetailPage /></ErrorBoundary>} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/post" element={<PostListingPage />} />
+            <Route path="/post" element={user?.role === 'farmer' ? <PostListingPage /> : <Navigate to="/login" replace />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />

@@ -79,6 +79,18 @@ export default function FarmerProfile() {
           bio: data[0].farmerBio || null,
           certifications: data[0].farmerCertifications || null,
         })
+      } else {
+        // No listings yet — fetch farmer profile directly
+        try {
+          const profile = await api.get(`/api/participants/${encodeURIComponent(id)}/public`)
+          setFarmer({
+            name: profile.name,
+            shopName: profile.shopName || null,
+            zipCode: profile.zipCode || null,
+            bio: profile.bio || null,
+            certifications: profile.certifications || null,
+          })
+        } catch { /* silently ignore — farmer may not exist */ }
       }
     } catch (err) {
       toast.error(err.message || 'Failed to load farmer listings.')

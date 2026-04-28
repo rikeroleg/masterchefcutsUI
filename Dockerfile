@@ -26,6 +26,7 @@ RUN rm /etc/nginx/conf.d/default.conf
 # ${RENDERTRON_URL} is substituted at container startup.
 # Default keeps nginx healthy if the env var is not yet set.
 ENV RENDERTRON_URL=http://localhost:19999
+ENV BACKEND_URL=https://masterchefcuts-eqilqj43qa-uc.a.run.app
 
 # Store as a template — substituted by the CMD below, NOT by nginx:alpine's
 # automatic envsubst (which would mangle nginx's own $uri, $remote_addr, etc.)
@@ -36,4 +37,4 @@ EXPOSE 80
 
 # envsubst '${RENDERTRON_URL}' — only substitutes that one variable;
 # all other nginx $variables are left exactly as written.
-CMD ["/bin/sh", "-c", "envsubst '${RENDERTRON_URL}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+CMD ["/bin/sh", "-c", "envsubst '${RENDERTRON_URL} ${BACKEND_URL}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]

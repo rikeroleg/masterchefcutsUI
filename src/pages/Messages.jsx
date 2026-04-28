@@ -66,6 +66,27 @@ export default function Messages() {
       .finally(() => setMsgLoading(false))
   }, [activeThread, user])
 
+  // Poll for new messages every 5 seconds when a thread is open
+  useEffect(() => {
+    if (!activeThread || !user) return
+    const interval = setInterval(() => {
+      api.get(`/api/messages?with=${activeThread.participantId}`)
+        .then(data => {
+          setMessages(prev => {
+            if (data.length !== prev.length) {
+              // Mark new unread messages as read silently
+              data.filter(m => !m.read && m.senderId !== user.id)
+                .forEach(m => api.post(`/api/messages/${m.id}/read`).catch(() => {}))
+              api.get('/api/messages/threads').then(setThreads).catch(() => {})
+            }
+            return data
+          })
+        })
+        .catch(() => {})
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [activeThread, user])
+
   // Scroll to bottom when messages change
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })

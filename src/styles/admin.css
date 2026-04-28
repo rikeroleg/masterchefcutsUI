@@ -11,6 +11,29 @@
   gap: 24px;
 }
 
+.admin-confirm-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(184, 74, 0, 0.15);
+  border: 1px solid rgba(184, 74, 0, 0.5);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #f5c97a;
+  font-size: 0.95rem;
+}
+.admin-confirm-bar span { flex: 1; }
+.admin-confirm-yes {
+  background: #b84a00; color: #fff; border: none;
+  border-radius: 6px; padding: 6px 16px; cursor: pointer; font-weight: 700;
+}
+.admin-confirm-yes:hover { background: #d45800; }
+.admin-confirm-no {
+  background: rgba(255,255,255,0.1); color: #ccc; border: none;
+  border-radius: 6px; padding: 6px 16px; cursor: pointer;
+}
+.admin-confirm-no:hover { background: rgba(255,255,255,0.2); }
+
 .admin-header {
   display: flex;
   align-items: center;

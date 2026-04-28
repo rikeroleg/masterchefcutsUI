@@ -30,6 +30,7 @@ export default function Admin() {
   const [commentsPage,    setCommentsPage]    = useState(0)
   const [commentsHasMore, setCommentsHasMore] = useState(false)
   const [deletingCommentId, setDeletingCommentId] = useState(null)
+  const [pendingConfirm, setPendingConfirm] = useState(null) // { message, onConfirm }
 
   useEffect(() => {
     if (!user || user.role !== 'admin') { navigate('/'); return }
@@ -49,13 +50,17 @@ export default function Admin() {
   }
 
   async function deleteAdminComment(id) {
-    if (!window.confirm('Delete this comment?')) return
-    setDeletingCommentId(id)
-    try {
-      await api.delete(`/api/admin/comments/${id}`)
-      setAdminComments(prev => prev.filter(c => c.id !== id))
-    } catch (err) { setError(err.message || 'Failed to delete comment') }
-    setDeletingCommentId(null)
+    setPendingConfirm({
+      message: 'Delete this comment?',
+      onConfirm: async () => {
+        setDeletingCommentId(id)
+        try {
+          await api.delete(`/api/admin/comments/${id}`)
+          setAdminComments(prev => prev.filter(c => c.id !== id))
+        } catch (err) { setError(err.message || 'Failed to delete comment') }
+        setDeletingCommentId(null)
+      }
+    })
   }
 
   async function loadStats() {
@@ -160,14 +165,18 @@ export default function Admin() {
   }
 
   async function deleteListing(id) {
-    if (!window.confirm('Remove this listing?')) return
-    setLoading(true)
-    try {
-      await api.delete(`/api/admin/listings/${id}`)
-      await loadListings()
-      await loadStats()
-    } catch (err) { setError(err.message) }
-    setLoading(false)
+    setPendingConfirm({
+      message: 'Remove this listing?',
+      onConfirm: async () => {
+        setLoading(true)
+        try {
+          await api.delete(`/api/admin/listings/${id}`)
+          await loadListings()
+          await loadStats()
+        } catch (err) { setError(err.message) }
+        setLoading(false)
+      }
+    })
   }
 
   const farmers = users.filter(u => u.role === 'FARMER')
@@ -177,6 +186,13 @@ export default function Admin() {
   return (
     <div className="admin-page">
       <div className="admin-inner">
+        {pendingConfirm && (
+          <div className="admin-confirm-bar">
+            <span>{pendingConfirm.message}</span>
+            <button className="admin-confirm-yes" onClick={async () => { const fn = pendingConfirm.onConfirm; setPendingConfirm(null); await fn(); }}>Confirm</button>
+            <button className="admin-confirm-no" onClick={() => setPendingConfirm(null)}>Cancel</button>
+          </div>
+        )}
         <div className="admin-header">
           <h1 className="admin-title">Admin Panel</h1>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
