@@ -176,7 +176,8 @@ const STATUS_STYLE = {
 }
 
 function Avatar({ name, size = 56 }) {
-  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+  const safeName = name || '?'
+  const initials = safeName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
   return (
     <div className="profile-avatar" style={{ width: size, height: size, fontSize: size * 0.38 }}>
       {initials}
