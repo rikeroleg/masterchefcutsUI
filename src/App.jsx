@@ -67,6 +67,7 @@ function App() {
       {/* 3D Canvas — fixed background, only mounted on shop route */}
       {isShop && (
         <div style={{ position: 'absolute', inset: 0 }}>
+          <ErrorBoundary fallback={<div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem' }}>3D viewer unavailable</div>}>
           <Canvas
             camera={{ position: [14, 1, 0], fov: 40 }}
             gl={{ antialias: true, alpha: true }}
@@ -85,6 +86,7 @@ function App() {
             </Bounds>
             <OrbitControls enablePan={false} />
           </Canvas>
+          </ErrorBoundary>
         </div>
       )}
 

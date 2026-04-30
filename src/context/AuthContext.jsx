@@ -78,6 +78,31 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener('session-expired', handleExpired)
   }, [navigate])
 
+  // Proactive token refresh — schedule a refresh 60s before the JWT expires
+  useEffect(() => {
+    if (!user) return
+    const token = localStorage.getItem('mc_token')
+    if (!token) return
+    let timerId
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      const msUntilRefresh = payload.exp * 1000 - Date.now() - 60_000
+      const doRefresh = () => {
+        api.post('/api/auth/refresh', {})
+          .then(data => { if (data?.token) localStorage.setItem('mc_token', data.token) })
+          .catch(() => window.dispatchEvent(new Event('session-expired')))
+      }
+      if (msUntilRefresh <= 0) {
+        doRefresh()
+      } else {
+        timerId = setTimeout(doRefresh, msUntilRefresh)
+      }
+    } catch {
+      // unparseable token — 401 handler will catch it
+    }
+    return () => clearTimeout(timerId)
+  }, [user])
+
   useEffect(() => {
     if (user) localStorage.setItem('mc_user', JSON.stringify(user))
     else { localStorage.removeItem('mc_user'); localStorage.removeItem('mc_token') }

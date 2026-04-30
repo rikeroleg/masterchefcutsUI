@@ -23,6 +23,19 @@ export function CartProvider({ children }) {
     try { localStorage.setItem('mc_cart', JSON.stringify(items)) } catch (_) {}
   }, [items])
 
+  // Sync cart across tabs via storage event
+  React.useEffect(() => {
+    function handleStorage(e) {
+      if (e.key !== 'mc_cart') return
+      try {
+        const next = e.newValue ? JSON.parse(e.newValue) : []
+        setItems(next)
+      } catch (_) {}
+    }
+    window.addEventListener('storage', handleStorage)
+    return () => window.removeEventListener('storage', handleStorage)
+  }, [])
+
   function addToCart({ animal, cutId, name, color, price, qty, listingId, breed, sourceFarm }) {
     const id = `${animal}-${cutId}`
     setItems((prev) => {

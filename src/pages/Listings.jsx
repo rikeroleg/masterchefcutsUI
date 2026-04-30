@@ -126,12 +126,10 @@ function ListingCard({ listing, onClaimed }) {
         await api.post(`/api/listings/${listing.id}/waitlist`)
         setOnWaitlist(true)
       }
-    } catch {}
+    } catch (err) {
+      toast.error(err.message || 'Failed to update waitlist.')
+    }
     setWLLoading(false)
-  }
-
-  if (false) {
-    // confirmed state removed — toast + inline update replaces this
   }
 
   return (

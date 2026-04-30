@@ -55,6 +55,10 @@ export default function Login() {
       setError('Password must be at least 8 characters and contain at least one uppercase letter, one number, and one special character.')
       return
     }
+    if (signup.zipCode && !/^\d{5}(-\d{4})?$/.test(signup.zipCode)) {
+      setError('Please enter a valid ZIP code (e.g. 90210 or 90210-1234).')
+      return
+    }
     setLoad(true)
     const refCode = localStorage.getItem('mcc_ref')
     const res = await register({

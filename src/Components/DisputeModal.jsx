@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { api } from '../api/client'
 import '../styles/dispute-modal.css'
 
@@ -16,6 +16,28 @@ export default function DisputeModal({ claim, onClose }) {
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState('')
   const [done, setDone]       = useState(false)
+  const modalRef = useRef(null)
+
+  // Focus trap + Escape key
+  useEffect(() => {
+    const el = modalRef.current
+    if (!el) return
+    const focusable = el.querySelectorAll('button, input, select, textarea, [tabindex]:not([tabindex="-1"])')
+    const first = focusable[0]
+    const last  = focusable[focusable.length - 1]
+    first?.focus()
+    function handleKey(e) {
+      if (e.key === 'Escape') { onClose(); return }
+      if (e.key !== 'Tab') return
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last?.focus() }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first?.focus() }
+      }
+    }
+    el.addEventListener('keydown', handleKey)
+    return () => el.removeEventListener('keydown', handleKey)
+  }, [onClose])
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -40,7 +62,7 @@ export default function DisputeModal({ claim, onClose }) {
 
   return (
     <div className="dsp-overlay" onClick={onClose}>
-      <div className="dsp-modal" onClick={e => e.stopPropagation()}>
+      <div className="dsp-modal" ref={modalRef} onClick={e => e.stopPropagation()}>
         <button className="dsp-close" onClick={onClose}>✕</button>
 
         {done ? (

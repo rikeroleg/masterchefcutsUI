@@ -35,6 +35,19 @@ export default function OrderReceipt() {
       .catch(err  => { setError(err.message || 'Order not found.'); setLoading(false) })
   }, [id])
 
+  // Poll for status updates every 15s; stop when terminal status reached
+  useEffect(() => {
+    if (!id || !order) return
+    const terminal = new Set(['COMPLETED', 'PAYMENT_FAILED'])
+    if (terminal.has(order.status?.toUpperCase())) return
+    const interval = setInterval(() => {
+      api.get(`/api/orders/${id}`)
+        .then(data => setOrder(data))
+        .catch(() => {}) // silently ignore poll errors
+    }, 15_000)
+    return () => clearInterval(interval)
+  }, [id, order?.status])
+
   async function handleConfirmPickup() {
     setConfirming(true)
     try {

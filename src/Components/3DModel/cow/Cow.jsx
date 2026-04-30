@@ -198,7 +198,7 @@ function CutMarker({ position, color, cut, onClose }) {
 
 export function Cow({ ...props }) {
   const meshRef = useRef()
-  const { scene, materials } = useGLTF('https://storage.googleapis.com/masterchefcuts-static/3DCow.glb')
+  const { scene, materials } = useGLTF(`${import.meta.env.VITE_GLB_BASE ?? 'https://storage.googleapis.com/masterchefcuts-static'}/3DCow.glb`)
   const [markers, setMarkers] = useState([])
 
   const meshObj = useMemo(() => {
@@ -267,6 +267,6 @@ export function Cow({ ...props }) {
   )
 }
 
-useGLTF.preload('https://storage.googleapis.com/masterchefcuts-static/3DCow.glb')
+useGLTF.preload(`${import.meta.env.VITE_GLB_BASE ?? 'https://storage.googleapis.com/masterchefcuts-static'}/3DCow.glb`)
 
 

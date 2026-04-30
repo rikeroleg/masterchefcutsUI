@@ -40,7 +40,7 @@ const PRIMAL_CUTS = {
 }
 
 export default function PostListing() {
-  const { user } = useAuth()
+  const { user, refreshConnectStatus } = useAuth()
   const { toast } = useToast()
   const navigate = useNavigate()
 
@@ -54,8 +54,40 @@ export default function PostListing() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState('')
+  const [connectLoading, setConnectLoading]       = useState(false)
+  const [connectRefreshing, setConnectRefreshing] = useState(false)
+  const [connectError, setConnectError]           = useState('')
   const [photoFile, setPhotoFile]     = useState(null)
   const [photoPreview, setPhotoPreview] = useState(null)
+
+  async function handleStartOnboarding() {
+    setConnectLoading(true)
+    setConnectError('')
+    try {
+      const data = await api.post('/api/connect/onboard', {})
+      if (data?.url) {
+        window.open(data.url, '_blank', 'noopener,noreferrer')
+      } else {
+        setConnectError('Could not get onboarding link. Try again.')
+      }
+    } catch (err) {
+      setConnectError(err.message || 'Failed to start onboarding.')
+    } finally {
+      setConnectLoading(false)
+    }
+  }
+
+  async function handleRefreshConnect() {
+    setConnectRefreshing(true)
+    setConnectError('')
+    try {
+      await refreshConnectStatus()
+    } catch {
+      setConnectError('Could not refresh status. Please try again.')
+    } finally {
+      setConnectRefreshing(false)
+    }
+  }
 
   function handlePhotoChange(e) {
     const file = e.target.files[0]
@@ -164,7 +196,24 @@ export default function PostListing() {
               You need to connect a bank account via Stripe before posting listings.
               This ensures you receive your 85% payout automatically when buyers pay.
             </p>
-            <Link to="/profile" className="hp-btn-primary">Go to Profile to Connect →</Link>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '8px' }}>
+              <button
+                className="hp-btn-primary"
+                disabled={connectLoading}
+                onClick={handleStartOnboarding}
+              >
+                {connectLoading ? 'Redirecting…' : '🏦 Start Onboarding →'}
+              </button>
+              <button
+                className="hp-btn-secondary"
+                disabled={connectRefreshing}
+                onClick={handleRefreshConnect}
+                style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', color: '#f5c97a', borderRadius: '6px', padding: '10px 18px', cursor: 'pointer', fontWeight: 600 }}
+              >
+                {connectRefreshing ? 'Checking…' : '↺ Refresh Status'}
+              </button>
+            </div>
+            {connectError && <p style={{ color: '#e74c3c', marginTop: '10px', fontSize: '0.85rem' }}>{connectError}</p>}
           </div>
         )}
 
