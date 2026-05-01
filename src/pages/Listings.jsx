@@ -252,6 +252,18 @@ export default function Listings() {
 
   useEffect(() => { document.title = 'Browse Listings — MasterChef Cuts' }, [])
 
+  // ── Data state ───────────────────────────────────────────────────────────
+  const [listings,    setListings]    = useState([])
+  const [loading,     setLoading]     = useState(true)
+  const [error,       setError]       = useState('')
+  const [page,        setPage]        = useState(0)
+  const [hasMore,     setHasMore]     = useState(true)
+  const [moreFilters, setMoreFilters] = useState(false)
+  const [viewMode, setViewMode] = useState('grid')
+
+  // Track last-fetched server params to detect resets vs appends
+  const lastServerParams = useRef({ animal, zip, maxPrice })
+
   // ItemList JSON-LD — updates whenever visible listings change
   useEffect(() => {
     if (!listings.length) return
@@ -275,18 +287,6 @@ export default function Listings() {
     document.head.appendChild(script)
     return () => script.remove()
   }, [listings])
-
-  // ── Data state ───────────────────────────────────────────────────────────
-  const [listings,    setListings]    = useState([])
-  const [loading,     setLoading]     = useState(true)
-  const [error,       setError]       = useState('')
-  const [page,        setPage]        = useState(0)
-  const [hasMore,     setHasMore]     = useState(true)
-  const [moreFilters, setMoreFilters] = useState(false)
-  const [viewMode, setViewMode] = useState('grid')
-
-  // Track last-fetched server params to detect resets vs appends
-  const lastServerParams = useRef({ animal, zip, maxPrice })
 
   // ── Push debounced inputs → URL params ───────────────────────────────────
   function updateParam(key, value) {
