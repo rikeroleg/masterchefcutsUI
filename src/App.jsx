@@ -31,6 +31,7 @@ import FaqPage from "./pages/Faq"
 import ContactPage from "./pages/Contact"
 import ErrorBoundary from "./Components/ErrorBoundary";
 import Footer from "./Components/Footer";
+import CookieConsent from "./Components/CookieConsent";
 import NotificationBell from "./Components/NotificationBell";
 import AnimalRequestModal from "./Components/AnimalRequestModal";
 import { useAuth } from "./context/AuthContext";
@@ -282,6 +283,7 @@ function App() {
 
         {/* Footer — hidden on 3D shop route */}
         {!isShop && <Footer />}
+        <CookieConsent />
 
       </div>
     </div>
