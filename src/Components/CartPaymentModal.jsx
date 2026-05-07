@@ -161,7 +161,7 @@ export default function CartPaymentModal({ items, onSuccess, onClose }) {
           <div className="pm-loading">Preparing payment\u2026</div>
         )}
 
-        {clientSecret && (
+        {clientSecret && clientSecret !== 'MOCK' && (
           <Elements
             stripe={stripePromise}
             options={{ clientSecret, appearance: STRIPE_APPEARANCE, wallets: { applePay: 'auto', googlePay: 'auto' } }}
@@ -173,6 +173,26 @@ export default function CartPaymentModal({ items, onSuccess, onClose }) {
               onCancel={onClose}
             />
           </Elements>
+        )}
+
+        {clientSecret === 'MOCK' && (
+          <div style={{ padding: '0 24px 24px', textAlign: 'center' }}>
+            <p>Stripe is disabled locally. This is a mock checkout.</p>
+            <div className="pm-actions" style={{ justifyContent: 'center', marginTop: 16 }}>
+              <button className="pm-cancel-btn" onClick={onClose}>Cancel</button>
+              <button 
+                className="pm-pay-btn" 
+                onClick={() => {
+                  // Simulate webhook to complete order because the local mock won't receive one
+                  api.post('/api/payments/mock-webhook', { paymentIntentId: "MOCK", buyerId: "MOCK" })
+                    .catch(() => {})
+                    .finally(() => onSuccess('MOCK'));
+                }}
+              >
+                Mock Pay ${(amountCents / 100).toFixed(2)}
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </div>
