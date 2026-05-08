@@ -1,118 +1,156 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useSEO, DEFAULT_OG_IMAGE, SITE_URL } from '../utils/seo'
 import '../styles/faq.css'
 
-const SECTIONS = [
+const FAQS = [
   {
-    label: 'For Buyers',
+    category: 'Buying Meat',
     items: [
       {
-        q: 'How does MasterChef Cuts work?',
-        a: 'Local farmers and butchers list whole animals (beef, pork, lamb) on our platform. You browse nearby listings, claim a primal cut share, and pay securely. Once the animal is fully claimed, the butcher processes it and you collect your fresh cuts.',
+        q: 'What is a "whole animal share"?',
+        a: 'A whole animal share lets you buy a portion — whole, half, or quarter — of an animal directly from a local butcher. You split the cost and the cuts with other community members, getting farm-fresh meat at significantly lower prices than retail.',
       },
       {
-        q: 'Is the meat safe and inspected?',
-        a: 'Yes. All animals processed through MasterChef Cuts must be handled by USDA-licensed facilities or state-inspected processors. Farmers attest to this when listing. If you have questions about a specific listing, message the farmer directly.',
+        q: 'How much can I save compared to grocery stores?',
+        a: 'Most participants save 30–50% versus supermarket prices. Because you\'re buying direct and in bulk, there\'s no retail markup. Exact savings depend on the animal type and your share size.',
       },
       {
-        q: 'What cuts do I get?',
-        a: 'Each listing shows the available primal cuts — things like chuck, rib, loin, round, brisket, flank, shank, and more. You claim a specific cut, so you know exactly what you\'re getting before you pay.',
+        q: 'Do I need a large freezer?',
+        a: 'A standard chest or upright freezer (5–7 cubic feet) comfortably holds a quarter share. Half and whole shares benefit from a larger dedicated freezer. Most butchers can advise on packaging and storage.',
       },
       {
-        q: 'How does pickup work?',
-        a: 'The farmer sets a processing date and pickup location when posting their listing. You\'ll receive a notification when your order is ready. Coordinate directly with the farmer via our messaging system to arrange pickup.',
+        q: 'Can I choose my specific cuts?',
+        a: 'Cut selection depends on the butcher. Many listings let you customize cuts at checkout or allow you to message the farmer directly. Look for the "custom cuts" tag on a listing.',
       },
       {
-        q: 'What if the animal pool doesn\'t fill completely?',
-        a: 'If a listing doesn\'t fill before the processing date, the farmer may extend the deadline or cancel the listing. If cancelled, you receive a full refund automatically. You can also join the waitlist on full listings.',
-      },
-      {
-        q: 'Can I get a refund?',
-        a: 'Yes. If a listing is cancelled by the farmer, you\'re refunded in full. If you have an issue with your order after delivery, use the Dispute button on your order page within 7 days of pickup to open a case.',
+        q: 'What if the pool doesn\'t fill?',
+        a: 'If a listing doesn\'t reach the minimum claims before the closing date, the butcher may extend it or cancel it. Any holds on your payment are released immediately on cancellation.',
       },
     ],
   },
   {
-    label: 'For Farmers',
+    category: 'For Farmers & Butchers',
     items: [
       {
-        q: 'How do I list an animal?',
-        a: 'Create a farmer account, complete Stripe Connect onboarding to receive payouts, then go to Post a Listing. Fill in the animal type, breed, live weight, available cuts, price per pound, your ZIP code, and processing date.',
+        q: 'How do I post a listing?',
+        a: 'Create a Farmer account, go to Post a Listing, and fill in the animal details — type, breed, weight, price per lb, processing date, and photos. Your listing goes live after admin approval (usually within 24 hours).',
       },
       {
-        q: 'What\'s the platform commission?',
-        a: 'MasterChef Cuts takes a small platform fee per order to cover payment processing and platform maintenance. The exact rate is shown during listing creation. You keep the rest, paid directly to your connected Stripe account.',
+        q: 'When do I receive payment?',
+        a: 'Payments are released to your Stripe account within 2 business days after all participants in a pool have confirmed receipt of their orders.',
       },
       {
-        q: 'How do payouts work?',
-        a: 'Payouts are handled through Stripe Connect. Once an order is confirmed and the buyer marks receipt, funds are released to your connected bank account on Stripe\'s standard payout schedule (typically 2–7 business days).',
+        q: 'What is the platform fee?',
+        a: 'MasterChef Cuts charges a small percentage service fee per completed transaction. The exact rate is displayed when you create a listing. There are no monthly subscription fees.',
       },
       {
-        q: 'Do I need to be USDA-licensed?',
-        a: 'The processing facility you use must be USDA-inspected or state-approved for the meat to be legally sold. You are responsible for ensuring your processor meets all applicable regulations in your state.',
+        q: 'Can I list multiple animals at once?',
+        a: 'Yes — you can have multiple active listings simultaneously. Each listing is managed independently with its own pool and processing date.',
       },
     ],
   },
   {
-    label: 'General',
+    category: 'Orders & Payments',
     items: [
       {
-        q: 'What is MasterChef Cuts?',
-        a: 'MasterChef Cuts is a marketplace that connects local farmers and butchers directly with buyers. We make it easy to split whole animals with neighbors — lowering costs, reducing waste, and supporting local agriculture.',
+        q: 'What payment methods are accepted?',
+        a: 'We accept all major credit and debit cards (Visa, Mastercard, Amex, Discover) processed securely via Stripe. We do not store card information on our servers.',
       },
       {
-        q: 'Where does MasterChef Cuts operate?',
-        a: 'We currently operate across the United States. Listings are filtered by ZIP code so you only see animals available near you. We\'re actively growing — if there are no listings in your area yet, sign up for notifications.',
+        q: 'Can I cancel or modify my claim?',
+        a: 'You can cancel your claim before the listing\'s closing date from your Cart page. After the pool has closed and processing is underway, cancellations are at the butcher\'s discretion.',
       },
       {
-        q: 'How do I contact support?',
-        a: 'Use the Contact page (linked below) to send us a message. We typically respond within 1 business day. For urgent order issues, use the Dispute button on your order page.',
+        q: 'What if there\'s a problem with my order?',
+        a: 'Use the Dispute button on your order receipt. Our team reviews disputes within 48 hours and works with both parties to reach a fair resolution.',
+      },
+      {
+        q: 'Is my payment information secure?',
+        a: 'Yes. All payments are processed by Stripe, which is PCI-DSS Level 1 certified. MasterChef Cuts never sees or stores your full card number.',
+      },
+    ],
+  },
+  {
+    category: 'Account & Profile',
+    items: [
+      {
+        q: 'How do I reset my password?',
+        a: 'Click "Forgot password?" on the login page and enter your email. You\'ll receive a reset link within a few minutes. Check your spam folder if you don\'t see it.',
+      },
+      {
+        q: 'Can I have both a buyer and farmer account?',
+        a: 'Each email address is linked to one role. If you want to both buy and sell, contact us at support@masterchefcuts.com and we can discuss your options.',
+      },
+      {
+        q: 'How does the referral program work?',
+        a: 'Share your unique referral link from the Referrals page. When a friend signs up and completes their first purchase, both of you earn a credit toward your next order.',
       },
     ],
   },
 ]
 
-function FaqItem({ q, a }) {
+function FAQItem({ q, a }) {
   const [open, setOpen] = useState(false)
   return (
-    <div className="faq-item">
+    <div className={`faq-item${open ? ' faq-item--open' : ''}`}>
       <button className="faq-question" onClick={() => setOpen(o => !o)} aria-expanded={open}>
         <span>{q}</span>
-        <span className={`faq-chevron${open ? ' faq-chevron--open' : ''}`}>▼</span>
+        <span className="faq-chevron">{open ? '▲' : '▼'}</span>
       </button>
-      <div className={`faq-answer${open ? ' faq-answer--open' : ''}`}>
-        <p>{a}</p>
-      </div>
+      {open && <div className="faq-answer"><p>{a}</p></div>}
     </div>
   )
 }
 
-export default function FaqPage() {
+export default function FAQ() {
+  useSEO({
+    title: 'FAQ — MasterChef Cuts',
+    description: 'Answers to common questions about buying whole-animal shares, posting listings, payments, and accounts on MasterChef Cuts.',
+    image: DEFAULT_OG_IMAGE,
+    url: '/faq',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      name: 'MasterChef Cuts FAQ',
+      url: `${SITE_URL}/faq`,
+      mainEntity: FAQS.flatMap(cat =>
+        cat.items.map(item => ({
+          '@type': 'Question',
+          name: item.q,
+          acceptedAnswer: { '@type': 'Answer', text: item.a },
+        }))
+      ),
+    },
+  })
+
   return (
     <div className="faq-page">
-      <div className="faq-inner">
+      <div className="faq-hero">
+        <span className="faq-eyebrow">Help Center</span>
+        <h1 className="faq-title">Frequently Asked Questions</h1>
+        <p className="faq-sub">
+          Can't find your answer?{' '}
+          <Link to="/contact" className="faq-sub-link">Contact us</Link> and we'll get back to you.
+        </p>
+      </div>
 
-        <div className="faq-hero">
-          <span className="about-eyebrow">Help Center</span>
-          <h1 className="faq-hero-title">Frequently Asked Questions</h1>
-          <p className="faq-hero-sub">Everything you need to know about buying and selling on MasterChef Cuts.</p>
-        </div>
-
-        {SECTIONS.map(section => (
-          <div key={section.label} className="faq-section">
-            <span className="faq-section-title">{section.label}</span>
-            {section.items.map(item => (
-              <FaqItem key={item.q} q={item.q} a={item.a} />
-            ))}
-          </div>
+      <div className="faq-body">
+        {FAQS.map(cat => (
+          <section key={cat.category} className="faq-section">
+            <h2 className="faq-category">{cat.category}</h2>
+            <div className="faq-list">
+              {cat.items.map(item => (
+                <FAQItem key={item.q} q={item.q} a={item.a} />
+              ))}
+            </div>
+          </section>
         ))}
+      </div>
 
-        <div className="faq-contact-cta">
-          <h3>Still have questions?</h3>
-          <p>Our support team is here to help with anything not covered above.</p>
-          <Link to="/contact" className="faq-contact-btn">Contact Support →</Link>
-        </div>
-
+      <div className="faq-cta">
+        <p>Still have questions?</p>
+        <Link to="/contact" className="faq-cta-btn">Get in Touch →</Link>
       </div>
     </div>
   )

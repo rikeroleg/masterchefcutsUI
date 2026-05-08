@@ -33,7 +33,7 @@ export default function Admin() {
   const [pendingConfirm, setPendingConfirm] = useState(null) // { message, onConfirm }
 
   useEffect(() => {
-    if (!user || user.role !== 'admin') { navigate('/'); return }
+    if (!user || user.role !== 'admin') { navigate('/login'); return }
     loadStats()
     loadUsers()
     loadListings()
