@@ -42,7 +42,7 @@ export default function Footer() {
         {/* Support */}
         <div className="footer-col">
           <h4 className="footer-col-title">Support</h4>
-          <Link to="/faq" className="footer-link">FAQ</Link>
+          <Link to="/faq" className="footer-link">FAQ / Help Center</Link>
           <Link to="/contact" className="footer-link">Contact Us</Link>
         </div>
 

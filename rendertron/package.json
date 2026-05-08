@@ -1,0 +1,16 @@
+{
+  "name": "masterchefcuts-rendertron",
+  "version": "1.0.0",
+  "description": "Headless Chrome pre-render service for Googlebot / social crawlers",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "^4.18.3",
+    "puppeteer-core": "^22.0.0"
+  }
+}

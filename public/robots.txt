@@ -1,14 +1,13 @@
 User-agent: *
 Allow: /
 Disallow: /admin
+Disallow: /admin/*
 Disallow: /profile
-Disallow: /post
-Disallow: /cart
 Disallow: /messages
-Disallow: /login
-Disallow: /forgot-password
-Disallow: /reset-password
+Disallow: /cart
+Disallow: /order/*
 Disallow: /verify-email
-Disallow: /order/
+Disallow: /reset-password
+Disallow: /forgot-password
 
 Sitemap: https://masterchefcuts.com/sitemap.xml

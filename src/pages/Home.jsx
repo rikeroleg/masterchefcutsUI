@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
-import { DEFAULT_OG_IMAGE, SITE_URL, useSEO } from '../utils/seo'
 
 const ANIMAL_META = {
   BEEF: { emoji: '🐄', label: 'Beef' },
@@ -45,32 +44,18 @@ export default function Home() {
   const { user }                = useAuth()
   const [role, setRole]         = useState(null)
   const [listings, setListings] = useState([])
-  const [reviews, setReviews]   = useState([])
-  const activeListings  = listings.filter(l => l.status === 'ACTIVE' || l.status === 'FULLY_CLAIMED')
-  const availableCuts   = listings.reduce((a, l) => a + (l.totalCuts - l.claimedCuts), 0)
-
-  useSEO({
-    title: 'MasterChef Cuts - Farm-Fresh Meat Marketplace',
-    description: 'Browse whole-animal listings from local butchers and pool with neighbors to claim premium cuts.',
-    image: DEFAULT_OG_IMAGE,
-    url: '/',
-    schema: {
-      '@context': 'https://schema.org',
-      '@type': 'Organization',
-      name: 'MasterChef Cuts',
-      url: SITE_URL,
-      logo: DEFAULT_OG_IMAGE,
-      description: 'A marketplace connecting local farmers and butchers with buyers who want to split whole animals.',
-    },
-  })
+  const [testimonials, setTestimonials] = useState([])
 
   useEffect(() => {
     const params = new URLSearchParams()
     if (user?.zipCode) params.set('zip', user.zipCode)
     const query = params.toString()
     api.get(`/api/listings${query ? `?${query}` : ''}`).then(setListings).catch(() => {})
-    api.get('/api/reviews/featured').then(setReviews).catch(() => {})
+    api.get('/api/reviews/featured').then(setTestimonials).catch(() => {})
   }, [user?.zipCode])
+
+  const activeListings  = listings.filter(l => l.status === 'ACTIVE' || l.status === 'FULLY_CLAIMED')
+  const availableCuts   = listings.reduce((a, l) => a + (l.totalCuts - l.claimedCuts), 0)
   const previewListings = activeListings.slice(0, 3)
 
   return (
@@ -121,33 +106,30 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════ TESTIMONIALS ════ */}
-      {reviews.length >= 2 && (
-      <section className="hp-testimonials">
-        <div className="hp-section-inner">
-          <span className="hp-label">What buyers say</span>
-          <h2 className="hp-h2">Real reviews from real customers.</h2>
-          <div className="hp-testimonials-grid">
-            {reviews.map(r => (
-              <div key={r.id} className="hp-testimonial-card">
-                <div className="hp-testimonial-stars">
-                  {'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}
+      {/* ════ TESTIMONIALS (only shown when backend returns data) ════ */}
+      {testimonials.length > 0 && (
+        <section className="hp-testimonials">
+          <div className="hp-section-inner">
+            <span className="about-eyebrow">What buyers say</span>
+            <h2 className="hp-h2">Real cuts. Real people.</h2>
+            <div className="hp-testimonials-grid">
+              {testimonials.slice(0, 4).map((r, i) => (
+                <div key={r.id ?? i} className="hp-testimonial-card">
+                  <div className="hp-testimonial-stars">
+                    {'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}
+                  </div>
+                  <p className="hp-testimonial-body">"{r.comment || r.body || ''}"</p>
+                  <div className="hp-testimonial-author">
+                    <span className="hp-testimonial-name">{r.reviewerName || r.buyerName || 'Anonymous'}</span>
+                    {r.animalType && (
+                      <span className="hp-testimonial-meta">{r.animalType} · {r.farmName || ''}</span>
+                    )}
+                  </div>
                 </div>
-                <p className="hp-testimonial-comment">"{r.comment}"</p>
-                <div className="hp-testimonial-footer">
-                  <span className="hp-testimonial-buyer">{r.buyerName}</span>
-                  {r.animalType && (
-                    <span className="hp-testimonial-animal">{r.animalType.charAt(0) + r.animalType.slice(1).toLowerCase()}</span>
-                  )}
-                  {r.farmerShopName && (
-                    <span className="hp-testimonial-farm">@ {r.farmerShopName}</span>
-                  )}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
       )}
 
       {/* ════ JOIN / ROLE ════ */}

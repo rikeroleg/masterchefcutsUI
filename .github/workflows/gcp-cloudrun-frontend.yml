@@ -63,14 +63,12 @@ jobs:
           VITE_API_URL: ""
           VITE_STRIPE_PUBLIC_KEY: ${{ secrets.VITE_STRIPE_PUBLIC_KEY }}
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
-          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
         run: |
           IMAGE_URI="${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${ARTIFACT_REGISTRY_REPO}/masterchefcuts-ui:${IMAGE_TAG}"
           docker build \
             --build-arg VITE_API_URL="${VITE_API_URL}" \
             --build-arg VITE_STRIPE_PUBLIC_KEY="${VITE_STRIPE_PUBLIC_KEY}" \
             --build-arg VITE_SENTRY_DSN="${VITE_SENTRY_DSN}" \
-            --build-arg VITE_GLB_BASE_URL="https://storage.googleapis.com/${GCS_BUCKET}" \
             -t "${IMAGE_URI}" .
           docker push "${IMAGE_URI}"
           echo "image=${IMAGE_URI}" >> "$GITHUB_OUTPUT"

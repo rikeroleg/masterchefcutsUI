@@ -133,19 +133,6 @@ function FulfilledPanel({ listingId, currentUserId }) {
     }
   }
 
-  async function handleUnclaim(claimId, cutId) {
-    setWorking(claimId)
-    try {
-      await api.delete(`/api/claims/${claimId}`)
-      // Refresh listing
-      const updated = await api.get(`/api/listings/${listingId}`)
-      setListing(updated)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setWorking(null)
-    }
-  }
 
   if (loading) return <p className="db-panel-loading">Loading cuts…</p>
   if (error)   return <p className="db-panel-error">{error}</p>
@@ -168,7 +155,7 @@ function FulfilledPanel({ listingId, currentUserId }) {
       {listing.cuts.length > 0 && (
         <div className="db-panel-cuts">
           {listing.cuts.map(cut => {
-            const isMine = cut.claimed && cut.claimedByName && currentUserId
+
             // We can only detect "mine" if there's a claimId. We'll fetch my claims separately OR rely on claimedByName matching
             // For now: show unclaim for any claimed cut if the user has a claim — we look it up below
             return (
@@ -220,7 +207,7 @@ function RequestCard({ request, onFulfilled, onCancelled, onEdited }) {
     try {
       await api.delete(`/api/animal-requests/${request.id}`)
       onCancelled(request.id)
-    } catch {}
+    } catch { /* ignore */ }
     setCancelling(false)
   }
 

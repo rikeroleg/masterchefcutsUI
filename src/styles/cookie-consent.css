@@ -1,0 +1,51 @@
+/* ── Cookie consent bar ──────────────────────────────────────────────────── */
+.cc-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 14px 24px;
+  background: rgba(20, 12, 6, 0.96);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  flex-wrap: wrap;
+}
+
+.cc-text {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+}
+
+.cc-link {
+  color: #e07730;
+  text-decoration: underline;
+}
+
+.cc-link:hover {
+  color: #f59340;
+}
+
+.cc-accept {
+  flex-shrink: 0;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  background: #b84a00;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cc-accept:hover {
+  background: #d45800;
+}

@@ -58,7 +58,44 @@ export default function FarmerProfile() {
   useEffect(() => {
     fetchListings()
     api.get(`/api/reviews/farmer/${encodeURIComponent(id)}`).then(setReviews).catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
+
+  // LocalBusiness JSON-LD — inject when farmer data is available
+  useEffect(() => {
+    if (!farmer) return
+    const displayName = farmer.shopName || farmer.name || 'Farmer'
+    document.title = `${displayName} — MasterChef Cuts`
+    const avgRating = reviews.length
+      ? (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length).toFixed(1)
+      : null
+    const script = document.createElement('script')
+    script.type = 'application/ld+json'
+    script.id = 'ld-farmer-localbusiness'
+    script.text = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'LocalBusiness',
+      name: displayName,
+      url: `https://masterchefcuts.com/farmer/${id}`,
+      image: 'https://masterchefcuts.com/og-image.jpg',
+      description: farmer.bio || `Farm-fresh meat from ${displayName}.`,
+      address: {
+        '@type': 'PostalAddress',
+        postalCode: farmer.zipCode || '',
+        addressCountry: 'US',
+      },
+      ...(avgRating && reviews.length > 0 ? {
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: avgRating,
+          reviewCount: reviews.length,
+        },
+      } : {}),
+    })
+    document.getElementById('ld-farmer-localbusiness')?.remove()
+    document.head.appendChild(script)
+    return () => script.remove()
+  }, [farmer, reviews, id])
 
   async function fetchListings() {
     setLoading(true)
@@ -73,6 +110,18 @@ export default function FarmerProfile() {
           bio: data[0].farmerBio || null,
           certifications: data[0].farmerCertifications || null,
         })
+      } else {
+        // No listings yet — fetch farmer profile directly
+        try {
+          const profile = await api.get(`/api/participants/${encodeURIComponent(id)}/public`)
+          setFarmer({
+            name: profile.name,
+            shopName: profile.shopName || null,
+            zipCode: profile.zipCode || null,
+            bio: profile.bio || null,
+            certifications: profile.certifications || null,
+          })
+        } catch { /* silently ignore — farmer may not exist */ }
       }
     } catch (err) {
       toast.error(err.message || 'Failed to load farmer listings.')
@@ -183,7 +232,7 @@ export default function FarmerProfile() {
   )
 }
 
-function FarmerListingCard({ listing, onClaimed, user, navigate, toast }) {
+function FarmerListingCard({ listing, onClaimed, user, navigate }) {
   const meta = ANIMAL_META[listing.animalType] || { emoji: '🥩', label: listing.animalType }
   const available = listing.cuts.filter(c => !c.claimed).length
   const [payingCut, setPayingCut] = useState(null)

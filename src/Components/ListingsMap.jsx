@@ -6,7 +6,6 @@
  * Falls back gracefully if geocoding fails.
  */
 import React, { useEffect, useRef, useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 // Lazily import leaflet so it doesn't break SSR / non-map pages
 let L = null
@@ -36,7 +35,6 @@ const ANIMAL_COLOR = { BEEF: '#c0392b', PORK: '#d35400', LAMB: '#8e44ad' }
 const ANIMAL_EMOJI = { BEEF: '🐄', PORK: '🐷', LAMB: '🐑' }
 
 export default function ListingsMap({ listings }) {
-  const navigate   = useNavigate()
   const mapRef     = useRef(null)
   const leafletMap = useRef(null)
   const markers    = useRef([])

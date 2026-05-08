@@ -123,7 +123,14 @@
 }
 .ld-back:hover { color: #fff; }
 
-/* Share listing button */
+/* Share listing button + social icons panel */
+.ld-share-panel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
 .ld-share-btn {
   background: rgba(255,255,255,0.15);
   border: 1px solid rgba(255,255,255,0.4);
@@ -140,6 +147,46 @@
   color: #fff;
   border-color: #e74c3c;
 }
+
+.ld-share-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: background 0.15s, transform 0.12s;
+  cursor: pointer;
+}
+.ld-share-icon:hover { background: rgba(255,255,255,0.22); transform: scale(1.1); }
+
+/* Share with neighbors callout banner */
+.ld-share-neighbors {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(231,76,60,0.1);
+  border: 1px solid rgba(231,76,60,0.3);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.ld-share-neighbors-icon { font-size: 1.4rem; flex-shrink: 0; }
+
+.ld-share-neighbors > div {
+  flex: 1;
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.85);
+  min-width: 160px;
+}
+
+.ld-share-neighbors > div strong { color: #fff; }
 
 /* Listing photo/image display */
 .ld-photo {

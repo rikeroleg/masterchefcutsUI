@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { api } from '../api/client'
@@ -40,21 +40,53 @@ const PRIMAL_CUTS = {
 }
 
 export default function PostListing() {
-  const { user } = useAuth()
+  const { user, refreshConnectStatus } = useAuth()
   const { toast } = useToast()
-  const navigate = useNavigate()
 
   const [form, setForm] = useState({
     animalType: 'beef', breed: '', hangingWeight: '', pricePerLb: '',
     sourceFarm: '', description: '',
     zipCode: user?.zipCode || '',
-    shares: {}, prices: {}, weights: {},
+    processingDate: '',
+    shares: {}, weights: {},
   })
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState('')
+  const [connectLoading, setConnectLoading]       = useState(false)
+  const [connectRefreshing, setConnectRefreshing] = useState(false)
+  const [connectError, setConnectError]           = useState('')
   const [photoFile, setPhotoFile]     = useState(null)
   const [photoPreview, setPhotoPreview] = useState(null)
+
+  async function handleStartOnboarding() {
+    setConnectLoading(true)
+    setConnectError('')
+    try {
+      const data = await api.post('/api/connect/onboard', {})
+      if (data?.url) {
+        window.open(data.url, '_blank', 'noopener,noreferrer')
+      } else {
+        setConnectError('Could not get onboarding link. Try again.')
+      }
+    } catch (err) {
+      setConnectError(err.message || 'Failed to start onboarding.')
+    } finally {
+      setConnectLoading(false)
+    }
+  }
+
+  async function handleRefreshConnect() {
+    setConnectRefreshing(true)
+    setConnectError('')
+    try {
+      await refreshConnectStatus()
+    } catch {
+      setConnectError('Could not refresh status. Please try again.')
+    } finally {
+      setConnectRefreshing(false)
+    }
+  }
 
   function handlePhotoChange(e) {
     const file = e.target.files[0]
@@ -72,14 +104,10 @@ export default function PostListing() {
   function handleShare(id) {
     setForm(f => {
       const next = { ...f.shares, [id]: !f.shares[id] }
-      const nextPrices = { ...f.prices }
       const nextWeights = { ...f.weights }
-      if (!next[id]) { delete nextPrices[id]; delete nextWeights[id] }
-      return { ...f, shares: next, prices: nextPrices, weights: nextWeights }
+      if (!next[id]) { delete nextWeights[id] }
+      return { ...f, shares: next, weights: nextWeights }
     })
-  }
-  function handlePrice(id, val) {
-    setForm(f => ({ ...f, prices: { ...f.prices, [id]: val } }))
   }
   function handleWeight(id, val) {
     setForm(f => ({ ...f, weights: { ...f.weights, [id]: val } }))
@@ -92,13 +120,14 @@ export default function PostListing() {
     setLoading(true)
     try {
       const created = await api.post('/api/listings', {
-        animalType:  form.animalType.toUpperCase(),
-        breed:       form.breed       || null,
-        weightLbs:   parseFloat(form.hangingWeight),
-        pricePerLb:  parseFloat(form.pricePerLb),
-        sourceFarm:  form.sourceFarm  || null,
-        description: form.description || null,
-        zipCode:     form.zipCode,
+        animalType:     form.animalType.toUpperCase(),
+        breed:          form.breed          || null,
+        weightLbs:      parseFloat(form.hangingWeight),
+        pricePerLb:     parseFloat(form.pricePerLb),
+        sourceFarm:     form.sourceFarm     || null,
+        description:    form.description    || null,
+        zipCode:        form.zipCode,
+        processingDate: form.processingDate || null,
         cuts: selectedCuts.map(id => ({
           label:     PRIMAL_CUTS[form.animalType].find(c => c.id === id)?.label,
           weightLbs: form.weights[id] ? parseFloat(form.weights[id]) : null,
@@ -109,7 +138,7 @@ export default function PostListing() {
           const fd = new FormData()
           fd.append('file', photoFile)
           await api.upload(`/api/listings/${created.id}/photo`, fd)
-        } catch (_) {}
+        } catch { /* ignore */ }
       }
       setSubmitted(true)
       toast.success('Listing posted successfully!')
@@ -166,7 +195,24 @@ export default function PostListing() {
               You need to connect a bank account via Stripe before posting listings.
               This ensures you receive your 85% payout automatically when buyers pay.
             </p>
-            <Link to="/profile" className="hp-btn-primary">Go to Profile to Connect →</Link>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '8px' }}>
+              <button
+                className="hp-btn-primary"
+                disabled={connectLoading}
+                onClick={handleStartOnboarding}
+              >
+                {connectLoading ? 'Redirecting…' : '🏦 Start Onboarding →'}
+              </button>
+              <button
+                className="hp-btn-secondary"
+                disabled={connectRefreshing}
+                onClick={handleRefreshConnect}
+                style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', color: '#f5c97a', borderRadius: '6px', padding: '10px 18px', cursor: 'pointer', fontWeight: 600 }}
+              >
+                {connectRefreshing ? 'Checking…' : '↺ Refresh Status'}
+              </button>
+            </div>
+            {connectError && <p style={{ color: '#e74c3c', marginTop: '10px', fontSize: '0.85rem' }}>{connectError}</p>}
           </div>
         )}
 
@@ -176,7 +222,7 @@ export default function PostListing() {
             <h2>Listing submitted!</h2>
             <p>Your listing has been posted. Participants near <strong>{form.sourceFarm}</strong> will be able to find and claim cuts.</p>
             <div className="post-success-actions">
-              <button className="hp-btn-primary" onClick={() => { setSubmitted(false); setForm(f => ({ ...f, animalType: 'beef', breed: '', hangingWeight: '', pricePerLb: '', sourceFarm: '', description: '', shares: {}, prices: {}, weights: {} })) }}>
+              <button className="hp-btn-primary" onClick={() => { setSubmitted(false); setForm(f => ({ ...f, animalType: 'beef', breed: '', hangingWeight: '', pricePerLb: '', sourceFarm: '', description: '', processingDate: '', shares: {}, weights: {} })) }}>
                 Post another listing
               </button>
               <Link to="/profile" className="hp-btn-ghost">View my listings →</Link>
@@ -283,15 +329,10 @@ export default function PostListing() {
                     </span>
                     {form.shares[s.id] && (
                       <span className="hp-share-price-wrap" onClick={e => e.stopPropagation()}>
-                        <span className="hp-dollar">$</span>
-                        <input className="hp-price-in" type="number" min="1"
-                          value={form.prices[s.id] || ''}
-                          onChange={e => handlePrice(s.id, e.target.value)}
-                          placeholder="0" required />
                         <input className="hp-weight-in" type="number" min="0.1" step="0.1"
                           value={form.weights[s.id] || ''}
                           onChange={e => handleWeight(s.id, e.target.value)}
-                          placeholder="lbs (opt)" title="Weight in lbs for this cut (optional)" />
+                          placeholder="lbs (opt)" title="Estimated weight for this cut in lbs (optional)" />
                       </span>
                     )}
                   </label>
@@ -305,6 +346,12 @@ export default function PostListing() {
                 <input name="zipCode" value={form.zipCode} onChange={handleField}
                   placeholder="17601" maxLength={10} required />
                 <span className="hp-field-hint">Participants searching near this ZIP will find your listing</span>
+              </div>
+              <div className="hp-form-field">
+                <label>Processing Date <span className="hp-opt">(optional)</span></label>
+                <input name="processingDate" type="date" value={form.processingDate} onChange={handleField}
+                  min={new Date().toISOString().split('T')[0]} />
+                <span className="hp-field-hint">When you plan to process this animal</span>
               </div>
             </div>
 

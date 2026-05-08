@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react'
 import { Bell } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useNotifications } from '../context/NotificationContext'
-import { useAuth } from '../context/AuthContext'
 import '../styles/notification-bell.css'
 
 function timeAgo(iso) {
@@ -43,7 +42,6 @@ const TYPE_COLOR = {
 
 export default function NotificationBell() {
   const { notifications, unreadCount, totalCount, hasMore, loading, markRead, markAllRead, clearAll, loadMore } = useNotifications()
-  const { user } = useAuth()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const ref = useRef(null)

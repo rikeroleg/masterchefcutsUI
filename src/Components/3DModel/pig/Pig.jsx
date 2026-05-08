@@ -189,8 +189,7 @@ function CutMarker({ position, color, cut, onClose }) {
 
 export function Pig({ ...props }) {
   const meshRef = useRef()
-  const GLB_URL = import.meta.env.VITE_GLB_BASE_URL ? `${import.meta.env.VITE_GLB_BASE_URL}/3DPig.glb` : '/3DPig.glb'
-  const { scene, materials } = useGLTF(GLB_URL)
+  const { scene, materials } = useGLTF(`${import.meta.env.VITE_GLB_BASE ?? 'https://storage.googleapis.com/masterchefcuts-static'}/3DPig.glb`)
   const [markers, setMarkers] = useState([])
 
   const meshObj = useMemo(() => {
@@ -199,7 +198,11 @@ export function Pig({ ...props }) {
     return found
   }, [scene])
 
-  const mat = Object.values(materials)[0] ?? meshObj?.material
+  const mat = useMemo(() => {
+    const m = (Object.values(materials)[0] ?? meshObj?.material)?.clone()
+    if (m) { m.metalness = 0; m.roughness = 0.65 }
+    return m
+  }, [materials, meshObj])
 
   const handleClick = useCallback((event) => {
     event.stopPropagation()
@@ -250,7 +253,7 @@ export function Pig({ ...props }) {
   )
 }
 
-useGLTF.preload(import.meta.env.VITE_GLB_BASE_URL ? `${import.meta.env.VITE_GLB_BASE_URL}/3DPig.glb` : '/3DPig.glb')
+useGLTF.preload(`${import.meta.env.VITE_GLB_BASE ?? 'https://storage.googleapis.com/masterchefcuts-static'}/3DPig.glb`)
 
 
 

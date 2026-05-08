@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useSearchParams, Link, useNavigate } from 'react-router-dom'
+import { useSearchParams, Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -16,7 +16,6 @@ function Avatar({ name = '?', size = 36 }) {
 export default function Messages() {
   const { user }           = useAuth()
   const { toast }          = useToast()
-  const navigate           = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const withId = searchParams.get('with')   // pre-open thread with farmer ID
   const withName = searchParams.get('name') // display name hint
@@ -47,7 +46,7 @@ export default function Messages() {
     if (withId && user) {
       setActiveThread({ participantId: withId, name: withName || 'Farmer' })
     }
-  }, [withId, user])
+  }, [withId, user, withName])
 
   // Load messages for active thread
   useEffect(() => {
@@ -64,6 +63,27 @@ export default function Messages() {
       })
       .catch(() => setMessages([]))
       .finally(() => setMsgLoading(false))
+  }, [activeThread, user])
+
+  // Poll for new messages every 5 seconds when a thread is open
+  useEffect(() => {
+    if (!activeThread || !user) return
+    const interval = setInterval(() => {
+      api.get(`/api/messages?with=${activeThread.participantId}`)
+        .then(data => {
+          setMessages(prev => {
+            if (data.length !== prev.length) {
+              // Mark new unread messages as read silently
+              data.filter(m => !m.read && m.senderId !== user.id)
+                .forEach(m => api.post(`/api/messages/${m.id}/read`).catch(() => {}))
+              api.get('/api/messages/threads').then(setThreads).catch(() => {})
+            }
+            return data
+          })
+        })
+        .catch(() => {})
+    }, 5000)
+    return () => clearInterval(interval)
   }, [activeThread, user])
 
   // Scroll to bottom when messages change

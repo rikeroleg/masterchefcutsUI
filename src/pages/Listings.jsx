@@ -127,12 +127,10 @@ function ListingCard({ listing, onClaimed }) {
         await api.post(`/api/listings/${listing.id}/waitlist`)
         setOnWaitlist(true)
       }
-    } catch {}
+    } catch (err) {
+      toast.error(err.message || 'Failed to update waitlist.')
+    }
     setWLLoading(false)
-  }
-
-  if (false) {
-    // confirmed state removed — toast + inline update replaces this
   }
 
   return (
@@ -230,7 +228,6 @@ function ListingCard({ listing, onClaimed }) {
 }
 
 export default function Listings() {
-  const { user }                    = useAuth()
   const { toast }                   = useToast()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -293,19 +290,43 @@ export default function Listings() {
   // Track last-fetched server params to detect resets vs appends
   const lastServerParams = useRef({ animal, zip, maxPrice })
 
+  // ItemList JSON-LD — updates whenever visible listings change
+  useEffect(() => {
+    if (!listings.length) return
+    const script = document.createElement('script')
+    script.type = 'application/ld+json'
+    script.id = 'ld-listings-itemlist'
+    script.text = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Farm-Fresh Meat Listings on MasterChef Cuts',
+      url: 'https://masterchefcuts.com/listings',
+      numberOfItems: listings.length,
+      itemListElement: listings.map((l, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `https://masterchefcuts.com/listings/${l.id}`,
+        name: `${l.breed || ''} ${l.animalType || ''} — ${l.farmerShopName || l.farmerName || ''}`.trim(),
+      })),
+    })
+    document.getElementById('ld-listings-itemlist')?.remove()
+    document.head.appendChild(script)
+    return () => script.remove()
+  }, [listings])
+
   // ── Push debounced inputs → URL params ───────────────────────────────────
-  function updateParam(key, value) {
+  const updateParam = React.useCallback((key, value) => {
     setSearchParams(prev => {
       const next = new URLSearchParams(prev)
       if (value) next.set(key, value); else next.delete(key)
       return next
     }, { replace: true })
-  }
+  }, [setSearchParams])
 
-  useEffect(() => { updateParam('zip',      debouncedZip)      }, [debouncedZip])
-  useEffect(() => { updateParam('maxPrice', debouncedMaxPrice) }, [debouncedMaxPrice])
-  useEffect(() => { updateParam('breed',    debouncedBreed)    }, [debouncedBreed])
-  useEffect(() => { updateParam('q',        debouncedQ)        }, [debouncedQ])
+  useEffect(() => { updateParam('zip',      debouncedZip)      }, [debouncedZip, updateParam])
+  useEffect(() => { updateParam('maxPrice', debouncedMaxPrice) }, [debouncedMaxPrice, updateParam])
+  useEffect(() => { updateParam('breed',    debouncedBreed)    }, [debouncedBreed, updateParam])
+  useEffect(() => { updateParam('q',        debouncedQ)        }, [debouncedQ, updateParam])
 
   // ── Fetch whenever server-side filter params change ──────────────────────
   const q = searchParams.get('q') || ''

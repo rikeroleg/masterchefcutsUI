@@ -13,7 +13,7 @@ const ANIMAL_INFO = {
 }
 
 export default function Cart() {
-  const { items, removeFromCart, removeItems, updateQty, totalPrice, clearCart } = useCart()
+  const { items, removeFromCart, removeItems, updateQty, clearCart } = useCart()
   const { user } = useAuth()
   const location = useLocation()
   const selectListingId = location.state?.selectListingId

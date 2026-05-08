@@ -6,15 +6,19 @@ import { useToast } from '../context/ToastContext'
 import { cartBridge } from '../context/CartContext'
 import Spinner from '../Components/Spinner'
 import '../styles/listing-detail.css'
-import { DEFAULT_OG_IMAGE, SITE_URL, useSEO } from '../utils/seo'
 
-function ShareButton({ title }) {
+function SharePanel({ listing }) {
   const { toast } = useToast()
+  const url  = `https://masterchefcuts.com/listings/${listing.id}`
+  const meta = ANIMAL_META[listing.animalType] || { label: listing.animalType }
+  const text = encodeURIComponent(
+    `Check out this ${listing.breed || ''} ${meta.label} from ${listing.farmerShopName || listing.farmerName || 'a local farm'} on MasterChef Cuts!`
+  )
+  const encodedUrl = encodeURIComponent(url)
 
-  function handleShare() {
-    const url = window.location.href
+  function handleNativeShare() {
     if (navigator.share) {
-      navigator.share({ title, url }).catch(() => {})
+      navigator.share({ title: listing.breed + ' ' + meta.label, text: decodeURIComponent(text), url }).catch(() => {})
     } else {
       navigator.clipboard.writeText(url)
         .then(() => toast.success('Link copied to clipboard!'))
@@ -23,9 +27,34 @@ function ShareButton({ title }) {
   }
 
   return (
-    <button className="ld-share-btn" onClick={handleShare} title="Share this listing">
-      ↗ Share
-    </button>
+    <div className="ld-share-panel">
+      <button className="ld-share-btn" onClick={handleNativeShare} title="Share or copy link">
+        ↗ Share
+      </button>
+      <a
+        className="ld-share-icon ld-share-icon--wa"
+        href={`https://wa.me/?text=${text}%20${encodedUrl}`}
+        target="_blank" rel="noopener noreferrer"
+        title="Share on WhatsApp"
+      >🟢</a>
+      <a
+        className="ld-share-icon ld-share-icon--fb"
+        href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
+        target="_blank" rel="noopener noreferrer"
+        title="Share on Facebook"
+      >📘</a>
+      <a
+        className="ld-share-icon ld-share-icon--tw"
+        href={`https://twitter.com/intent/tweet?text=${text}&url=${encodedUrl}`}
+        target="_blank" rel="noopener noreferrer"
+        title="Share on X / Twitter"
+      >🐦</a>
+      <a
+        className="ld-share-icon ld-share-icon--sms"
+        href={`sms:?body=${text}%20${encodedUrl}`}
+        title="Share via SMS"
+      >💬</a>
+    </div>
   )
 }
 
@@ -81,51 +110,38 @@ export default function ListingDetail() {
   const [waitlistLoading,setWaitlistLoading] = useState(false)
   const [waitlistTotal,  setWaitlistTotal]  = useState(0)
 
-  const listingMeta = listing ? (ANIMAL_META[listing.animalType] || { emoji: '🥩', label: listing.animalType }) : null
-  const availableCuts = listing ? listing.cuts.filter(c => !c.claimed).length : 0
-  const avgRatingValue = reviews.length > 0 ? reviews.reduce((a, r) => a + r.rating, 0) / reviews.length : null
-  const listingTitle = listingMeta && listing
-    ? `${listing.breed} ${listingMeta.label} - MasterChef Cuts`
-    : 'Listing - MasterChef Cuts'
-  const listingDescription = listing
-    ? (listing.description || `Claim ${listingMeta.label.toLowerCase()} cuts from ${listing.farmerShopName || listing.farmerName} in ZIP ${listing.zipCode}.`)
-    : 'View whole-animal listing details from local butchers on MasterChef Cuts.'
-  const listingImage = listing?.imageUrl || DEFAULT_OG_IMAGE
+  useEffect(() => { document.title = 'Listing \u2014 MasterChef Cuts' }, [])
 
-  useSEO({
-    title: listingTitle,
-    description: listingDescription,
-    image: listingImage,
-    url: listing ? `/listings/${listing.id}` : `/listings/${id}`,
-    type: listing ? 'product' : 'website',
-    schema: listing ? {
-      '@context': 'https://schema.org',
-      '@type': 'Product',
-      name: `${listing.breed} ${listingMeta.label}`,
-      description: listingDescription,
-      image: [listingImage],
-      brand: {
-        '@type': 'Brand',
-        name: 'MasterChef Cuts',
-      },
-      seller: {
-        '@type': 'Organization',
-        name: listing.farmerShopName || listing.farmerName || 'MasterChef Cuts Seller',
-      },
-      offers: {
-        '@type': 'Offer',
-        priceCurrency: 'USD',
-        price: Number(listing.pricePerLb).toFixed(2),
-        availability: availableCuts > 0 ? 'https://schema.org/InStock' : 'https://schema.org/SoldOut',
-        url: `${SITE_URL}/listings/${listing.id}`,
-      },
-      aggregateRating: avgRatingValue !== null ? {
-        '@type': 'AggregateRating',
-        ratingValue: avgRatingValue.toFixed(1),
-        reviewCount: reviews.length,
-      } : undefined,
-    } : undefined,
-  })
+  useEffect(() => {
+    if (listing) {
+      const animalLabel = ANIMAL_META[listing.animalType]?.label || ''
+      document.title = `${listing.breed} ${animalLabel} \u2014 MasterChef Cuts`
+
+      const script = document.createElement('script')
+      script.type = 'application/ld+json'
+      script.id = 'ld-listing-product'
+      script.text = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: `${listing.breed} ${animalLabel}`,
+        description: listing.description || `${listing.breed} ${animalLabel} from ${listing.farmerShopName || listing.farmerName}`,
+        image: listing.imageUrl || 'https://masterchefcuts.com/og-image.jpg',
+        offers: {
+          '@type': 'AggregateOffer',
+          priceCurrency: 'USD',
+          lowPrice: listing.pricePerLb,
+          highPrice: listing.pricePerLb,
+          availability: listing.status === 'ACTIVE'
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/SoldOut',
+        },
+        brand: { '@type': 'Brand', name: listing.farmerShopName || listing.farmerName || 'MasterChef Cuts' },
+      })
+      document.getElementById('ld-listing-product')?.remove()
+      document.head.appendChild(script)
+      return () => script.remove()
+    }
+  }, [listing])
 
   useEffect(() => {
     Promise.all([
@@ -284,7 +300,7 @@ export default function ListingDetail() {
 
         <div className="ld-back-row">
           <Link to="/listings" className="ld-back">← Back to Listings</Link>
-          <ShareButton title={`${listing.breed} ${meta.label} — MasterChef Cuts`} />
+          <SharePanel listing={listing} />
         </div>
 
         {/* Hero card */}
@@ -344,6 +360,18 @@ export default function ListingDetail() {
             ))}
           </div>
         </div>
+
+        {/* Share with neighbors callout — shown when partially claimed */}
+        {available > 0 && claimed > 0 && pct < 100 && (
+          <div className="ld-share-neighbors">
+            <span className="ld-share-neighbors-icon">🤝</span>
+            <div>
+              <strong>Help fill this pool!</strong>
+              <span> Only {available} cut{available !== 1 ? 's' : ''} left — share with neighbors to get it processed faster.</span>
+            </div>
+            <SharePanel listing={listing} />
+          </div>
+        )}
 
         {listing.description && (
           <p className="ld-description">{listing.description}</p>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -20,7 +20,6 @@ export default function OrderReceipt() {
   const { id }          = useParams()
   const { user }        = useAuth()
   const { toast }       = useToast()
-  const navigate        = useNavigate()
 
   const [order, setOrder]               = useState(null)
   const [loading, setLoading]           = useState(true)
@@ -34,6 +33,19 @@ export default function OrderReceipt() {
       .then(data => { setOrder(data); setLoading(false) })
       .catch(err  => { setError(err.message || 'Order not found.'); setLoading(false) })
   }, [id])
+
+  // Poll for status updates every 15s; stop when terminal status reached
+  useEffect(() => {
+    if (!id || !order) return
+    const terminal = new Set(['COMPLETED', 'PAYMENT_FAILED'])
+    if (terminal.has(order.status?.toUpperCase())) return
+    const interval = setInterval(() => {
+      api.get(`/api/orders/${id}`)
+        .then(data => setOrder(data))
+        .catch(() => {}) // silently ignore poll errors
+    }, 15_000)
+    return () => clearInterval(interval)
+  }, [id, order])
 
   async function handleConfirmPickup() {
     setConfirming(true)

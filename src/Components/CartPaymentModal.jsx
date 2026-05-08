@@ -87,6 +87,28 @@ export default function CartPaymentModal({ items, onSuccess, onClose }) {
   const [amountCents,  setAmountCents]  = useState(0)
   const [error,        setError]        = useState('')
   const intentCreatedRef = useRef(false) // Prevent duplicate intent creation
+  const modalRef = useRef(null)
+
+  // Focus trap + Escape key
+  useEffect(() => {
+    const el = modalRef.current
+    if (!el) return
+    const focusable = el.querySelectorAll('button, input, select, textarea, [tabindex]:not([tabindex="-1"])')
+    const first = focusable[0]
+    const last  = focusable[focusable.length - 1]
+    first?.focus()
+    function handleKey(e) {
+      if (e.key === 'Escape') { onClose(); return }
+      if (e.key !== 'Tab') return
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last?.focus() }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first?.focus() }
+      }
+    }
+    el.addEventListener('keydown', handleKey)
+    return () => el.removeEventListener('keydown', handleKey)
+  }, [onClose])
 
   useEffect(() => {
     // Guard against duplicate calls (React StrictMode, rapid re-renders, etc.)
@@ -124,7 +146,7 @@ export default function CartPaymentModal({ items, onSuccess, onClose }) {
 
   return (
     <div className="pm-overlay" onClick={onClose}>
-      <div className="pm-modal" onClick={e => e.stopPropagation()}>
+      <div className="pm-modal" ref={modalRef} onClick={e => e.stopPropagation()}>
         <div className="pm-header">
           <div className="pm-header-info">
             <h2 className="pm-title">Complete Order</h2>
@@ -139,10 +161,10 @@ export default function CartPaymentModal({ items, onSuccess, onClose }) {
           <div className="pm-loading">Preparing payment\u2026</div>
         )}
 
-        {clientSecret && (
+        {clientSecret && clientSecret !== 'MOCK' && (
           <Elements
             stripe={stripePromise}
-            options={{ clientSecret, appearance: STRIPE_APPEARANCE }}
+            options={{ clientSecret, appearance: STRIPE_APPEARANCE, wallets: { applePay: 'auto', googlePay: 'auto' } }}
           >
             <CartCheckoutForm
               items={items}
@@ -151,6 +173,26 @@ export default function CartPaymentModal({ items, onSuccess, onClose }) {
               onCancel={onClose}
             />
           </Elements>
+        )}
+
+        {clientSecret === 'MOCK' && (
+          <div style={{ padding: '0 24px 24px', textAlign: 'center' }}>
+            <p>Stripe is disabled locally. This is a mock checkout.</p>
+            <div className="pm-actions" style={{ justifyContent: 'center', marginTop: 16 }}>
+              <button className="pm-cancel-btn" onClick={onClose}>Cancel</button>
+              <button 
+                className="pm-pay-btn" 
+                onClick={() => {
+                  // Simulate webhook to complete order because the local mock won't receive one
+                  api.post('/api/payments/mock-webhook', { paymentIntentId: "MOCK", buyerId: "MOCK" })
+                    .catch(() => {})
+                    .finally(() => onSuccess('MOCK'));
+                }}
+              >
+                Mock Pay ${(amountCents / 100).toFixed(2)}
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </div>

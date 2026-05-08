@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { api } from '../api/client'
 import { useAuth } from './AuthContext'
@@ -156,3 +157,4 @@ export function NotificationProvider({ children }) {
 export function useNotifications() {
   return useContext(NotificationContext)
 }
+

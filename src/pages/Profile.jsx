@@ -176,7 +176,8 @@ const STATUS_STYLE = {
 }
 
 function Avatar({ name, size = 56 }) {
-  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+  const safeName = name || '?'
+  const initials = safeName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
   return (
     <div className="profile-avatar" style={{ width: size, height: size, fontSize: size * 0.38 }}>
       {initials}
@@ -193,7 +194,7 @@ export default function Profile() {
   const [editing, setEditing]             = useState(false)
   const [connectLoading, setConnectLoading] = useState(false)
 
-  const { favorites, toggle: toggleFav } = useFavorites()
+  const { favorites } = useFavorites()
 
   // Handle Stripe Connect return redirect (?connect=success or ?connect=refresh)
   useEffect(() => {
@@ -284,7 +285,7 @@ export default function Profile() {
       setOrdersLoading(true)
       api.get('/api/orders/my').then(setMyOrders).catch(() => toast.error('Could not load your orders.')).finally(() => setOrdersLoading(false))
     }
-  }, [user, isFarmerUser])
+  }, [user, isFarmerUser, toast])
   const [form, setForm] = useState({
     name: user?.name || '', shopName: user?.shopName || '',
     street: user?.street || '', apt: user?.apt || '',
@@ -1375,7 +1376,7 @@ export default function Profile() {
             <h2 className="profile-section-title">🔔 Notification Preferences</h2>
           </div>
           <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem', marginBottom: '12px' }}>
-            Choose which notifications you receive.
+            Choose which in-app notifications you receive.
           </p>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             {['ALL', 'IMPORTANT_ONLY'].map(opt => (
@@ -1392,6 +1393,26 @@ export default function Profile() {
           </div>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.78rem', marginTop: '8px' }}>
             Important: pool full, processing set, order complete.
+          </p>
+
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem', marginTop: '20px', marginBottom: '10px' }}>
+            Email notification preference:
+          </p>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            {[['ALL', '📧 All emails'], ['IMPORTANT', '⭐ Orders only'], ['NONE', '🔕 No emails']].map(([val, label]) => (
+              <button
+                key={val}
+                disabled={emailPrefLoading}
+                className={`profile-date-btn${emailPref === val ? ' profile-date-btn--active' : ''}`}
+                style={emailPref === val ? { background: '#f5c97a', color: '#1a0a00', fontWeight: 700, border: 'none' } : {}}
+                onClick={() => emailPref !== val && handleEmailPrefChange(val)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.78rem', marginTop: '8px' }}>
+            ‘Orders only’ = claim accepted, order ready, dispute updates. ‘No emails’ = in-app only.
           </p>
         </div>
 

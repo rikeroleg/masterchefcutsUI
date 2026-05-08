@@ -13,7 +13,6 @@ export default function Login() {
   const [error, setError]   = useState('')
   const [fieldErrors, setFieldErrors] = useState(null)
   const [loading, setLoad]  = useState(false)
-  const [verified, setVerified] = useState(false)
   const [registered, setRegistered] = useState(false) // Show email verification prompt
   const { login, register, sessionExpiredMsg, clearSessionMsg } = useAuth()
   const navigate            = useNavigate()
@@ -53,6 +52,10 @@ export default function Login() {
     const pwdPattern = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$/
     if (!pwdPattern.test(signup.password)) {
       setError('Password must be at least 8 characters and contain at least one uppercase letter, one number, and one special character.')
+      return
+    }
+    if (signup.zipCode && !/^\d{5}(-\d{4})?$/.test(signup.zipCode)) {
+      setError('Please enter a valid ZIP code (e.g. 90210 or 90210-1234).')
       return
     }
     setLoad(true)
