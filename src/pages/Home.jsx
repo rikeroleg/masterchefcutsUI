@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
-import { DEFAULT_OG_IMAGE, SITE_URL, useSEO } from '../utils/seo'
 
 const ANIMAL_META = {
   BEEF: { emoji: '🐄', label: 'Beef' },
@@ -54,6 +53,9 @@ export default function Home() {
     api.get(`/api/listings${query ? `?${query}` : ''}`).then(setListings).catch(() => {})
     api.get('/api/reviews/featured').then(setTestimonials).catch(() => {})
   }, [user?.zipCode])
+
+  const activeListings  = listings.filter(l => l.status === 'ACTIVE' || l.status === 'FULLY_CLAIMED')
+  const availableCuts   = listings.reduce((a, l) => a + (l.totalCuts - l.claimedCuts), 0)
   const previewListings = activeListings.slice(0, 3)
 
   return (
