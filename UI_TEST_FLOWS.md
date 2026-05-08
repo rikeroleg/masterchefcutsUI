@@ -16,17 +16,17 @@ After completing any action, verify:
 Test on every page — the header is persistent.
 
 ### 1.1 Logo / Brand link
-- [ ] Click the "MasterChef Cuts" logo — must navigate to `/`
+- [x] Click the "MasterChef Cuts" logo — must navigate to `/`
 
 ### 1.2 Nav links (unauthenticated)
-- [ ] Click **Home** — navigates to `/`, link shows active state
-- [ ] Click **Shop** — navigates to `/shop`, link shows active state
-- [ ] Click **Cart** — navigates to `/cart`, link shows active state
-- [ ] Click **Listings** — navigates to `/listings`, link shows active state
-- [ ] Click **Demand** — navigates to `/demand`, link shows active state
-- [ ] Click **About** — navigates to `/about`, link shows active state
-- [ ] Click **FAQ** — navigates to `/faq`, link shows active state
-- [ ] Click **Sign In** — navigates to `/login`, link shows active state
+- [x] Click **Home** — navigates to `/`, link shows active state
+- [x] Click **Shop** — navigates to `/shop`, link shows active state
+- [x] Click **Cart** — navigates to `/cart`, link shows active state
+- [x] Click **Listings** — navigates to `/listings`, link shows active state
+- [x] Click **Demand** — navigates to `/demand`, link shows active state
+- [x] Click **About** — navigates to `/about`, link shows active state
+- [x] Click **FAQ** — navigates to `/faq`, link shows active state
+- [x] Click **Sign In** — navigates to `/login`, link shows active state
 
 ### 1.3 Nav links (authenticated — BUYER)
 All of the above, plus:
@@ -44,8 +44,8 @@ All BUYER links, plus:
 - [ ] **Admin** link appears and navigates to `/admin`
 
 ### 1.6 Hamburger menu (mobile viewport ≤768px)
-- [ ] Resize to mobile width — desktop nav links must collapse
-- [ ] Click **☰ hamburger icon** — mobile menu opens
+- [x] Resize to mobile width — desktop nav links must collapse
+- [x] Click **☰ hamburger icon** — mobile menu opens
 - [ ] All nav links are visible inside the open menu — click each one to verify navigation
 - [ ] Click **✕ close icon** — menu closes
 - [ ] Navigate to any page — menu auto-closes on route change
@@ -55,23 +55,23 @@ All BUYER links, plus:
 ## 2. Footer (all non-shop routes)
 
 ### 2.1 Marketplace column links
-- [ ] **Browse Listings** → `/listings`
-- [ ] **Demand Board** → `/demand`
-- [ ] **3D Shop** → `/shop`
-- [ ] **About** → `/about`
+- [x] **Browse Listings** → `/listings`
+- [x] **Demand Board** → `/demand`
+- [x] **3D Shop** → `/shop`
+- [x] **About** → `/about`
 
 ### 2.2 Account column links
-- [ ] **My Profile** → `/profile`
-- [ ] **Sign In / Register** → `/login`
-- [ ] **Post a Listing** → `/post`
+- [x] **My Profile** → `/profile`
+- [x] **Sign In / Register** → `/login`
+- [x] **Post a Listing** → `/post` (redirects to `/login` when unauthenticated ✓)
 
 ### 2.3 Legal column links
-- [ ] **Terms of Service** → `/terms`
-- [ ] **Privacy Policy** → `/privacy`
+- [x] **Terms of Service** → `/terms`
+- [x] **Privacy Policy** → `/privacy`
 
 ### 2.4 Support column links
-- [ ] **FAQ / Help Center** → `/faq`
-- [ ] **Contact Us** → `/contact`
+- [x] **FAQ / Help Center** → `/faq`
+- [x] **Contact Us** → `/contact`
 
 ---
 
@@ -79,46 +79,48 @@ All BUYER links, plus:
 
 Appears on first visit (localStorage key `mc_cookie_ok` not set). Clear localStorage to force it to show.
 
-- [ ] Bar is visible at the bottom of the screen on first load
-- [ ] **Privacy Policy** link inside the bar — navigates to `/privacy`
-- [ ] Click **Got it** button — bar disappears immediately
-- [ ] Reload the page — bar does NOT reappear (localStorage persisted)
+- [x] Bar is visible at the bottom of the screen on first load
+- [x] **Privacy Policy** link inside the bar — navigates to `/privacy`
+- [x] Click **Got it** button — bar disappears immediately
+- [x] Reload the page — bar does NOT reappear (localStorage persisted)
 
 ---
 
 ## 4. Home Page (`/`)
 
 ### 4.1 Hero section
-- [ ] Click **Find Meat Near Me** button — navigates to `/listings`
-- [ ] Click **List an Animal →** button — navigates to `/post` (or `/login` if unauthenticated)
-- [ ] Verify active listings and cuts available stats load (or show `—` if backend offline)
+- [x] Click **Find Meat Near Me** button — scrolls to `#hp-join` section, opens Participant card
+- [x] Click **List an Animal →** button — scrolls to `#hp-join` section, opens Farmer card
+- [x] Verify active listings and cuts available stats load (or show `—` if backend offline)
 
 ### 4.2 "Who are you?" section
-- [ ] Click **🛒 I'm a Participant** card — navigates to `/listings`
-- [ ] Click **🌾 I'm a Farmer / Butcher** card — navigates to `/post` (or `/login` if unauthenticated)
+- [x] Click **🛒 I'm a Participant** card (when closed) — expands card, shows **Browse All Listings →** link
+- [x] Click **Browse All Listings →** link inside expanded Participant card — navigates to `/listings`
+- [x] Click **🌾 I'm a Farmer / Butcher** card (when closed) — expands card, shows **Post a Listing →** link
+- [x] Click **Post a Listing →** link inside expanded Farmer card — navigates to `/post` (or `/login` if unauthenticated)
 
 ### 4.3 CTA section
-- [ ] Click **Browse Animals →** link — navigates to `/listings`
-- [ ] Click **Learn more** link — navigates to `/about`
+- [x] Click **Browse Animals →** link — navigates to `/listings`
+- [x] Click **Learn more** link — navigates to `/about`
 
 ---
 
 ## 5. 3D Shop (`/shop`)
 
 ### 5.1 Animal toggle buttons
-- [ ] Click **🐄 Beef** — becomes active, WAP updates to beef weights, 3D model switches to cow
-- [ ] Click **🐷 Pork** — becomes active, WAP updates to pork weights, 3D model switches to pig
-- [ ] Click **🐑 Lamb** — becomes active, WAP updates to lamb weights, 3D model switches to lamb
+- [x] Click **🐄 Beef** — becomes active, WAP updates to beef weights, 3D model switches to cow
+- [x] Click **🐷 Pork** — becomes active, WAP updates to pork weights, 3D model switches to pig
+- [x] Click **🐑 Lamb** — becomes active, WAP updates to lamb weights, 3D model switches to lamb
 
 ### 5.2 Whole Animal Panel (WAP) — each animal
 For each of Beef / Pork / Lamb:
-- [ ] Click **Whole** tier → **Claim** button — opens Request Modal (or sign-in prompt if unauthenticated)
+- [x] Click **Whole** tier → **Claim** button — opens Request Modal (or sign-in prompt if unauthenticated)
 - [ ] Click **Half** tier → **Claim** button — opens Request Modal (or sign-in prompt)
 - [ ] Click **Quarter** tier → **Claim** button — opens Request Modal (or sign-in prompt)
 
 ### 5.3 Action chooser
-- [ ] Click **📋 Browse Listings** card — navigates to `/listings`
-- [ ] Click **✏️ Request an Animal** button — opens Animal Request Modal
+- [x] Click **📋 Browse Listings** card — navigates to `/listings`
+- [x] Click **✏️ Request an Animal** button — opens Animal Request Modal
 
 ### 5.4 Mobile toggles (mobile viewport)
 - [ ] Click **🐄 WAP toggle** button — Whole Animal Panel opens/closes
@@ -137,8 +139,8 @@ For each of Beef / Pork / Lamb:
 Triggered from Shop or Demand Board. Requires BUYER auth.
 
 ### 6.1 Unauthenticated state
-- [ ] Modal opens showing "You need to be signed in as a participant"
-- [ ] Click **Sign In →** button — navigates to `/login`, modal closes
+- [x] Modal opens showing "You need to be signed in as a participant"
+- [x] Click **Sign In →** button — navigates to `/login`, modal closes
 
 ### 6.2 Authenticated BUYER state
 - [ ] **Animal type** selector — click each option (Beef, Pork, Lamb), verify selection changes
@@ -154,17 +156,17 @@ Triggered from Shop or Demand Board. Requires BUYER auth.
 ## 7. Browse Listings (`/listings`)
 
 ### 7.1 View toggle
-- [ ] Click **☰ Grid** button — listings display as grid
-- [ ] Click **🗺 Map** button — map view renders (Leaflet map appears)
+- [x] Click **☰ Grid** button — listings display as grid
+- [x] Click **🗺 Map** button — map view renders (Leaflet map appears)
 
 ### 7.2 Search and filters
-- [ ] Type in **Search breed, farm, description…** field — listing results filter live or on enter
+- [x] Type in **Search breed, farm, description…** field — listing results filter live or on enter
 - [ ] Type in **ZIP code** field — enter a valid ZIP
 - [ ] Change **Search radius** dropdown — select 25 mi, 50 mi, 100 mi options
-- [ ] Click **All** animal filter — shows all listings
-- [ ] Click **🐄 Beef** filter chip — filters to beef only
-- [ ] Click **🐷 Pork** filter chip — filters to pork only
-- [ ] Click **🐑 Lamb** filter chip — filters to lamb only
+- [x] Click **All** animal filter — shows all listings
+- [x] Click **🐄 Beef** filter chip — filters to beef only
+- [x] Click **🐷 Pork** filter chip — filters to pork only
+- [x] Click **🐑 Lamb** filter chip — filters to lamb only
 - [ ] Click **⋯ Filters** button — opens extended filter panel (if implemented)
 - [ ] Clear / reset filters — results return to unfiltered state
 
@@ -173,8 +175,8 @@ Triggered from Shop or Demand Board. Requires BUYER auth.
 - [ ] If pagination exists: click **Next page** / **Previous page** controls
 
 ### 7.4 Error / empty states
-- [ ] With backend offline: verify "Request failed (500)" message appears, no crash
-- [ ] Dismiss error alert with **✕** button — alert disappears
+- [x] With backend offline: verify "Request failed (500)" message appears, no crash
+- [x] Dismiss error alert with **✕** button — alert disappears
 
 ---
 
@@ -211,8 +213,8 @@ Triggered from Shop or Demand Board. Requires BUYER auth.
 ## 9. Cart (`/cart`)
 
 ### 9.1 Empty state
-- [ ] Click **← Browse Listings** link — navigates to `/listings`
-- [ ] Click **Browse Shop →** link — navigates to `/shop`
+- [x] Click **← Browse Listings** link — navigates to `/listings`
+- [x] Click **Browse Shop →** link — navigates to `/shop`
 
 ### 9.2 With items in cart (add items first via Listing Detail)
 - [ ] Each cart line item displays: animal name, cut, weight, price
@@ -238,33 +240,33 @@ Triggered from Shop or Demand Board. Requires BUYER auth.
 ## 11. Login Page (`/login`)
 
 ### 11.1 Sign In tab
-- [ ] **Sign In** tab is active by default
-- [ ] Click inside **Email** field — focused, accepts input
-- [ ] Click inside **Password** field — accepts input, characters masked
-- [ ] Click **Forgot password?** link — navigates to `/forgot-password`
-- [ ] Click **Sign In →** button with empty fields — shows validation error(s)
-- [ ] Click **Sign In →** with valid credentials — authenticates, redirects to home
+- [x] **Sign In** tab is active by default
+- [x] Click inside **Email** field — focused, accepts input
+- [x] Click inside **Password** field — accepts input, characters masked
+- [x] Click **Forgot password?** link — navigates to `/forgot-password`
+- [x] Click **Sign In →** button with empty fields — shows validation error(s)
+- [ ] Click **Sign In →** with valid credentials — authenticates, redirects to home (requires live backend)
 - [ ] Click **Create one** link — switches to Create Account tab
 
 ### 11.2 Create Account tab
-- [ ] Click **Create Account** tab button — form switches to registration view
-- [ ] Click **🛒 Participant** role button — buyer fields shown
-- [ ] Click **🌾 Farmer / Butcher** role button — farmer-specific fields appear (Shop name, Business Address)
+- [x] Click **Create Account** tab button — form switches to registration view
+- [x] Click **🛒 Participant** role button — buyer fields shown
+- [x] Click **🌾 Farmer / Butcher** role button — farmer-specific fields appear (Shop name, Business Address)
 - [ ] Fill **Full name**, **Email**, **ZIP Code**, **Password**, **Confirm password** fields
-- [ ] Check **Terms & Conditions** checkbox — checkbox becomes checked
-- [ ] Click **Terms & Conditions** button (inline) — opens terms modal or navigates to `/terms`
+- [x] Check **Terms & Conditions** checkbox — checkbox becomes checked
+- [x] Click **Terms & Conditions** button (inline) — opens terms modal or navigates to `/terms`
 - [ ] Click **Create Account →** with empty fields — shows validation error(s)
-- [ ] Click **Create Account →** with valid data — registers, redirects
-- [ ] Click **Sign in** link at bottom — switches back to Sign In tab
+- [ ] Click **Create Account →** with valid data — registers, redirects (requires live backend)
+- [x] Click **Sign in** link at bottom — switches back to Sign In tab
 
 ---
 
 ## 12. Forgot Password (`/forgot-password`)
 
-- [ ] Click inside **Email** field — accepts input
-- [ ] Click **Send Reset Link** with empty field — shows validation error
-- [ ] Click **Send Reset Link** with a valid email — shows success message ("Check your email")
-- [ ] Click **Back to sign in** link — navigates to `/login`
+- [x] Click inside **Email** field — accepts input
+- [x] Click **Send Reset Link** with empty field — shows validation error
+- [x] Click **Send Reset Link** with a valid email — shows success message ("Check your email")
+- [x] Click **Back to sign in** link — navigates to `/login`
 
 ---
 
