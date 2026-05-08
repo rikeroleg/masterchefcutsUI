@@ -1,4 +1,4 @@
-﻿import React, { useRef, useState, useCallback, useMemo } from 'react'
+﻿import React, { useState, useCallback, useMemo } from 'react'
 import { useGLTF, Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { PIG_CUT_DATA } from '../../../data/pigCutData'
@@ -188,21 +188,24 @@ function CutMarker({ position, color, cut, onClose }) {
 }
 
 export function Pig({ ...props }) {
-  const meshRef = useRef()
-  const { scene, materials } = useGLTF(`${import.meta.env.VITE_GLB_BASE ?? 'https://storage.googleapis.com/masterchefcuts-static'}/3DPig.glb`)
+  const { scene } = useGLTF(`${import.meta.env.VITE_GLB_BASE ?? 'https://storage.googleapis.com/masterchefcuts-static'}/3DPig.glb`)
   const [markers, setMarkers] = useState([])
 
-  const meshObj = useMemo(() => {
-    let found = null
-    scene.traverse((c) => { if (!found && c.isMesh) found = c })
-    return found
+  const clonedScene = useMemo(() => {
+    const clone = scene.clone(true)
+    clone.traverse((c) => {
+      if (c.isMesh) {
+        c.castShadow = true
+        c.receiveShadow = true
+        if (c.material) {
+          c.material = c.material.clone()
+          c.material.metalness = 0
+          c.material.roughness = 0.65
+        }
+      }
+    })
+    return clone
   }, [scene])
-
-  const mat = useMemo(() => {
-    const m = (Object.values(materials)[0] ?? meshObj?.material)?.clone()
-    if (m) { m.metalness = 0; m.roughness = 0.65 }
-    return m
-  }, [materials, meshObj])
 
   const handleClick = useCallback((event) => {
     event.stopPropagation()
@@ -230,12 +233,8 @@ export function Pig({ ...props }) {
 
   return (
     <group {...props} dispose={null}>
-      <mesh
-        ref={meshRef}
-        castShadow
-        receiveShadow
-        geometry={meshObj?.geometry}
-        material={mat}
+      <primitive
+        object={clonedScene}
         onClick={handleClick}
         onPointerOver={handlePointerOver}
         onPointerOut={handlePointerOut}
