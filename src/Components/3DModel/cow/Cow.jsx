@@ -1,4 +1,4 @@
-﻿import React, { useState, useCallback, useMemo, useRef } from 'react'
+﻿import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { useGLTF, Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { BEEF_CUT_DATA } from '../../../data/beefCutData'
@@ -217,6 +217,24 @@ export function Cow({ ...props }) {
     })
     return clone
   }, [scene])
+
+  // Dispose cloned materials when this component unmounts (or when clonedScene changes)
+  // to prevent WebGL resource leaks when the user switches between animals.
+  // Geometry is intentionally NOT disposed — scene.clone(true) shares geometry with
+  // the useGLTF cache; disposing it would break subsequent mounts of the same model.
+  useEffect(() => {
+    return () => {
+      clonedScene.traverse((c) => {
+        if (c.isMesh && c.material) {
+          if (Array.isArray(c.material)) {
+            c.material.forEach((m) => m.dispose())
+          } else {
+            c.material.dispose()
+          }
+        }
+      })
+    }
+  }, [clonedScene])
 
   const handleClick = useCallback((event) => {
     event.stopPropagation()
