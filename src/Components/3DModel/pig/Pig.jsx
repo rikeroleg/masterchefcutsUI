@@ -198,9 +198,18 @@ export function Pig({ ...props }) {
         c.castShadow = true
         c.receiveShadow = true
         if (c.material) {
-          c.material = c.material.clone()
-          c.material.metalness = 0
-          c.material.roughness = 0.65
+          if (Array.isArray(c.material)) {
+            c.material = c.material.map((material) => {
+              const clonedMaterial = material.clone()
+              clonedMaterial.metalness = 0
+              clonedMaterial.roughness = 0.65
+              return clonedMaterial
+            })
+          } else {
+            c.material = c.material.clone()
+            c.material.metalness = 0
+            c.material.roughness = 0.65
+          }
         }
       }
     })
