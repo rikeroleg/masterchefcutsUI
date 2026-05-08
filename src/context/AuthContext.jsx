@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
@@ -28,33 +27,21 @@ function mapUser(data) {
     stripeOnboardingComplete: data.stripeOnboardingComplete ?? false,
     licenseUrl:               data.licenseUrl               || null,
     rejectionReason:          data.rejectionReason           || null,
-  }
-}
-
-function isTokenExpired(token) {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]))
-    // exp is in seconds; Date.now() is in ms
-    return payload.exp * 1000 < Date.now()
-  } catch {
-    return true // treat unparseable tokens as expired
+    // Epoch-ms when the access token expires — used to schedule proactive refresh.
+    // The token itself travels only in the httpOnly mc_auth cookie, not in JS.
+    tokenExpiresAt: data.tokenExpiresAt || null,
   }
 }
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
+    // Restore non-sensitive profile cache from localStorage.
+    // The JWT lives only in the httpOnly mc_auth cookie — inaccessible to JS.
+    // The first API call will produce a 401 if the cookie has expired, which
+    // the session-expired handler will catch and clear user state.
     try {
-      const token = localStorage.getItem('mc_token')
       const saved = localStorage.getItem('mc_user')
-      if (!token || !saved) return null
-      if (isTokenExpired(token)) {
-        // Silent clear on init — no session-expired event, just a fresh logged-out state
-        localStorage.removeItem('mc_token')
-        localStorage.removeItem('mc_user')
-        localStorage.removeItem('mc_cart')
-        return null
-      }
-      return JSON.parse(saved)
+      return saved ? JSON.parse(saved) : null
     } catch { return null }
   })
   const [sessionExpiredMsg, setSessionExpiredMsg] = useState(null)
@@ -79,34 +66,33 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener('session-expired', handleExpired)
   }, [navigate])
 
-  // Proactive token refresh — schedule a refresh 60s before the JWT expires
+  // Proactive token refresh — schedule a refresh 60s before the JWT expires.
+  // tokenExpiresAt is stored in the mc_user cache (not in the httpOnly cookie itself).
   useEffect(() => {
-    if (!user) return
-    const token = localStorage.getItem('mc_token')
-    if (!token) return
+    if (!user?.tokenExpiresAt) return
     let timerId
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]))
-      const msUntilRefresh = payload.exp * 1000 - Date.now() - 60_000
-      const doRefresh = () => {
-        api.post('/api/auth/refresh', {})
-          .then(data => { if (data?.token) localStorage.setItem('mc_token', data.token) })
-          .catch(() => window.dispatchEvent(new Event('session-expired')))
-      }
-      if (msUntilRefresh <= 0) {
-        doRefresh()
-      } else {
-        timerId = setTimeout(doRefresh, msUntilRefresh)
-      }
-    } catch {
-      // unparseable token — 401 handler will catch it
+    const msUntilRefresh = user.tokenExpiresAt - Date.now() - 60_000
+    const doRefresh = () => {
+      api.post('/api/auth/refresh')
+        .then(data => {
+          if (data?.tokenExpiresAt) {
+            setUser(u => u ? { ...u, tokenExpiresAt: data.tokenExpiresAt } : u)
+          }
+        })
+        .catch(() => window.dispatchEvent(new Event('session-expired')))
+    }
+    if (msUntilRefresh <= 0) {
+      doRefresh()
+    } else {
+      timerId = setTimeout(doRefresh, msUntilRefresh)
     }
     return () => clearTimeout(timerId)
-  }, [user])
+  }, [user?.tokenExpiresAt])
 
+  // Persist non-sensitive profile cache. Token is in httpOnly cookie — not stored here.
   useEffect(() => {
     if (user) localStorage.setItem('mc_user', JSON.stringify(user))
-    else { localStorage.removeItem('mc_user'); localStorage.removeItem('mc_token') }
+    else localStorage.removeItem('mc_user')
   }, [user])
 
   async function register({ name, email, password, role, shopName, street, apt, city, state, zipCode, referralCode }) {
@@ -124,19 +110,13 @@ export function AuthProvider({ children }) {
         ...(zipCode         ? { zipCode } : {}),
         ...(referralCode    ? { referralCode } : {}),
       })
-      if (!data.token) {
+      // token is now in httpOnly cookie set by the server; tokenExpiresAt tells us when.
+      if (!data.tokenExpiresAt) {
         return { verify: true }
       }
-      localStorage.setItem('mc_token', data.token)
       setUser(mapUser(data))
       return { ok: true }
     } catch (err) {
-      // Duplicate registration of an unverified email: backend resent the
-      // verification link and returned 409 EMAIL_NOT_VERIFIED. Show the same
-      // "Check your email" screen the user would see after a fresh signup.
-      if (err.message === 'EMAIL_NOT_VERIFIED') {
-        return { verify: true }
-      }
       return { error: err.message, fields: err.fields || null }
     }
   }
@@ -144,23 +124,20 @@ export function AuthProvider({ children }) {
   async function login({ email, password }) {
     try {
       const data = await api.post('/api/auth/login', { email, password })
-      localStorage.setItem('mc_token', data.token)
+      // JWT is in httpOnly cookie set by the server; tokenExpiresAt drives the refresh timer.
       const mapped = mapUser(data)
       setUser(mapped)
       clearSessionMsg()
       return { ok: true, role: mapped.role }
     } catch (err) {
-      const msg = err.message === 'EMAIL_NOT_VERIFIED'
-        ? 'Please check your inbox for the email verification link.'
-        : err.message
-      return { error: msg }
+      return { error: err.message }
     }
   }
 
-  function logout() {
+  async function logout() {
+    // Tell the server to clear the httpOnly auth cookies, then clean up client state.
+    try { await api.post('/api/auth/logout') } catch { /* ignore — clear locally regardless */ }
     setUser(null)
-    localStorage.removeItem('mc_token')
-    localStorage.removeItem('mc_user')
     localStorage.removeItem('mc_cart')
     cartClearBridge.clearCart()
     clearSessionMsg()
@@ -214,4 +191,3 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext)
 }
-
