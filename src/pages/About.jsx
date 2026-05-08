@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api/client'
+import { DEFAULT_OG_IMAGE, SITE_URL, useSEO } from '../utils/seo'
 
 const FEATURES = [
   { icon: '🥩', title: 'Butcher-first',      body: 'We partner with local shops — not big-box suppliers. Every animal is sourced and processed by a professional you can trust.' },
@@ -16,6 +17,25 @@ const STEPS = [
 
 export default function About() {
   const [listings, setListings] = useState([])
+
+  useSEO({
+    title: 'About MasterChef Cuts',
+    description: 'Learn how MasterChef Cuts helps neighbors buy better meat by pooling whole-animal orders from trusted local butchers.',
+    image: DEFAULT_OG_IMAGE,
+    url: '/about',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'AboutPage',
+      name: 'About MasterChef Cuts',
+      url: `${SITE_URL}/about`,
+      description: 'Mission and marketplace overview for MasterChef Cuts.',
+      mainEntity: {
+        '@type': 'Organization',
+        name: 'MasterChef Cuts',
+        url: SITE_URL,
+      },
+    },
+  })
 
   useEffect(() => {
     api.get('/api/listings').then(setListings).catch(() => {})

@@ -33,7 +33,7 @@ export default function VerifyEmail() {
     if (!resendEmail.trim()) return
     setResendStatus('sending')
     try {
-      await api.post(`/api/auth/resend-verification?email=${encodeURIComponent(resendEmail.trim())}`)
+      await api.post('/api/auth/resend-verification', { email: resendEmail.trim() })
       setResendStatus('sent')
     } catch {
       setResendStatus('error')

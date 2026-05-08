@@ -131,6 +131,12 @@ export function AuthProvider({ children }) {
       setUser(mapUser(data))
       return { ok: true }
     } catch (err) {
+      // Duplicate registration of an unverified email: backend resent the
+      // verification link and returned 409 EMAIL_NOT_VERIFIED. Show the same
+      // "Check your email" screen the user would see after a fresh signup.
+      if (err.message === 'EMAIL_NOT_VERIFIED') {
+        return { verify: true }
+      }
       return { error: err.message, fields: err.fields || null }
     }
   }
@@ -144,12 +150,17 @@ export function AuthProvider({ children }) {
       clearSessionMsg()
       return { ok: true, role: mapped.role }
     } catch (err) {
-      return { error: err.message }
+      const msg = err.message === 'EMAIL_NOT_VERIFIED'
+        ? 'Please check your inbox for the email verification link.'
+        : err.message
+      return { error: msg }
     }
   }
 
   function logout() {
     setUser(null)
+    localStorage.removeItem('mc_token')
+    localStorage.removeItem('mc_user')
     localStorage.removeItem('mc_cart')
     cartClearBridge.clearCart()
     clearSessionMsg()

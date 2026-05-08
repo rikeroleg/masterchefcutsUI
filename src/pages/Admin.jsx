@@ -39,6 +39,22 @@ export default function Admin() {
     loadListings()
   }, [user, navigate])
 
+  async function loadAdminSettings() {
+    try {
+      const data = await api.get('/api/admin/settings')
+      setAdminSettings(data)
+    } catch { /* silent */ }
+  }
+
+  async function toggleOrderNotifications() {
+    setTogglingSettings(true)
+    try {
+      const data = await api.post('/api/admin/settings/order-notifications/toggle')
+      setAdminSettings(data)
+    } catch (err) { setError(err.message || 'Failed to update setting') }
+    setTogglingSettings(false)
+  }
+
   async function loadComments(pg = 0) {
     try {
       const data = await api.get(`/api/admin/comments?page=${pg}&size=25`)
@@ -61,6 +77,35 @@ export default function Admin() {
         setDeletingCommentId(null)
       }
     })
+  }
+
+  async function loadReviews(pg = 0) {
+    try {
+      const data = await api.get(`/api/admin/reviews?page=${pg}&size=25`)
+      if (pg === 0) setAdminReviews(data.content || [])
+      else setAdminReviews(prev => [...prev, ...(data.content || [])])
+      setReviewsPage(pg)
+      setReviewsHasMore(data.hasNext || false)
+    } catch (err) { setError(err.message || 'Failed to load reviews') }
+  }
+
+  async function toggleReviewFeatured(id) {
+    setTogglingReviewId(id)
+    try {
+      const updated = await api.patch(`/api/admin/reviews/${id}/featured`)
+      setAdminReviews(prev => prev.map(r => r.id === id ? updated : r))
+    } catch (err) { setError(err.message || 'Failed to toggle featured') }
+    setTogglingReviewId(null)
+  }
+
+  async function deleteAdminReview(id) {
+    if (!window.confirm('Delete this review?')) return
+    setDeletingReviewId(id)
+    try {
+      await api.delete(`/api/admin/reviews/${id}`)
+      setAdminReviews(prev => prev.filter(r => r.id !== id))
+    } catch (err) { setError(err.message || 'Failed to delete review') }
+    setDeletingReviewId(null)
   }
 
   async function loadStats() {
@@ -208,11 +253,11 @@ export default function Admin() {
         {error && <p className="admin-error">{error}</p>}
 
         <div className="admin-tabs">
-          {['stats', 'users', 'listings', 'orders', 'disputes', 'financials', 'comments'].map(t => (
+          {['stats', 'users', 'listings', 'orders', 'disputes', 'financials', 'comments', 'reviews'].map(t => (
             <button
               key={t}
               className={`admin-tab${tab === t ? ' active' : ''}`}
-              onClick={() => { setTab(t); if (t === 'orders') loadOrders(); if (t === 'financials') loadFinancials(); if (t === 'comments') loadComments(0) }}
+              onClick={() => { setTab(t); if (t === 'orders') loadOrders(); if (t === 'financials') loadFinancials(); if (t === 'comments') loadComments(0); if (t === 'reviews') loadReviews(0) }}
             >
               {t.charAt(0).toUpperCase() + t.slice(1)}
               {t === 'users' && pending.length > 0 && <span className="admin-tab-dot" />}
@@ -223,6 +268,7 @@ export default function Admin() {
 
         {/* ── Stats ── */}
         {tab === 'stats' && stats && (
+          <>
           <div className="admin-stats-grid">
             <div className="admin-stat-card">
               <strong>{stats.totalUsers}</strong><span>Total users</span>
@@ -237,6 +283,40 @@ export default function Admin() {
               <strong>{stats.pendingFarmers}</strong><span>Pending farmers</span>
             </div>
           </div>
+
+          {/* ── Admin Settings ── */}
+          {adminSettings !== null && (
+            <div className="admin-table-wrap" style={{ marginTop: '24px' }}>
+              <p className="admin-section-label">⚙️ Notification Settings</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', background: 'rgba(0,0,0,0.12)', border: '1px solid rgba(0,0,0,0.2)', borderRadius: '10px' }}>
+                <span style={{ flex: 1, fontSize: '0.88rem', color: 'rgba(20,6,0,0.75)' }}>
+                  <strong>Admin order notifications</strong>
+                  <span style={{ display: 'block', fontSize: '0.78rem', marginTop: '2px', color: 'rgba(20,6,0,0.5)' }}>
+                    Receive an in-app notification when a new order is paid.
+                  </span>
+                </span>
+                <button
+                  onClick={toggleOrderNotifications}
+                  disabled={togglingSettings}
+                  style={{
+                    padding: '7px 18px',
+                    borderRadius: '20px',
+                    border: 'none',
+                    cursor: togglingSettings ? 'not-allowed' : 'pointer',
+                    fontWeight: 700,
+                    fontSize: '0.82rem',
+                    background: adminSettings.adminOrderNotificationsEnabled ? '#27ae60' : 'rgba(0,0,0,0.25)',
+                    color: '#fff',
+                    opacity: togglingSettings ? 0.6 : 1,
+                    transition: 'background 0.2s',
+                  }}
+                >
+                  {adminSettings.adminOrderNotificationsEnabled ? '✓ On' : '✕ Off'}
+                </button>
+              </div>
+            </div>
+          )}
+          </>
         )}
 
         {/* ── Users ── */}
@@ -557,6 +637,50 @@ export default function Admin() {
             </div>
             {commentsHasMore && (
               <button className="admin-approve-btn" style={{ marginTop: '12px' }} onClick={() => loadComments(commentsPage + 1)}>
+                Load more
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* ── Reviews ── */}
+        {tab === 'reviews' && (
+          <div className="admin-table-wrap">
+            <p className="admin-section-label">All reviews ({adminReviews.length}{reviewsHasMore ? '+' : ''})</p>
+            {adminReviews.length === 0 && <p style={{ fontSize: '0.85rem', color: 'rgba(20,6,0,0.5)', margin: 0 }}>No reviews yet.</p>}
+            <div className="admin-comments-list">
+              {adminReviews.map(r => (
+                <div key={r.id} className="admin-comment-row">
+                  <div className="admin-comment-info">
+                    <span className="admin-comment-author">{r.buyerName}</span>
+                    {r.animalType && <span className="admin-comment-listing">{r.animalType}</span>}
+                    {r.farmerShopName && <span className="admin-comment-listing">@ {r.farmerShopName}</span>}
+                    <span className="admin-comment-date">{r.createdAt ? new Date(r.createdAt).toLocaleDateString() : ''}</span>
+                    <span style={{ color: '#f59e0b', fontSize: '0.85rem' }}>{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</span>
+                    <p className="admin-comment-body">{r.comment && r.comment.length > 100 ? r.comment.slice(0, 100) + '…' : r.comment}</p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                    <button
+                      className={r.featured ? 'admin-approve-btn' : 'admin-reject-btn'}
+                      disabled={togglingReviewId === r.id}
+                      onClick={() => toggleReviewFeatured(r.id)}
+                      title={r.featured ? 'Remove from featured' : 'Feature on homepage'}
+                    >
+                      {togglingReviewId === r.id ? '…' : r.featured ? '⭐ Featured' : '☆ Feature'}
+                    </button>
+                    <button
+                      className="admin-delete-btn"
+                      disabled={deletingReviewId === r.id}
+                      onClick={() => deleteAdminReview(r.id)}
+                    >
+                      {deletingReviewId === r.id ? '…' : 'Delete'}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {reviewsHasMore && (
+              <button className="admin-approve-btn" style={{ marginTop: '12px' }} onClick={() => loadReviews(reviewsPage + 1)}>
                 Load more
               </button>
             )}

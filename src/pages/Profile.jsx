@@ -1416,6 +1416,36 @@ export default function Profile() {
           </p>
         </div>
 
+        {/* ── Email Preferences ── */}
+        <div className="profile-section">
+          <div className="profile-section-header">
+            <h2 className="profile-section-title">📧 Email Preferences</h2>
+          </div>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem', marginBottom: '12px' }}>
+            Choose which emails you receive from MasterChef Cuts.
+          </p>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            {[
+              { value: 'ALL',       label: '📧 All emails' },
+              { value: 'IMPORTANT', label: '⭐ Order emails only' },
+              { value: 'NONE',      label: '🔕 No emails' },
+            ].map(({ value, label }) => (
+              <button
+                key={value}
+                disabled={emailPrefLoading}
+                className={`profile-date-btn${emailPref === value ? ' profile-date-btn--active' : ''}`}
+                style={emailPref === value ? { background: '#f5c97a', color: '#1a0a00', fontWeight: 700, border: 'none' } : {}}
+                onClick={() => emailPref !== value && handleEmailPrefChange(value)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.78rem', marginTop: '8px' }}>
+            Important: order confirmations, disputes, processing dates. Auth emails (password reset, email verification) are always sent.
+          </p>
+        </div>
+
         {/* ── Invite Friends (Referral) ── */}
         {!isFarmer && (
           <div className="profile-section">

@@ -32,6 +32,27 @@ jobs:
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@v2
 
+      - name: Validate GCS_BUCKET secret
+        env:
+          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
+        run: |
+          if [ -z "$GCS_BUCKET" ]; then
+            echo "::error::GCS_BUCKET secret is not set. 3D models cannot be uploaded to GCS and will be served from Cloud Run, which has a 32 MiB response limit — causing 500 errors for 3DCow.glb and 3DLamb.glb."
+            exit 1
+          fi
+
+      - name: Verify bucket access
+        env:
+          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
+        run: |
+          gcloud storage ls "gs://${GCS_BUCKET}/" > /dev/null
+
+      - name: Upload 3D models to GCS
+        env:
+          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
+        run: |
+          gcloud storage cp public/*.glb gs://$GCS_BUCKET/
+
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker "${{ env.GCP_REGION }}-docker.pkg.dev" --quiet
 

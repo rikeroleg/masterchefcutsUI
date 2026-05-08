@@ -6,6 +6,7 @@ import { useToast } from '../context/ToastContext'
 import { useFavorites } from '../utils/index'
 import PaymentModal from '../Components/PaymentModal'
 import '../styles/listings.css'
+import { DEFAULT_OG_IMAGE, SITE_URL, useSEO } from '../utils/seo'
 
 const ANIMAL_META = {
   BEEF: { emoji: '🐄', label: 'Beef' },
@@ -24,6 +25,35 @@ export default function FarmerProfile() {
   const [loading, setLoading] = useState(true)
   const [reviews, setReviews] = useState([])
   const { isFav, toggle: toggleFav } = useFavorites()
+
+  const avgRating = reviews.length > 0 ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length : null
+  const farmerName = farmer?.shopName || farmer?.name || 'Farmer Storefront'
+  const farmerDescription = farmer?.bio || `Browse listings from ${farmerName} on MasterChef Cuts.`
+
+  useSEO({
+    title: `${farmerName} - MasterChef Cuts`,
+    description: farmerDescription,
+    image: DEFAULT_OG_IMAGE,
+    url: `/farmer/${id}`,
+    schema: farmer ? {
+      '@context': 'https://schema.org',
+      '@type': 'LocalBusiness',
+      name: farmerName,
+      description: farmerDescription,
+      url: `${SITE_URL}/farmer/${id}`,
+      image: DEFAULT_OG_IMAGE,
+      address: farmer.zipCode ? {
+        '@type': 'PostalAddress',
+        postalCode: farmer.zipCode,
+        addressCountry: 'US',
+      } : undefined,
+      aggregateRating: avgRating !== null ? {
+        '@type': 'AggregateRating',
+        ratingValue: avgRating.toFixed(1),
+        reviewCount: reviews.length,
+      } : undefined,
+    } : undefined,
+  })
 
   useEffect(() => {
     fetchListings()

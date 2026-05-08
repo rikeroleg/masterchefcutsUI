@@ -6,6 +6,7 @@ import { useToast } from '../context/ToastContext'
 import { cartBridge } from '../context/CartContext'
 import Spinner from '../Components/Spinner'
 import '../styles/listing-detail.css'
+import { DEFAULT_OG_IMAGE, SITE_URL, useSEO } from '../utils/seo'
 
 function SharePanel({ listing }) {
   const { toast } = useToast()
@@ -110,7 +111,16 @@ export default function ListingDetail() {
   const [waitlistLoading,setWaitlistLoading] = useState(false)
   const [waitlistTotal,  setWaitlistTotal]  = useState(0)
 
-  useEffect(() => { document.title = 'Listing \u2014 MasterChef Cuts' }, [])
+  const listingMeta = listing ? (ANIMAL_META[listing.animalType] || { emoji: '🥩', label: listing.animalType }) : null
+  const availableCuts = listing ? listing.cuts.filter(c => !c.claimed).length : 0
+  const avgRatingValue = reviews.length > 0 ? reviews.reduce((a, r) => a + r.rating, 0) / reviews.length : null
+  const listingTitle = listingMeta && listing
+    ? `${listing.breed} ${listingMeta.label} - MasterChef Cuts`
+    : 'Listing - MasterChef Cuts'
+  const listingDescription = listing
+    ? (listing.description || `Claim ${listingMeta.label.toLowerCase()} cuts from ${listing.farmerShopName || listing.farmerName} in ZIP ${listing.zipCode}.`)
+    : 'View whole-animal listing details from local butchers on MasterChef Cuts.'
+  const listingImage = listing?.imageUrl || DEFAULT_OG_IMAGE
 
   useEffect(() => {
     if (listing) {
