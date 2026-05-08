@@ -1,4 +1,4 @@
-﻿import React, { useState, useCallback, useMemo } from 'react'
+﻿import React, { useState, useCallback, useMemo, useRef } from 'react'
 import { useGLTF, Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { BEEF_CUT_DATA } from '../../../data/beefCutData'
