@@ -32,7 +32,8 @@ async function request(method, path, body) {
     try {
       data = JSON.parse(text)
     } catch {
-      data = { message: text }
+      // Non-JSON response (e.g. nginx HTML error page) — never surface raw HTML
+      data = { message: res.ok ? text : `Request failed (${res.status})` }
     }
   }
 
