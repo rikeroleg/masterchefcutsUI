@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect } from 'react'
 
 const noop = () => {}
@@ -16,11 +17,11 @@ export function CartProvider({ children }) {
       if (!localStorage.getItem('mc_user')) return []
       const stored = localStorage.getItem('mc_cart')
       return stored ? JSON.parse(stored) : []
-    } catch (_) { return [] }
+    } catch { /* ignore */ return [] }
   })
 
   React.useEffect(() => {
-    try { localStorage.setItem('mc_cart', JSON.stringify(items)) } catch (_) {}
+    try { localStorage.setItem('mc_cart', JSON.stringify(items)) } catch { /* ignore */ }
   }, [items])
 
   // Sync cart across tabs via storage event
@@ -30,7 +31,7 @@ export function CartProvider({ children }) {
       try {
         const next = e.newValue ? JSON.parse(e.newValue) : []
         setItems(next)
-      } catch (_) {}
+      } catch { /* ignore */ }
     }
     window.addEventListener('storage', handleStorage)
     return () => window.removeEventListener('storage', handleStorage)
@@ -87,3 +88,4 @@ export function useCart() {
   if (!ctx) throw new Error('useCart must be used within CartProvider')
   return ctx
 }
+

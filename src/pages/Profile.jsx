@@ -194,7 +194,7 @@ export default function Profile() {
   const [editing, setEditing]             = useState(false)
   const [connectLoading, setConnectLoading] = useState(false)
 
-  const { favorites, toggle: toggleFav } = useFavorites()
+  const { favorites } = useFavorites()
 
   // Handle Stripe Connect return redirect (?connect=success or ?connect=refresh)
   useEffect(() => {
@@ -285,7 +285,7 @@ export default function Profile() {
       setOrdersLoading(true)
       api.get('/api/orders/my').then(setMyOrders).catch(() => toast.error('Could not load your orders.')).finally(() => setOrdersLoading(false))
     }
-  }, [user, isFarmerUser])
+  }, [user, isFarmerUser, toast])
   const [form, setForm] = useState({
     name: user?.name || '', shopName: user?.shopName || '',
     street: user?.street || '', apt: user?.apt || '',

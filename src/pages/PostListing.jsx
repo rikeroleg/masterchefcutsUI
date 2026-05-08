@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { api } from '../api/client'
@@ -42,7 +42,6 @@ const PRIMAL_CUTS = {
 export default function PostListing() {
   const { user, refreshConnectStatus } = useAuth()
   const { toast } = useToast()
-  const navigate = useNavigate()
 
   const [form, setForm] = useState({
     animalType: 'beef', breed: '', hangingWeight: '', pricePerLb: '',
@@ -139,7 +138,7 @@ export default function PostListing() {
           const fd = new FormData()
           fd.append('file', photoFile)
           await api.upload(`/api/listings/${created.id}/photo`, fd)
-        } catch (_) {}
+        } catch { /* ignore */ }
       }
       setSubmitted(true)
       toast.success('Listing posted successfully!')

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -20,7 +20,6 @@ export default function OrderReceipt() {
   const { id }          = useParams()
   const { user }        = useAuth()
   const { toast }       = useToast()
-  const navigate        = useNavigate()
 
   const [order, setOrder]               = useState(null)
   const [loading, setLoading]           = useState(true)
@@ -46,7 +45,7 @@ export default function OrderReceipt() {
         .catch(() => {}) // silently ignore poll errors
     }, 15_000)
     return () => clearInterval(interval)
-  }, [id, order?.status])
+  }, [id, order])
 
   async function handleConfirmPickup() {
     setConfirming(true)

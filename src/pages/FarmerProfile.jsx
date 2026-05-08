@@ -28,6 +28,7 @@ export default function FarmerProfile() {
   useEffect(() => {
     fetchListings()
     api.get(`/api/reviews/farmer/${encodeURIComponent(id)}`).then(setReviews).catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
   // LocalBusiness JSON-LD — inject when farmer data is available
@@ -201,7 +202,7 @@ export default function FarmerProfile() {
   )
 }
 
-function FarmerListingCard({ listing, onClaimed, user, navigate, toast }) {
+function FarmerListingCard({ listing, onClaimed, user, navigate }) {
   const meta = ANIMAL_META[listing.animalType] || { emoji: '🥩', label: listing.animalType }
   const available = listing.cuts.filter(c => !c.claimed).length
   const [payingCut, setPayingCut] = useState(null)

@@ -51,7 +51,7 @@ function easeOutCubic(t) {
 }
 
 function CutFullPopup({ cut, onClose }) {
-  const [claimed, setClaimed] = useState(false)
+  const [, setClaimed] = useState(false)
   const data = BEEF_CUT_DATA[cut.id]
   if (!data) return null
   const { color } = cut

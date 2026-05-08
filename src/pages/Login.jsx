@@ -13,7 +13,6 @@ export default function Login() {
   const [error, setError]   = useState('')
   const [fieldErrors, setFieldErrors] = useState(null)
   const [loading, setLoad]  = useState(false)
-  const [verified, setVerified] = useState(false)
   const [registered, setRegistered] = useState(false) // Show email verification prompt
   const { login, register, sessionExpiredMsg, clearSessionMsg } = useAuth()
   const navigate            = useNavigate()

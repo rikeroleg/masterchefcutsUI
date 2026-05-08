@@ -227,7 +227,6 @@ function ListingCard({ listing, onClaimed }) {
 }
 
 export default function Listings() {
-  const { user }                    = useAuth()
   const { toast }                   = useToast()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -289,18 +288,18 @@ export default function Listings() {
   }, [listings])
 
   // ── Push debounced inputs → URL params ───────────────────────────────────
-  function updateParam(key, value) {
+  const updateParam = React.useCallback((key, value) => {
     setSearchParams(prev => {
       const next = new URLSearchParams(prev)
       if (value) next.set(key, value); else next.delete(key)
       return next
     }, { replace: true })
-  }
+  }, [setSearchParams])
 
-  useEffect(() => { updateParam('zip',      debouncedZip)      }, [debouncedZip])
-  useEffect(() => { updateParam('maxPrice', debouncedMaxPrice) }, [debouncedMaxPrice])
-  useEffect(() => { updateParam('breed',    debouncedBreed)    }, [debouncedBreed])
-  useEffect(() => { updateParam('q',        debouncedQ)        }, [debouncedQ])
+  useEffect(() => { updateParam('zip',      debouncedZip)      }, [debouncedZip, updateParam])
+  useEffect(() => { updateParam('maxPrice', debouncedMaxPrice) }, [debouncedMaxPrice, updateParam])
+  useEffect(() => { updateParam('breed',    debouncedBreed)    }, [debouncedBreed, updateParam])
+  useEffect(() => { updateParam('q',        debouncedQ)        }, [debouncedQ, updateParam])
 
   // ── Fetch whenever server-side filter params change ──────────────────────
   const q = searchParams.get('q') || ''

@@ -23,7 +23,7 @@ export default function AdminUserDetail() {
       .then(setData)
       .catch(() => navigate('/admin'))
       .finally(() => setLoading(false))
-  }, [id, me])
+  }, [id, me, navigate])
 
   if (loading) return <div className="admin-page"><div className="admin-inner"><p>Loading…</p></div></div>
   if (!data) return null

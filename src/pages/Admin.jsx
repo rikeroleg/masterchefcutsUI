@@ -37,7 +37,7 @@ export default function Admin() {
     loadStats()
     loadUsers()
     loadListings()
-  }, [user])
+  }, [user, navigate])
 
   async function loadComments(pg = 0) {
     try {
@@ -64,23 +64,23 @@ export default function Admin() {
   }
 
   async function loadStats() {
-    try { setStats(await api.get('/api/admin/stats')) } catch {}
+    try { setStats(await api.get('/api/admin/stats')) } catch { /* ignore */ }
   }
 
   async function loadUsers() {
-    try { setUsers(await api.get('/api/admin/users')) } catch {}
+    try { setUsers(await api.get('/api/admin/users')) } catch { /* ignore */ }
   }
 
   async function loadListings() {
-    try { setListings(await api.get('/api/listings')) } catch {}
+    try { setListings(await api.get('/api/listings')) } catch { /* ignore */ }
   }
 
   async function loadDisputes() {
-    try { setDisputes(await api.get('/api/admin/disputes')) } catch {}
+    try { setDisputes(await api.get('/api/admin/disputes')) } catch { /* ignore */ }
   }
 
   async function loadOrders() {
-    try { setOrders(await api.get('/api/admin/orders')) } catch {}
+    try { setOrders(await api.get('/api/admin/orders')) } catch { /* ignore */ }
   }
 
   async function loadFinancials() {

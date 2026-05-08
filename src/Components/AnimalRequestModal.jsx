@@ -45,7 +45,6 @@ export default function AnimalRequestModal({ onClose, initialAnimal, initialCuts
   const navigate = useNavigate()
   const isEdit = !!existingRequest
 
-  const [step, setStep] = useState(1)
   const [animalType, setAnimalType] = useState(
     existingRequest ? existingRequest.animalType.toLowerCase() : (initialAnimal || 'beef')
   )
