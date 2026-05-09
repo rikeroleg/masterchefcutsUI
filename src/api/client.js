@@ -1,3 +1,5 @@
+import logger from '../utils/logger.js'
+
 const BASE_URL = import.meta.env.VITE_API_URL ?? ''
 
 // Fields that are implementation details and must never surface in the UI.
@@ -13,6 +15,8 @@ function sanitizeErrorBody(data) {
 async function request(method, path, body) {
   const headers = {}
   if (body !== undefined) headers['Content-Type'] = 'application/json'
+
+  logger.debug('API', `${method} ${path}`, body !== undefined ? { body } : undefined)
 
   const res = await fetch(`${BASE_URL}${path}`, {
     method,
@@ -34,9 +38,11 @@ async function request(method, path, body) {
 
   if (res.status === 401) {
     if (path.startsWith('/api/auth/')) {
+      logger.warn('API', `401 auth failure: ${path}`)
       throw new Error(data?.error || data?.message || 'Invalid credentials')
     }
     // Session expired — clear non-sensitive profile cache; cookie cleared server-side
+    logger.warn('API', `401 session expired: ${path}`)
     localStorage.removeItem('mc_user')
     localStorage.removeItem('mc_cart')
     window.dispatchEvent(new CustomEvent('session-expired'))
@@ -44,12 +50,14 @@ async function request(method, path, body) {
   }
 
   if (res.status === 403) {
+    logger.warn('API', `403 access denied: ${path}`)
     throw new Error(data?.error || data?.message || 'Access denied — you do not have permission.')
   }
 
   if (!res.ok) {
     const safe = sanitizeErrorBody(data)
     const message = safe?.error || safe?.message || `Request failed (${res.status})`
+    logger.error('API', `${res.status} error: ${method} ${path}`, { message })
     const err = new Error(message)
     if (safe?.fields && typeof safe.fields === 'object') err.fields = safe.fields
     throw err
