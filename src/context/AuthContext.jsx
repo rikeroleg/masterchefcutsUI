@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect, useRef, useCallb
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
 import { cartClearBridge } from './CartContext'
+import logger from '../utils/logger.js'
 
 const AuthContext = createContext(null)
 
@@ -58,6 +59,7 @@ export function AuthProvider({ children }) {
     function handleExpired() {
       if (handledExpiryRef.current) return
       handledExpiryRef.current = true
+      logger.warn('AuthContext', 'session expired — clearing user and redirecting to login')
       setUser(null)
       cartClearBridge.clearCart()
       setSessionExpiredMsg('Your session expired — please sign in again.')
@@ -74,13 +76,18 @@ export function AuthProvider({ children }) {
     let timerId
     const msUntilRefresh = user.tokenExpiresAt - Date.now() - 60_000
     const doRefresh = () => {
+      logger.debug('AuthContext', 'proactive token refresh triggered')
       api.post('/api/auth/refresh')
         .then(data => {
           if (data?.tokenExpiresAt) {
+            logger.debug('AuthContext', 'token refreshed successfully')
             setUser(u => u ? { ...u, tokenExpiresAt: data.tokenExpiresAt } : u)
           }
         })
-        .catch(() => window.dispatchEvent(new Event('session-expired')))
+        .catch(() => {
+          logger.warn('AuthContext', 'token refresh failed — dispatching session-expired')
+          window.dispatchEvent(new Event('session-expired'))
+        })
     }
     if (msUntilRefresh <= 0) {
       doRefresh()
@@ -113,11 +120,14 @@ export function AuthProvider({ children }) {
       })
       // token is now in httpOnly cookie set by the server; tokenExpiresAt tells us when.
       if (!data.tokenExpiresAt) {
+        logger.info('AuthContext', 'registration succeeded — email verification required', { email })
         return { verify: true }
       }
+      logger.info('AuthContext', 'registration succeeded — user signed in', { email, role })
       setUser(mapUser(data))
       return { ok: true }
     } catch (err) {
+      logger.warn('AuthContext', 'registration failed', { email, error: err.message })
       return { error: err.message, fields: err.fields || null }
     }
   }
@@ -127,16 +137,19 @@ export function AuthProvider({ children }) {
       const data = await api.post('/api/auth/login', { email, password })
       // JWT is in httpOnly cookie set by the server; tokenExpiresAt drives the refresh timer.
       const mapped = mapUser(data)
+      logger.info('AuthContext', 'user signed in', { email, role: mapped.role })
       setUser(mapped)
       clearSessionMsg()
       return { ok: true, role: mapped.role }
     } catch (err) {
+      logger.warn('AuthContext', 'sign-in failed', { email, error: err.message })
       return { error: err.message }
     }
   }
 
   async function logout() {
     // Tell the server to clear the httpOnly auth cookies, then clean up client state.
+    logger.info('AuthContext', 'user signed out')
     try { await api.post('/api/auth/logout') } catch { /* ignore — clear locally regardless */ }
     setUser(null)
     localStorage.removeItem('mc_cart')

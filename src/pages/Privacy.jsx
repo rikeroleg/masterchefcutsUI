@@ -1,5 +1,5 @@
 import React from 'react'
-import '../styles/auth.css'
+import '../styles/legal.css'
 import { DEFAULT_OG_IMAGE, SITE_URL, useSEO } from '../utils/seo'
 
 export default function Privacy() {
@@ -17,10 +17,10 @@ export default function Privacy() {
   })
 
   return (
-    <div className="auth-page" style={{ alignItems: 'flex-start', padding: '48px 24px' }}>
-      <div style={{ maxWidth: 760, margin: '0 auto', width: '100%' }}>
+    <div className="legal-page">
+      <div className="legal-inner">
         <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: 8 }}>Privacy Policy</h1>
-        <p style={{ color: 'rgba(255,255,255,0.45)', marginBottom: 40, fontSize: '0.875rem' }}>
+        <p style={{ color: 'rgba(255,255,255,0.45)', marginBottom: 24, fontSize: '0.875rem' }}>
           Last updated: April 11, 2026
         </p>
 
@@ -76,9 +76,9 @@ export default function Privacy() {
 
 function Section({ title, children }) {
   return (
-    <div style={{ marginBottom: 28 }}>
-      <h2 style={{ fontSize: '1.05rem', fontWeight: 600, marginBottom: 8, color: '#fff' }}>{title}</h2>
-      <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, margin: 0 }}>{children}</p>
+    <div className="legal-section">
+      <h2>{title}</h2>
+      <p>{children}</p>
     </div>
   )
 }

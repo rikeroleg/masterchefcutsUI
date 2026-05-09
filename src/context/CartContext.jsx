@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import logger from '../utils/logger.js'
 
 const noop = () => {}
 const CartContext = createContext({
@@ -39,6 +40,7 @@ export function CartProvider({ children }) {
 
   function addToCart({ animal, cutId, name, color, price, qty, listingId, breed, sourceFarm }) {
     const id = `${animal}-${cutId}`
+    logger.debug('CartContext', `add to cart: ${name}`, { id, qty, price })
     setItems((prev) => {
       const existing = prev.find((i) => i.id === id)
       if (existing) {
@@ -53,6 +55,7 @@ export function CartProvider({ children }) {
   })
 
   function removeFromCart(id) {
+    logger.debug('CartContext', `remove from cart: ${id}`)
     setItems((prev) => prev.filter((i) => i.id !== id))
   }
 
@@ -62,6 +65,7 @@ export function CartProvider({ children }) {
   }
 
   function clearCart() {
+    logger.debug('CartContext', 'cart cleared')
     setItems([])
   }
 
