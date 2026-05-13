@@ -30,7 +30,6 @@ export function NotificationProvider({ children }) {
     fetchPage(0, true)
 
     const BASE_URL = import.meta.env.VITE_API_URL ?? ''
-    const token    = localStorage.getItem('mc_token')
     let es = null
     let pollInterval = null
 
@@ -39,10 +38,11 @@ export function NotificationProvider({ children }) {
       pollInterval = setInterval(() => fetchPage(0, true), 30_000)
     }
 
-    // Try SSE; fall back to polling if unsupported or backend returns non-event-stream
-    if (token && typeof EventSource !== 'undefined') {
+    // Try SSE using httpOnly cookie for auth (withCredentials sends mc_auth automatically).
+    // Never pass the JWT via URL — it would be logged by the server and visible in browser history.
+    if (typeof EventSource !== 'undefined') {
       try {
-        es = new EventSource(`${BASE_URL}/api/notifications/stream?token=${encodeURIComponent(token)}`)
+        es = new EventSource(`${BASE_URL}/api/notifications/stream`, { withCredentials: true })
 
         es.onmessage = (e) => {
           try {

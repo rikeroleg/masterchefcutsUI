@@ -16,6 +16,16 @@ async function request(method, path, body) {
   const headers = {}
   if (body !== undefined) headers['Content-Type'] = 'application/json'
 
+  // Read the XSRF-TOKEN cookie set by Spring's CookieCsrfTokenRepository and
+  // include it as a header on every mutating request so CSRF protection passes.
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+    const xsrf = document.cookie
+      .split('; ')
+      .find(c => c.startsWith('XSRF-TOKEN='))
+      ?.split('=')[1]
+    if (xsrf) headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrf)
+  }
+
   logger.debug('API', `${method} ${path}`, body !== undefined ? { body } : undefined)
 
   const res = await fetch(`${BASE_URL}${path}`, {
