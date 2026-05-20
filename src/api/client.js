@@ -12,9 +12,25 @@ function sanitizeErrorBody(data) {
   )
 }
 
+// Read the XSRF-TOKEN cookie set by Spring's CookieCsrfTokenRepository and
+// return the decoded value, or null if absent.
+function readXsrfToken() {
+  const cookie = document.cookie
+    .split('; ')
+    .find(c => c.startsWith('XSRF-TOKEN='))
+    ?.split('=')[1]
+  return cookie ? decodeURIComponent(cookie) : null
+}
+
 async function request(method, path, body) {
   const headers = {}
   if (body !== undefined) headers['Content-Type'] = 'application/json'
+
+  // Include XSRF token on every mutating request so CSRF protection passes.
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+    const xsrf = readXsrfToken()
+    if (xsrf) headers['X-XSRF-TOKEN'] = xsrf
+  }
 
   logger.debug('API', `${method} ${path}`, body !== undefined ? { body } : undefined)
 
@@ -73,9 +89,13 @@ export const api = {
   put:    (path, body)  => request('PUT',    path, body),
   delete: (path)        => request('DELETE', path),
   upload: (path, formData) => {
+    const headers = {}
+    const xsrf = readXsrfToken()
+    if (xsrf) headers['X-XSRF-TOKEN'] = xsrf
     return fetch(`${BASE_URL}${path}`, {
       method: 'POST',
       credentials: 'include',
+      headers,
       body: formData,
     })
       .then(async res => {

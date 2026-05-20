@@ -189,18 +189,15 @@ export function Lamb({ ...props }) {
         c.castShadow = true
         c.receiveShadow = true
         if (c.material) {
-          if (Array.isArray(c.material)) {
-            c.material = c.material.map((material) => {
-              const clonedMaterial = material.clone()
-              clonedMaterial.metalness = 0
-              clonedMaterial.roughness = 0.65
-              return clonedMaterial
-            })
-          } else {
-            c.material = c.material.clone()
-            c.material.metalness = 0
-            c.material.roughness = 0.65
+          const applyToMat = (material) => {
+            const m = material.clone()
+            m.metalness = 0
+            m.roughness = 0.65
+            return m
           }
+          c.material = Array.isArray(c.material)
+            ? c.material.map(applyToMat)
+            : applyToMat(c.material)
         }
       }
     })

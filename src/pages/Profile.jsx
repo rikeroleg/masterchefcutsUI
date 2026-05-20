@@ -399,20 +399,12 @@ export default function Profile() {
     if (!file) return
     setLicenseUploading(true)
     try {
-      const token = localStorage.getItem('mc_token')
       const formData = new FormData()
       formData.append('file', file)
-      const res = await fetch(`${import.meta.env.VITE_API_URL ?? ''}/api/auth/me/license`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error(err.message || 'Upload failed')
-      }
+      // Use api.upload() which sends credentials: 'include' so the httpOnly mc_auth cookie
+      // is used for auth — never read JWT from localStorage.
+      const updated = await api.upload('/api/auth/me/license', formData)
       toast.success('License uploaded — pending admin review.')
-      const updated = await res.json()
       if (updated?.licenseUrl) updateUser({ licenseUrl: updated.licenseUrl })
     } catch (err) {
       toast.error(err.message || 'Failed to upload license')
