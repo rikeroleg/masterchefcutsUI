@@ -13,6 +13,7 @@ env:
   GCP_REGION: us-central1
   ARTIFACT_REGISTRY_REPO: mastercheifcuts
   CLOUD_RUN_SERVICE: masterchefcuts-ui
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   deploy:
