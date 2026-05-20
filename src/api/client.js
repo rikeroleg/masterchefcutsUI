@@ -57,12 +57,19 @@ async function request(method, path, body) {
       logger.warn('API', `401 auth failure: ${path}`)
       throw new Error(data?.error || data?.message || 'Invalid credentials')
     }
-    // Session expired — clear non-sensitive profile cache; cookie cleared server-side
-    logger.warn('API', `401 session expired: ${path}`)
-    localStorage.removeItem('mc_user')
-    localStorage.removeItem('mc_cart')
-    window.dispatchEvent(new CustomEvent('session-expired'))
-    throw new Error('Session expired — please sign in again.')
+    // Only treat 401 as "session expired" when there actually was a session.
+    // Anonymous visitors hitting an auth-required endpoint must NOT be forced
+    // through a logout-and-redirect — they were never logged in.
+    const hadSession = typeof localStorage !== 'undefined' && localStorage.getItem('mc_user') !== null
+    if (hadSession) {
+      logger.warn('API', `401 session expired: ${path}`)
+      localStorage.removeItem('mc_user')
+      localStorage.removeItem('mc_cart')
+      window.dispatchEvent(new CustomEvent('session-expired'))
+      throw new Error('Session expired — please sign in again.')
+    }
+    logger.warn('API', `401 unauthorized (no active session): ${path}`)
+    throw new Error(data?.error || data?.message || 'Authentication required')
   }
 
   if (res.status === 403) {
